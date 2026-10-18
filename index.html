@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#06080e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Hybrid v3.5</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Vazirmatn & JetBrains Mono Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PeerJS (Channel 1) -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    
+    <!-- MQTT.js over WebSockets (Channel 2 - Foolproof Firewall Bypass Signaling) -->
+    <script src="https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
+    
+    <!-- QRCode Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        studio: {
+                            950: '#06080e',
+                            900: '#0b0f19',
+                            800: '#111827',
+                            700: '#1f2937',
+                            600: '#374151',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            background-color: #06080e;
+            color: #f3f4f6;
+            font-family: 'Vazirmatn', sans-serif;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
+
+        .tally-border-pgm {
+            box-shadow: inset 0 0 0 7px #ef4444, inset 0 0 40px rgba(239, 68, 68, 0.6);
+        }
+        .tally-border-pvw {
+            box-shadow: inset 0 0 0 7px #10b981, inset 0 0 40px rgba(16, 185, 129, 0.5);
+        }
+        .tally-border-stby {
+            box-shadow: inset 0 0 0 2px #374151;
+        }
+
+        .hw-btn {
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 3px 0 #000000, inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .hw-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #000000;
+        }
+        .hw-btn-pgm-active {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            color: white !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6), 0 3px 0 #7f1d1d;
+            border-color: #f87171 !important;
+        }
+        .hw-btn-pvw-active {
+            background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+            color: white !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5), 0 3px 0 #064e3b;
+            border-color: #34d399 !important;
+        }
+
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .animate-rec {
+            animation: pulse-fast 1.1s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-studio-950 text-gray-100">
+
+    <!-- ================= TOP BROADCAST HEADER BAR ================= -->
+    <header class="bg-studio-900 border-b border-studio-700 px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-30 sticky top-0">
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <div class="flex items-center gap-2 bg-studio-800 border border-studio-700 px-2.5 py-1 rounded-lg">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-rec"></span>
+                <span class="font-mono font-bold text-sm tracking-wider text-white">PRISM<span class="text-red-500">DECK</span></span>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-mono">HYBRID v3.5</span>
+            </div>
+
+            <!-- Signaling Server Live Status -->
+            <div id="connStatusBadge" class="flex items-center gap-1.5 bg-studio-800 border border-studio-700 px-2.5 py-1 rounded-lg text-xs">
+                <span id="connDot" class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                <span id="connText" class="text-gray-200 font-medium">آماده راه‌اندازی</span>
+            </div>
+
+            <!-- Room ID Display -->
+            <div id="headerRoomBox" class="hidden items-center gap-1.5 bg-emerald-950/80 border border-emerald-600/60 px-2.5 py-1 rounded-lg text-xs">
+                <span class="text-emerald-300">کد استودیو:</span>
+                <span id="headerRoomCode" class="font-mono font-black text-sm text-white tracking-widest">----</span>
+                <button onclick="copyRoomCode()" class="text-emerald-400 hover:text-white mr-1" title="کپی کد">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Telemetry & Mode Switch -->
+        <div class="flex items-center gap-2">
+            <div class="hidden md:flex items-center gap-2 bg-studio-800 border border-studio-700 px-2.5 py-1 rounded-lg font-mono text-xs text-gray-400">
+                <span id="activeProtocolBadge" class="text-blue-400">MQTT+TURN</span>
+                <span class="text-studio-600">|</span>
+                <span id="liveClock">00:00:00</span>
+            </div>
+
+            <button onclick="returnToLauncher()" id="btnSwitchMode" class="hidden bg-studio-800 hover:bg-studio-700 text-gray-200 border border-studio-600 px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate"></i>
+                <span>تغییر نقش</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= REAL-TIME DIAGNOSTIC LOG BAR ================= -->
+    <div id="diagBar" class="bg-studio-950 border-b border-studio-800 px-3 py-1 text-[11px] font-mono flex items-center justify-between gap-2 text-gray-400">
+        <div class="flex items-center gap-2 truncate">
+            <span class="text-emerald-400 font-bold"><i class="fa-solid fa-terminal ml-1"></i>وضعیت شبکه:</span>
+            <span id="diagLogText" class="text-gray-300 truncate">سیستم هیبریدی (MQTT + WebRTC TURN) آماده اتصال بین دو دستگاه است.</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <span id="mqttIndicator" class="px-1.5 py-0.5 rounded bg-studio-800 text-gray-500 text-[10px]">MQTT: OFF</span>
+            <span id="peerIndicator" class="px-1.5 py-0.5 rounded bg-studio-800 text-gray-500 text-[10px]">PEER: OFF</span>
+        </div>
+    </div>
+
+    <!-- ================= TOAST / NOTIFICATION BANNER ================= -->
+    <div id="toastContainer" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none w-11/12 max-w-md"></div>
+
+    <!-- ================= VIEW 0: ROLE SELECTION LAUNCHER ================= -->
+    <main id="launcherView" class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
+        <div class="max-w-4xl w-full bg-studio-900 border border-studio-700 rounded-2xl p-5 sm:p-8 shadow-2xl relative overflow-hidden">
+            
+            <!-- WebView / Iframe Warning Banner (Crucial for WebIntoApp & Gemini Preview) -->
+            <div id="envWarningBox" class="hidden mb-5 bg-amber-950/80 border-2 border-amber-500/80 rounded-xl p-3.5 text-xs text-amber-200">
+                <div class="flex items-start gap-2.5">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg mt-0.5"></i>
+                    <div class="flex-1">
+                        <div class="font-bold text-amber-300 text-sm mb-1">توجه مهم برای اتصال دوربین و شبکه بدون محدودیت:</div>
+                        <p id="envWarningText" class="leading-relaxed text-amber-100/90"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center max-w-2xl mx-auto mb-6">
+                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold mb-2">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <span>نسخه ۳.۵ هیبریدی • عبور خودکار از فایروال و فیلترشکن (MQTT + TURN)</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black text-white mb-2 leading-tight">
+                    استودیوی کارگردانی و سوییچر بی‌سیم دو گوشی
+                </h1>
+                <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    در یکی از دستگاه‌ها گزینه <b>«۱. واحد دوربین بی‌سیم»</b> را بزنید، صبر کنید تا چراغ کد ۴ رقمی <b>سبز</b> شود، سپس همان کد را در دستگاه دوم (<b>«۲. میز کارگردانی»</b>) وارد کنید.
+                </p>
+            </div>
+
+            <!-- 3 Operational Modes Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                
+                <!-- Mode 1: Camera Node -->
+                <div onclick="startCameraNodeMode()" class="group cursor-pointer bg-studio-800 hover:bg-studio-800/90 border-2 border-studio-700 hover:border-emerald-500 rounded-xl p-5 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700/50">دستگاه اول • فرستنده تصویر</span>
+                        <h2 class="text-lg font-bold text-white mt-2 mb-1">۱. واحد دوربین بی‌سیم</h2>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            ارسال تصویر و صدای زنده به میز کارگردانی + دارای <b>مولد سیگنال تست داخلی</b> (حتی اگر دوربین دستگاه مسدود باشد می‌توانید تصویر تست بفرستید).
+                        </p>
+                    </div>
+                    <button class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 transition">
+                        <span>راه‌اندازی به عنوان دوربین</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+
+                <!-- Mode 2: Director Switcher -->
+                <div onclick="startDirectorMode(false)" class="group cursor-pointer bg-studio-800 hover:bg-studio-800/90 border-2 border-studio-700 hover:border-red-500 rounded-xl p-5 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-700/50">دستگاه دوم • میز کارگردان</span>
+                        <h2 class="text-lg font-bold text-white mt-2 mb-1">۲. میز کارگردانی تلویزیونی</h2>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            دریافت تصویر بی‌سیم دوربین ۱، مانیتورینگ PVW/PGM، پخش فیلم و کلیپ از گالری، زیرنویس زنده، تصویر در تصویر و ضبط خروجی.
+                        </p>
+                    </div>
+                    <button class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 transition">
+                        <span>ورود به میز کارگردانی</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+
+                <!-- Mode 3: All-in-One Sandbox -->
+                <div onclick="startDirectorMode(true)" class="group cursor-pointer bg-studio-800 hover:bg-studio-800/90 border-2 border-studio-700 hover:border-blue-500 rounded-xl p-5 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-700/50">تست تک‌دستگاه • بدون کد</span>
+                        <h2 class="text-lg font-bold text-white mt-2 mb-1">۳. استودیوی یکپارچه</h2>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            اجرای هم‌زمان دوربین و میز کارگردانی روی یک دستگاه برای تست فوری زیرنویس، پخش کلیپ، سوییچینگ و ضبط ویدیو.
+                        </p>
+                    </div>
+                    <button class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-2 transition">
+                        <span>اجرای شبیه‌ساز یکپارچه</span>
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Why WebIntoApp blocks camera & How to open in Chrome -->
+            <div class="bg-studio-950 border border-studio-700 rounded-xl p-3.5 text-xs text-gray-300 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-brands fa-chrome text-emerald-400 text-2xl shrink-0"></i>
+                    <div class="leading-relaxed">
+                        <b>راهنمای مهم برای موبایل:</b> برنامه‌های تبدیل رایگان مثل WebIntoApp دسترسی دوربین اندروید را مسدود می‌کنند. برای روشن شدن دوربین روی گوشی، لینک سایت خود (در Netlify یا Tiiny.host) را <b>مستقیماً در مرورگر Google Chrome</b> باز کنید و از منوی کروم گزینه <b>Add to Home screen</b> را بزنید.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= VIEW 1: CAMERA NODE (واحد دوربین بی‌سیم) ================= -->
+    <section id="cameraNodeView" class="hidden flex-1 flex flex-col relative overflow-hidden bg-black">
+        
+        <!-- Fullscreen Tally Border -->
+        <div id="camTallyFrame" class="absolute inset-0 pointer-events-none z-20 tally-border-stby transition-all duration-300"></div>
+
+        <!-- Video / Test Pattern Viewport -->
+        <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
+            <video id="camNodeVideo" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-200"></video>
+            <!-- Synthetic Test Pattern Canvas (Used when Camera permission is blocked or toggled) -->
+            <canvas id="camSynthCanvas" width="1280" height="720" class="hidden w-full h-full object-contain"></canvas>
+
+            <!-- Camera Blocked Diagnostic Modal Overlay -->
+            <div id="camPermissionBlockedCard" class="hidden absolute z-30 bg-studio-900/95 backdrop-blur-md border-2 border-amber-500 rounded-2xl p-5 max-w-md w-11/12 text-center shadow-2xl">
+                <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-video-slash"></i>
+                </div>
+                <h3 class="text-base font-bold text-white mb-1">دسترسی به دوربین توسط پوسته برنامه مسدود شده است</h3>
+                <p id="camErrorDetailText" class="text-xs text-gray-300 leading-relaxed mb-4">
+                    پوسته WebView فعلی اجازه روشن کردن دوربین را نمی‌دهد. می‌توانید لینک را در مرورگر <b>Chrome</b> باز کنید، یا همین الان با زدن دکمه زیر <b>«سیگنال تصویر تست زنده»</b> را به میز کارگردانی بفرستید تا اتصال دو دستگاه را تست کنید!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="enableSyntheticCameraStream()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-tower-cell"></i>
+                        <span>ارسال تصویر تست استودیویی (بدون دوربین)</span>
+                    </button>
+                    <button onclick="initCameraNodeHardware()" class="py-2.5 px-4 bg-studio-700 hover:bg-studio-600 text-white font-bold text-xs rounded-xl">
+                        تلاش مجدد دوربین
+                    </button>
+                </div>
+            </div>
+
+            <!-- Top Tally & Connection HUD -->
+            <div class="absolute top-3 right-3 left-3 flex flex-wrap items-center justify-between gap-2 z-30">
+                <!-- Tally Pill -->
+                <div id="camTallyPill" class="bg-gray-900/90 backdrop-blur border border-gray-600 px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
+                    <span id="camTallyDot" class="w-3 h-3 rounded-full bg-gray-400"></span>
+                    <span id="camTallyLabel" class="font-mono font-extrabold text-xs sm:text-sm tracking-wider text-white">STANDBY • آماده</span>
+                </div>
+
+                <!-- Room ID & Server Registration Status -->
+                <div class="flex items-center gap-2">
+                    <div class="bg-studio-900/95 backdrop-blur border-2 border-emerald-500/80 px-3.5 py-1.5 rounded-xl flex items-center gap-2.5 shadow-2xl">
+                        <div class="flex flex-col text-right">
+                            <span class="text-[10px] text-gray-400">کد اتصال دوربین:</span>
+                            <span id="camRegStateLabel" class="text-[10px] font-bold text-yellow-400">در حال ثبت کد...</span>
+                        </div>
+                        <span id="camRoomCodeDisplay" class="font-mono font-black text-xl sm:text-2xl text-emerald-400 tracking-widest bg-black/50 px-2.5 py-0.5 rounded-lg border border-emerald-500/40">----</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Director Intercom Cue Overlay -->
+            <div id="camDirectorPrompt" class="hidden absolute top-20 left-1/2 -translate-x-1/2 z-30 bg-amber-500 text-black font-black px-6 py-3 rounded-2xl shadow-2xl border-2 border-white max-w-md w-11/12 text-center animate-bounce">
+                <div class="text-[10px] uppercase tracking-wider font-mono opacity-80">پیام کارگردان (INTERCOM)</div>
+                <div id="camDirectorPromptText" class="text-lg sm:text-xl">نگاه به دوربین ۱</div>
+            </div>
+
+            <!-- Bottom Left Telemetry -->
+            <div class="absolute bottom-20 left-3 z-30 bg-black/75 backdrop-blur border border-white/15 rounded-xl px-3 py-2 font-mono text-xs text-gray-300 flex flex-col gap-1">
+                <div>منبع: <span id="camResInfo" class="text-white font-bold">در حال راه‌اندازی...</span></div>
+                <div>زوم: <span id="camZoomInfo" class="text-emerald-400">1.0x</span></div>
+                <div>وضعیت کارگردان: <span id="camPeerStatus" class="text-yellow-400 font-bold">منتظر ورود کد در گوشی کارگردان...</span></div>
+            </div>
+        </div>
+
+        <!-- Bottom Local Camera Controls -->
+        <div class="bg-studio-900 border-t border-studio-700 p-2.5 flex flex-wrap items-center justify-between gap-2 z-30">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="switchCameraNodeLens()" class="hw-btn bg-studio-800 hover:bg-studio-700 border border-studio-600 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-camera-rotate text-blue-400"></i>
+                    <span>چرخش لنز</span>
+                </button>
+                <button onclick="toggleCameraNodeTorch()" class="hw-btn bg-studio-800 hover:bg-studio-700 border border-studio-600 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt text-amber-400"></i>
+                    <span>فلاش</span>
+                </button>
+                <button onclick="toggleCameraNodeMirror()" class="hw-btn bg-studio-800 hover:bg-studio-700 border border-studio-600 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrows-left-right text-purple-400"></i>
+                    <span>قرینه</span>
+                </button>
+                <button onclick="enableSyntheticCameraStream()" class="hw-btn bg-emerald-950 hover:bg-emerald-900 border border-emerald-600 text-emerald-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-tv"></i>
+                    <span>ارسال تصویر تست</span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 flex-1 max-w-xs">
+                <span class="text-[11px] text-gray-400">زوم:</span>
+                <input id="camLocalZoomSlider" type="range" min="1" max="3" step="0.1" value="1" oninput="applyCameraNodeZoom(this.value)" class="w-full">
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= VIEW 2: DIRECTOR SWITCHER (میز کارگردانی) ================= -->
+    <section id="directorView" class="hidden flex-1 flex flex-col bg-studio-950 overflow-y-auto">
+        
+        <!-- Top Connection & Master Record Bar -->
+        <div class="bg-studio-900 border-b border-studio-800 px-3 py-2.5 flex flex-wrap items-center justify-between gap-2">
+            
+            <!-- Connect to Camera 1 Input -->
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center bg-studio-800 border-2 border-emerald-600/70 rounded-xl overflow-hidden p-1 shadow-lg">
+                    <span class="text-xs text-gray-300 font-bold px-2"><i class="fa-solid fa-link ml-1 text-emerald-400"></i>کد دوربین ۱:</span>
+                    <input id="dirRoomInput" type="tel" maxlength="4" placeholder="5648" class="bg-studio-950 text-emerald-400 font-mono font-black text-base px-2 py-1 w-20 text-center rounded-lg border border-studio-700 focus:outline-none focus:border-emerald-400">
+                    <button onclick="connectToCameraNode()" id="btnConnectPeer" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-3.5 py-1.5 rounded-lg mr-1.5 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-wifi"></i>
+                        <span>اتصال بی‌سیم</span>
+                    </button>
+                </div>
+
+                <button onclick="enableLocalDirectorCam()" id="btnEnableLocalCam" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-200 text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-mobile-screen text-blue-400"></i>
+                    <span>فعال‌سازی دوربین همین دستگاه (CAM 2)</span>
+                </button>
+            </div>
+
+            <!-- Master Output Recorder Controls -->
+            <div class="flex items-center gap-2">
+                <div id="recTimerBadge" class="hidden items-center gap-1.5 bg-red-950 border border-red-500 px-3 py-1.5 rounded-xl font-mono text-xs text-red-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-rec"></span>
+                    <span>REC</span>
+                    <span id="recTimerText" class="font-bold text-white">00:00</span>
+                </div>
+
+                <button onclick="toggleMasterRecording()" id="btnMasterRecord" class="hw-btn bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 border border-red-400">
+                    <i class="fa-solid fa-circle-dot"></i>
+                    <span id="btnMasterRecordText">ضبط مستر خروجی (PGM)</span>
+                </button>
+
+                <button onclick="takeProgramSnapshot()" class="hw-btn bg-studio-800 hover:bg-studio-700 text-gray-200 border border-studio-600 text-xs px-3 py-2 rounded-xl" title="عکسبرداری از خروجی">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN WORKSPACE GRID -->
+        <div class="p-3 grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1">
+            
+            <!-- LEFT/CENTER COLUMN (8 Cols): Dual Monitors + Switcher -->
+            <div class="lg:col-span-8 flex flex-col gap-3">
+                
+                <!-- DUAL MONITORS ROW (PVW & PGM) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    
+                    <!-- PREVIEW MONITOR (PVW - GREEN) -->
+                    <div class="bg-studio-900 border-2 border-emerald-600/80 rounded-xl overflow-hidden flex flex-col shadow-lg">
+                        <div class="bg-emerald-950/60 border-b border-emerald-800/60 px-3 py-1.5 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                                <span class="font-mono font-bold text-xs text-emerald-300">PREVIEW (PVW) • پیش‌نمایش</span>
+                            </div>
+                            <span id="pvwSourceBadge" class="font-mono text-[11px] bg-emerald-900/80 text-emerald-200 px-2 py-0.5 rounded">MEDIA</span>
+                        </div>
+                        <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+                            <canvas id="pvwCanvas" width="640" height="360" class="w-full h-full object-contain"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- PROGRAM MONITOR (PGM - RED / ON AIR) -->
+                    <div class="bg-studio-900 border-2 border-red-600 rounded-xl overflow-hidden flex flex-col shadow-lg">
+                        <div class="bg-red-950/70 border-b border-red-800/70 px-3 py-1.5 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-rec"></span>
+                                <span class="font-mono font-bold text-xs text-red-300">PROGRAM (PGM) • روی آنتن</span>
+                            </div>
+                            <span id="pgmSourceBadge" class="font-mono text-[11px] bg-red-900/80 text-white font-bold px-2 py-0.5 rounded">CAM 1</span>
+                        </div>
+                        <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+                            <canvas id="pgmCanvas" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- HARDWARE SWITCHER & TRANSITION DECK -->
+                <div class="bg-studio-900 border border-studio-700 rounded-xl p-3.5 shadow-lg flex flex-col gap-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-studio-800 pb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells-large text-red-400"></i>
+                            <span class="text-xs font-bold text-white">میز سوییچر تصویر و چیدمان صحنه (Scene Switcher)</span>
+                        </div>
+                        <span class="text-[11px] text-gray-400">صحنه بعدی را در ردیف سبز (PVW) انتخاب و با <b>CUT</b> یا <b>AUTO FADE</b> روی آنتن ببرید</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                        <!-- Scene Buses (9 Cols) -->
+                        <div class="md:col-span-9 flex flex-col gap-2.5">
+                            <!-- PROGRAM BUS -->
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 text-[11px] font-mono font-bold text-red-400 shrink-0">PGM (هوا)</span>
+                                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 flex-1">
+                                    <button onclick="setDirectProgram('CAM1')" id="pgmBtn_CAM1" class="hw-btn hw-btn-pgm-active py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-video"></i><span>دوربین ۱</span>
+                                    </button>
+                                    <button onclick="setDirectProgram('CAM2')" id="pgmBtn_CAM2" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-mobile-screen"></i><span>دوربین ۲</span>
+                                    </button>
+                                    <button onclick="setDirectProgram('MEDIA')" id="pgmBtn_MEDIA" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-film"></i><span>پخش مدیا</span>
+                                    </button>
+                                    <button onclick="setDirectProgram('PIP_MEDIA')" id="pgmBtn_PIP_MEDIA" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-clone"></i><span>تصویر در تصویر</span>
+                                    </button>
+                                    <button onclick="setDirectProgram('SPLIT')" id="pgmBtn_SPLIT" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-columns"></i><span>دو قاب ۵۰/۵۰</span>
+                                    </button>
+                                    <button onclick="setDirectProgram('SLATE')" id="pgmBtn_SLATE" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-tv"></i><span>استندبای</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- PREVIEW BUS -->
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 text-[11px] font-mono font-bold text-emerald-400 shrink-0">PVW (آماده)</span>
+                                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 flex-1">
+                                    <button onclick="setPreviewScene('CAM1')" id="pvwBtn_CAM1" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-video"></i><span>دوربین ۱</span>
+                                    </button>
+                                    <button onclick="setPreviewScene('CAM2')" id="pvwBtn_CAM2" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-mobile-screen"></i><span>دوربین ۲</span>
+                                    </button>
+                                    <button onclick="setPreviewScene('MEDIA')" id="pvwBtn_MEDIA" class="hw-btn hw-btn-pvw-active py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-film"></i><span>پخش مدیا</span>
+                                    </button>
+                                    <button onclick="setPreviewScene('PIP_MEDIA')" id="pvwBtn_PIP_MEDIA" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-clone"></i><span>تصویر در تصویر</span>
+                                    </button>
+                                    <button onclick="setPreviewScene('SPLIT')" id="pvwBtn_SPLIT" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-columns"></i><span>دو قاب ۵۰/۵۰</span>
+                                    </button>
+                                    <button onclick="setPreviewScene('SLATE')" id="pvwBtn_SLATE" class="hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1">
+                                        <i class="fa-solid fa-tv"></i><span>استندبای</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transition Block -->
+                        <div class="md:col-span-3 flex md:flex-col gap-2 bg-studio-950 p-2.5 rounded-xl border border-studio-800">
+                            <button onclick="executeCutTransition()" class="hw-btn flex-1 py-2.5 bg-studio-800 hover:bg-red-950 text-white border-2 border-red-500/80 rounded-lg font-mono font-extrabold text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-bolt text-red-400"></i>
+                                <span>CUT (کات)</span>
+                            </button>
+                            <button onclick="executeAutoFadeTransition()" class="hw-btn flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-red-600 hover:from-amber-500 hover:to-red-500 text-white border border-amber-400 rounded-lg font-mono font-extrabold text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>AUTO FADE</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MEDIA PLAYER & REMOTE PTZ CAMERA CONTROL ROW -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    
+                    <!-- MEDIA / B-ROLL PLAYER -->
+                    <div class="bg-studio-900 border border-studio-700 rounded-xl p-3.5 flex flex-col justify-between gap-3">
+                        <div class="flex items-center justify-between border-b border-studio-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-photo-film text-purple-400"></i>
+                                <span class="text-xs font-bold text-white">پلیر ویدیو و عکس (Media / B-Roll)</span>
+                            </div>
+                            <label class="cursor-pointer bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-upload"></i>
+                                <span>انتخاب فیلم/عکس از گالری</span>
+                                <input type="file" id="mediaFileInput" accept="video/*,image/*" class="hidden" onchange="handleMediaFileUpload(event)">
+                            </label>
+                        </div>
+
+                        <div class="flex items-center gap-3 bg-studio-950 p-2 rounded-lg border border-studio-800">
+                            <div class="w-24 aspect-video bg-black rounded overflow-hidden flex items-center justify-center shrink-0 relative border border-studio-700">
+                                <video id="brollVideo" loop playsinline crossorigin="anonymous" class="w-full h-full object-cover hidden"></video>
+                                <img id="brollImage" class="w-full h-full object-cover hidden" alt="Media">
+                                <span id="brollPlaceholder" class="text-[10px] text-gray-500 text-center px-1">تیزر دمو فعال است</span>
+                            </div>
+
+                            <div class="flex-1 flex flex-col gap-1.5">
+                                <div id="mediaFileName" class="text-xs font-semibold text-gray-200 truncate">تیزر گرافیکی پیش‌فرض استودیو</div>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="toggleBrollPlayback()" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-white px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i class="fa-solid fa-play text-emerald-400"></i>
+                                        <span>پخش/توقف</span>
+                                    </button>
+                                    <button onclick="restartBrollVideo()" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-300 px-2 py-1 rounded text-xs" title="از ابتدا">
+                                        <i class="fa-solid fa-backward-step"></i>
+                                    </button>
+                                    <button onclick="swapPipCorner()" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-300 px-2 py-1 rounded text-xs">
+                                        <i class="fa-solid fa-up-down-left-right"></i>
+                                        <span>مکان PiP</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REMOTE CAMERA 1 PTZ & INTERCOM CONTROL -->
+                    <div class="bg-studio-900 border border-studio-700 rounded-xl p-3.5 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between border-b border-studio-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-satellite-dish text-emerald-400"></i>
+                                <span class="text-xs font-bold text-white">کنترل از راه دور دوربین ۱ (Remote PTZ)</span>
+                            </div>
+                            <span id="remoteCamBadge" class="text-[10px] font-mono bg-studio-800 text-gray-400 px-2 py-0.5 rounded">آماده اتصال</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-400 shrink-0">زوم دوربین ۱:</span>
+                            <input type="range" min="1" max="3" step="0.1" value="1" oninput="sendRemoteCamCommand('ZOOM', this.value)" class="flex-1">
+                            <span id="dirZoomLabel" class="font-mono text-xs text-emerald-400 w-9 text-left">1.0x</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="sendRemoteCamCommand('SWITCH_LENS')" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-200 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-camera-rotate text-blue-400"></i><span>چرخش لنز</span>
+                            </button>
+                            <button onclick="sendRemoteCamCommand('TORCH')" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-200 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-bolt text-amber-400"></i><span>فلاش</span>
+                            </button>
+                            <button onclick="sendRemoteCamCommand('MIRROR')" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-200 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-arrows-left-right text-purple-400"></i><span>قرینه</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 pt-1">
+                            <input id="intercomInput" type="text" placeholder="ارسال پیام روی صفحه دوربین ۱..." class="bg-studio-950 border border-studio-700 rounded-lg px-2.5 py-1 text-xs text-white flex-1 focus:outline-none focus:border-amber-500">
+                            <button onclick="sendIntercomCue()" class="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs px-3 py-1 rounded-lg shrink-0">
+                                ارسال اعلان
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN (4 Cols): Lower Thirds, Ticker & Audio Mixer -->
+            <div class="lg:col-span-4 flex flex-col gap-3">
+                
+                <!-- GRAPHICS & LOWER THIRDS -->
+                <div class="bg-studio-900 border border-studio-700 rounded-xl p-3.5 flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-studio-800 pb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-closed-captioning text-blue-400"></i>
+                            <span class="text-xs font-bold text-white">زیرنویس تلویزیونی (Lower Thirds)</span>
+                        </div>
+                        <button onclick="toggleLowerThird()" id="btnToggleLowerThird" class="hw-btn bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5">
+                            <i class="fa-solid fa-eye"></i>
+                            <span id="lowerThirdStateText">نمایش روی آنتن</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">تیتر اصلی / نام مهمان یا گوینده:</label>
+                            <input id="ltTitleInput" type="text" value="استودیو پخش زنده PRISM" oninput="updateGraphicsState()" class="w-full bg-studio-950 border border-studio-700 rounded-lg px-3 py-1.5 text-xs text-white font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">زیرتیتر / سمت یا توضیحات:</label>
+                            <input id="ltSubInput" type="text" value="کارگردانی دو دوربینه بی‌سیم هیبریدی" oninput="updateGraphicsState()" class="w-full bg-studio-950 border border-studio-700 rounded-lg px-3 py-1.5 text-xs text-gray-300">
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5 pt-1">
+                            <button onclick="setLowerThirdTheme('RED')" class="bg-red-950/60 hover:bg-red-900/60 border border-red-600/50 text-red-300 py-1 rounded text-[11px] font-semibold">قرمز خبری</button>
+                            <button onclick="setLowerThirdTheme('BLUE')" class="bg-blue-950/60 hover:bg-blue-900/60 border border-blue-600/50 text-blue-300 py-1 rounded text-[11px] font-semibold">آبی استودیویی</button>
+                            <button onclick="setLowerThirdTheme('GOLD')" class="bg-amber-950/60 hover:bg-amber-900/60 border border-amber-600/50 text-amber-300 py-1 rounded text-[11px] font-semibold">طلایی ویژه</button>
+                        </div>
+                    </div>
+
+                    <!-- Scrolling News Ticker -->
+                    <div class="border-t border-studio-800 pt-2.5 flex flex-col gap-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-gray-300">نوار خبر متحرک (News Ticker):</span>
+                            <button onclick="toggleTicker()" id="btnToggleTicker" class="bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-300 text-[11px] px-2.5 py-1 rounded-lg">
+                                فعال‌سازی نوار خبر
+                            </button>
+                        </div>
+                        <input id="tickerTextInput" type="text" value="🔴 ارتباط زنده استودیویی برقرار است | امکان سوییچ بین دوربین‌ها، پخش کلیپ، زیرنویس آنی و ضبط خروجی HD" oninput="updateGraphicsState()" class="w-full bg-studio-950 border border-studio-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-300">
+                    </div>
+
+                    <!-- Logo & Live Bug -->
+                    <div class="border-t border-studio-800 pt-2.5 flex items-center justify-between gap-2">
+                        <button onclick="toggleLiveBug()" class="flex-1 bg-red-600/20 border border-red-500/50 text-red-300 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            <span>نشان LIVE و ساعت</span>
+                        </button>
+
+                        <label class="flex-1 cursor-pointer bg-studio-800 hover:bg-studio-700 border border-studio-600 text-gray-200 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-image text-emerald-400"></i>
+                            <span>آپلود لوگو (PNG)</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- AUDIO MIXER CONSOLE -->
+                <div class="bg-studio-900 border border-studio-700 rounded-xl p-3.5 flex flex-col gap-3 flex-1">
+                    <div class="flex items-center justify-between border-b border-studio-800 pb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-emerald-400"></i>
+                            <span class="text-xs font-bold text-white">میکسر صدا (Master Audio Mixer)</span>
+                        </div>
+                        <span class="font-mono text-[10px] text-emerald-400">48kHz STEREO</span>
+                    </div>
+
+                    <div class="bg-studio-950 p-2.5 rounded-lg border border-studio-800 flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-semibold text-gray-200"><i class="fa-solid fa-microphone text-emerald-400 ml-1"></i>صدای دوربین ۱ (Remote Mic)</span>
+                            <span id="gainLabelCam1" class="font-mono text-emerald-400">100%</span>
+                        </div>
+                        <input type="range" min="0" max="1.5" step="0.05" value="1" oninput="setChannelGain('CAM1', this.value)" class="w-full">
+                        <div class="w-full h-1.5 bg-studio-800 rounded overflow-hidden">
+                            <div id="vuBarCam1" class="h-full bg-gradient-to-l from-red-500 via-yellow-400 to-emerald-500 w-2/3"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-studio-950 p-2.5 rounded-lg border border-studio-800 flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-semibold text-gray-200"><i class="fa-solid fa-headset text-blue-400 ml-1"></i>میکروفون کارگردان (دستگاه دوم)</span>
+                            <span id="gainLabelDir" class="font-mono text-blue-400">100%</span>
+                        </div>
+                        <input type="range" min="0" max="1.5" step="0.05" value="1" oninput="setChannelGain('DIR', this.value)" class="w-full">
+                        <div class="w-full h-1.5 bg-studio-800 rounded overflow-hidden">
+                            <div id="vuBarDir" class="h-full bg-gradient-to-l from-red-500 via-yellow-400 to-emerald-500 w-1/2"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-studio-950 p-2.5 rounded-lg border border-studio-800 flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-semibold text-gray-200"><i class="fa-solid fa-music text-purple-400 ml-1"></i>صدای پلیر ویدیو (Media Audio)</span>
+                            <span id="gainLabelMedia" class="font-mono text-purple-400">80%</span>
+                        </div>
+                        <input type="range" min="0" max="1.5" step="0.05" value="0.8" oninput="setChannelGain('MEDIA', this.value)" class="w-full">
+                        <div class="w-full h-1.5 bg-studio-800 rounded overflow-hidden">
+                            <div id="vuBarMedia" class="h-full bg-gradient-to-l from-red-500 via-yellow-400 to-emerald-500 w-3/5"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Hidden Video Elements for Director Compositing -->
+        <div class="hidden">
+            <video id="remoteCam1Video" autoplay playsinline></video>
+            <video id="localCam2Video" autoplay playsinline muted></video>
+        </div>
+    </section>
+
+    <!-- ================= JAVASCRIPT HYBRID WEBRTC + MQTT ENGINE ================= -->
+    <script>
+        /********************************************************************
+         * 1. GLOBAL ICE / STUN / TURN CONFIGURATION (Bypasses NAT & Firewalls)
+         ********************************************************************/
+        const HYBRID_ICE_SERVERS = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun.cloudflare.com:3478' },
+            // Free Public OpenRelay TURN Servers for symmetric NAT / Mobile-to-Laptop traversal
+            {
+                urls: 'turn:openrelay.metered.ca:80',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            }
+        ];
+
+        const MQTT_BROKERS = [
+            'wss://broker.emqx.io:8084/mqtt',
+            'wss://test.mosquitto.org:8081/mqtt'
+        ];
+
+        const AppState = {
+            mode: 'LAUNCHER',
+            roomCode: '',
+            
+            // Signaling Channel A: MQTT + Native RTCPeerConnection (Primary Reliable Engine)
+            mqttClient: null,
+            rtcPeerConn: null,
+            rtcDataChannel: null,
+            mqttConnected: false,
+
+            // Signaling Channel B: PeerJS Cloud (Secondary Backup Engine)
+            peer: null,
+            peerDataConn: null,
+            peerMediaCall: null,
+            peerConnected: false,
+
+            // Camera Node Stream State
+            camStream: null,
+            isSynthStream: false,
+            synthAnimId: null,
+            facingMode: 'environment',
+            camZoom: 1.0,
+            camMirrored: false,
+            camTorch: false,
+
+            // Director Switcher State
+            pgmScene: 'CAM1',
+            pvwScene: 'MEDIA',
+            transitionAlpha: 0,
+            prevScene: 'CAM1',
+            isTransitioning: false,
+            pipCorner: 0,
+
+            // Media / B-Roll State
+            mediaType: 'SYNTH',
+            brollPlaying: true,
+
+            // Graphics State
+            showLowerThird: true,
+            ltTitle: 'استودیو پخش زنده PRISM',
+            ltSubtitle: 'کارگردانی دو دوربینه بی‌سیم هیبریدی',
+            ltTheme: 'RED',
+            showTicker: false,
+            tickerText: '🔴 ارتباط زنده استودیویی برقرار است | امکان سوییچ بین دوربین‌ها، پخش کلیپ، زیرنویس آنی و ضبط خروجی HD',
+            tickerOffset: 1280,
+            showLiveBug: true,
+            logoImg: null,
+
+            // Audio & Recorder
+            audioCtx: null,
+            audioDest: null,
+            gainNodes: { CAM1: null, DIR: null, MEDIA: null },
+            mediaRecorder: null,
+            recordedChunks: [],
+            isRecording: false,
+            recStartTime: 0,
+            recInterval: null
+        };
+
+        // Clock & Environment Check
+        setInterval(() => {
+            const el = document.getElementById('liveClock');
+            if (el) el.textContent = new Date().toTimeString().split(' ')[0];
+        }, 1000);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkExecutionEnvironment();
+        });
+
+        function checkExecutionEnvironment() {
+            const ua = navigator.userAgent || '';
+            const isWebView = /wv|WebView/i.test(ua) || (ua.includes('Android') && !ua.includes('Chrome/'));
+            const isIframe = window.self !== window.top;
+
+            const warnBox = document.getElementById('envWarningBox');
+            const warnText = document.getElementById('envWarningText');
+
+            if (isWebView) {
+                warnBox.classList.remove('hidden');
+                warnText.innerHTML = `شما برنامه را داخل یک پوسته <b>WebView (مثل WebIntoApp)</b> باز کرده‌اید. اگر دوربین گوشی روشن نشد، دکمه <b>«ارسال تصویر تست استودیویی»</b> را بزنید یا فایل را مستقیماً در مرورگر <b>Google Chrome</b> باز نمایید.`;
+            } else if (isIframe) {
+                warnBox.classList.remove('hidden');
+                warnText.innerHTML = `شما در حال اجرای برنامه در کادر پیش‌نمایش (Preview) هستید. موتور جدید <b>MQTT + TURN</b> فعال شده تا حتی از داخل این کادر هم بتوانید به گوشی خود وصل شوید!`;
+            }
+        }
+
+        /********************************************************************
+         * 2. DIAGNOSTIC LOGGER & TOASTS
+         ********************************************************************/
+        function logDiag(msg, statusType = 'info') {
+            const el = document.getElementById('diagLogText');
+            if (el) el.textContent = msg;
+            console.log(`[PRISM-DIAG] ${msg}`);
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const colors = {
+                info: 'bg-blue-950/95 border-blue-500 text-blue-200',
+                success: 'bg-emerald-950/95 border-emerald-500 text-emerald-200',
+                warn: 'bg-amber-950/95 border-amber-500 text-amber-200',
+                error: 'bg-red-950/95 border-red-500 text-red-200'
+            };
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-2.5 rounded-xl border shadow-2xl text-xs font-bold flex items-center gap-2 backdrop-blur transition-all duration-300 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function updateConnectionBadge(statusText, colorClass) {
+            const dot = document.getElementById('connDot');
+            const text = document.getElementById('connText');
+            dot.className = `w-2.5 h-2.5 rounded-full ${colorClass}`;
+            text.textContent = statusText;
+        }
+
+        function updateProtocolBadges() {
+            const mEl = document.getElementById('mqttIndicator');
+            const pEl = document.getElementById('peerIndicator');
+            if (mEl) {
+                mEl.textContent = AppState.mqttConnected ? 'MQTT: ONLINE ✅' : 'MQTT: WAIT';
+                mEl.className = AppState.mqttConnected
+                    ? 'px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 text-[10px] font-bold'
+                    : 'px-1.5 py-0.5 rounded bg-studio-800 text-gray-500 text-[10px]';
+            }
+            if (pEl) {
+                pEl.textContent = AppState.peerConnected ? 'PEER: ONLINE ✅' : 'PEER: WAIT';
+                pEl.className = AppState.peerConnected
+                    ? 'px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 text-[10px] font-bold'
+                    : 'px-1.5 py-0.5 rounded bg-studio-800 text-gray-500 text-[10px]';
+            }
+        }
+
+        function copyRoomCode() {
+            if (!AppState.roomCode) return;
+            const tempInput = document.createElement('input');
+            tempInput.value = AppState.roomCode;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            tempInput.remove();
+            showToast(`کد ${AppState.roomCode} کپی شد`, 'success');
+        }
+
+        function returnToLauncher() {
+            cleanupConnections();
+            if (AppState.camStream) {
+                AppState.camStream.getTracks().forEach(t => t.stop());
+                AppState.camStream = null;
+            }
+            if (AppState.synthAnimId) {
+                cancelAnimationFrame(AppState.synthAnimId);
+                AppState.synthAnimId = null;
+            }
+            document.getElementById('cameraNodeView').classList.add('hidden');
+            document.getElementById('directorView').classList.add('hidden');
+            document.getElementById('btnSwitchMode').classList.add('hidden');
+            document.getElementById('headerRoomBox').classList.add('hidden');
+            document.getElementById('launcherView').classList.remove('hidden');
+            AppState.mode = 'LAUNCHER';
+            updateConnectionBadge('آماده راه‌اندازی', 'bg-yellow-500');
+        }
+
+        function cleanupConnections() {
+            if (AppState.mqttClient) {
+                try { AppState.mqttClient.end(true); } catch (e) {}
+                AppState.mqttClient = null;
+            }
+            if (AppState.rtcPeerConn) {
+                try { AppState.rtcPeerConn.close(); } catch (e) {}
+                AppState.rtcPeerConn = null;
+            }
+            if (AppState.peer) {
+                try { AppState.peer.destroy(); } catch (e) {}
+                AppState.peer = null;
+            }
+            AppState.mqttConnected = false;
+            AppState.peerConnected = false;
+            updateProtocolBadges();
+        }
+
+        /********************************************************************
+         * 3. MODE 1: CAMERA NODE (واحد دوربین بی‌سیم + سیگنال تست)
+         ********************************************************************/
+        async function startCameraNodeMode() {
+            cleanupConnections();
+            AppState.mode = 'CAMERA_NODE';
+            document.getElementById('launcherView').classList.add('hidden');
+            document.getElementById('cameraNodeView').classList.remove('hidden');
+            document.getElementById('btnSwitchMode').classList.remove('hidden');
+
+            // Generate 4-digit Room Code
+            const code = Math.floor(1000 + Math.random() * 9000).toString();
+            AppState.roomCode = code;
+            document.getElementById('camRoomCodeDisplay').textContent = code;
+            document.getElementById('headerRoomCode').textContent = code;
+            document.getElementById('headerRoomBox').classList.remove('hidden');
+            document.getElementById('headerRoomBox').classList.add('flex');
+
+            // 1. Start Camera Hardware (or auto-fallback to Synthetic Stream if blocked)
+            await initCameraNodeHardware();
+
+            // 2. Start BOTH MQTT Signaling & PeerJS Signaling simultaneously!
+            initCameraMqttSignaling(code);
+            initCameraPeerJsSignaling(code);
+        }
+
+        async function initCameraNodeHardware() {
+            document.getElementById('camPermissionBlockedCard').classList.add('hidden');
+            try {
+                if (AppState.camStream && !AppState.isSynthStream) {
+                    AppState.camStream.getTracks().forEach(t => t.stop());
+                }
+
+                let stream = null;
+                try {
+                    // Attempt HD first
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: AppState.facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+                        audio: { echoCancellation: true, noiseSuppression: true }
+                    });
+                } catch (hdErr) {
+                    // Fallback to basic constraints for strict Android devices
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                }
+
+                AppState.isSynthStream = false;
+                AppState.camStream = stream;
+
+                const videoEl = document.getElementById('camNodeVideo');
+                const synthCanvas = document.getElementById('camSynthCanvas');
+                synthCanvas.classList.add('hidden');
+                videoEl.classList.remove('hidden');
+                videoEl.srcObject = stream;
+                await videoEl.play().catch(() => {});
+
+                const vTrack = stream.getVideoTracks()[0];
+                if (vTrack) {
+                    const s = vTrack.getSettings();
+                    document.getElementById('camResInfo').textContent = s.width ? `دوربین واقعی ${s.width}x${s.height}` : 'دوربین واقعی فعال';
+                }
+
+                replaceActiveOutgoingTracks(stream);
+                showToast('دوربین و میکروفون با موفقیت روشن شد', 'success');
+            } catch (err) {
+                console.warn('Camera Permission Error:', err);
+                document.getElementById('camPermissionBlockedCard').classList.remove('hidden');
+                document.getElementById('camResInfo').textContent = 'دوربین مسدود (آماده ارسال تصویر تست)';
+                // Automatically enable synthetic stream in background so connection never fails!
+                enableSyntheticCameraStream(true);
+            }
+        }
+
+        function enableSyntheticCameraStream(silent = false) {
+            document.getElementById('camPermissionBlockedCard').classList.add('hidden');
+            const videoEl = document.getElementById('camNodeVideo');
+            const synthCanvas = document.getElementById('camSynthCanvas');
+            videoEl.classList.add('hidden');
+            synthCanvas.classList.remove('hidden');
+
+            const ctx = synthCanvas.getContext('2d');
+            let tick = 0;
+
+            if (AppState.synthAnimId) cancelAnimationFrame(AppState.synthAnimId);
+
+            function drawTestPattern() {
+                tick++;
+                const w = 1280, h = 720;
+                // Broadcast Color Bars + Moving Radar
+                const colors = ['#e2e8f0', '#eab308', '#06b6d4', '#22c55e', '#d946ef', '#ef4444', '#3b82f6'];
+                const barW = w / colors.length;
+                for (let i = 0; i < colors.length; i++) {
+                    ctx.fillStyle = colors[i];
+                    ctx.fillRect(i * barW, 0, barW + 1, h * 0.65);
+                }
+
+                ctx.fillStyle = '#090d16';
+                ctx.fillRect(0, h * 0.65, w, h * 0.35);
+
+                // Moving Bouncing Circle to prove 60fps real-time video streaming
+                const ballX = (w / 2) + Math.sin(tick * 0.04) * 380;
+                ctx.fillStyle = '#10b981';
+                ctx.beginPath();
+                ctx.arc(ballX, h * 0.82, 32, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Center Studio HUD Box
+                ctx.fillStyle = 'rgba(9, 13, 22, 0.9)';
+                ctx.beginPath();
+                ctx.roundRect(w / 2 - 320, h / 2 - 110, 640, 220, 20);
+                ctx.fill();
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.font = '900 38px Vazirmatn, sans-serif';
+                ctx.fillText(`سیگنال زنده دوربین ۱ (کد ${AppState.roomCode})`, w / 2, h / 2 - 30);
+
+                ctx.fillStyle = '#34d399';
+                ctx.font = 'bold 26px "JetBrains Mono", monospace';
+                ctx.fillText(`TIME: ${new Date().toTimeString().split(' ')[0]} | FRAME: ${tick}`, w / 2, h / 2 + 25);
+
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '500 20px Vazirmatn, sans-serif';
+                ctx.fillText('ارتباط تصویری WebRTC بین دو دستگاه کاملاً برقرار است', w / 2, h / 2 + 70);
+
+                AppState.synthAnimId = requestAnimationFrame(drawTestPattern);
+            }
+            drawTestPattern();
+
+            const synthStream = synthCanvas.captureStream(30);
+            AppState.isSynthStream = true;
+            AppState.camStream = synthStream;
+            document.getElementById('camResInfo').textContent = 'سیگنال تست استودیویی 720p (فعال)';
+
+            replaceActiveOutgoingTracks(synthStream);
+            if (!silent) {
+                showToast('سیگنال تصویر تست زنده فعال شد و آماده ارسال به کارگردان است!', 'success');
+            }
+        }
+
+        function replaceActiveOutgoingTracks(newStream) {
+            const vTrack = newStream.getVideoTracks()[0];
+            if (!vTrack) return;
+            // Update Native RTCPeerConnection
+            if (AppState.rtcPeerConn) {
+                const sender = AppState.rtcPeerConn.getSenders().find(s => s.track && s.track.kind === 'video');
+                if (sender) sender.replaceTrack(vTrack);
+            }
+            // Update PeerJS Call
+            if (AppState.peerMediaCall && AppState.peerMediaCall.peerConnection) {
+                const sender = AppState.peerMediaCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                if (sender) sender.replaceTrack(vTrack);
+            }
+        }
+
+        /********************************************************************
+         * 4. HYBRID SIGNALING ENGINE (MQTT WEBSOCKET + NATIVE WEBRTC)
+         *    Works even when 0.peerjs.com is blocked or inside Iframes!
+         ********************************************************************/
+        function markCameraCodeReady(protocolName) {
+            const regLabel = document.getElementById('camRegStateLabel');
+            if (regLabel) {
+                regLabel.textContent = `✅ آماده اتصال (${protocolName})`;
+                regLabel.className = 'text-[10px] font-bold text-emerald-400';
+            }
+            updateConnectionBadge(`کد ${AppState.roomCode} آماده اتصال است`, 'bg-emerald-500');
+            logDiag(`کد دوربین ${AppState.roomCode} در سرور ${protocolName} ثبت شد. اکنون کد را در گوشی کارگردان بزنید.`);
+        }
+
+        function initCameraMqttSignaling(code) {
+            const topicSig = `prismdeck/v35/${code}/signal`;
+            logDiag(`در حال اتصال به سرور سیگنالینگ MQTT برای ثبت کد ${code}...`);
+
+            const client = mqtt.connect(MQTT_BROKERS[0], {
+                keepalive: 30,
+                reconnectPeriod: 3000
+            });
+            AppState.mqttClient = client;
+
+            client.on('connect', () => {
+                AppState.mqttConnected = true;
+                updateProtocolBadges();
+                client.subscribe(topicSig, (err) => {
+                    if (!err) {
+                        markCameraCodeReady('MQTT');
+                    }
+                });
+            });
+
+            client.on('message', async (topic, payload) => {
+                try {
+                    const msg = JSON.parse(payload.toString());
+                    if (msg.sender === 'CAMERA') return; // Ignore own messages
+
+                    if (msg.type === 'DIRECTOR_JOIN_PING') {
+                        logDiag('میز کارگردان پیدا شد! در حال ارسال پیشنهاد تصویر (WebRTC Offer)...');
+                        document.getElementById('camPeerStatus').textContent = 'در حال مذاکره تصویر با کارگردان...';
+                        await startCameraNativeWebRtcOffer(code);
+                    } else if (msg.type === 'WEBRTC_ANSWER' && AppState.rtcPeerConn) {
+                        logDiag('پاسخ میز کارگردان دریافت شد! تصویر زنده روی آنتن رفت.');
+                        await AppState.rtcPeerConn.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                    } else if (msg.type === 'ICE_CANDIDATE' && AppState.rtcPeerConn && msg.candidate) {
+                        await AppState.rtcPeerConn.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(() => {});
+                    } else if (msg.type === 'CMD') {
+                        handleIncomingDirectorCommand(msg.data);
+                    }
+                } catch (e) {
+                    console.warn('MQTT Parse Error:', e);
+                }
+            });
+        }
+
+        async function startCameraNativeWebRtcOffer(code) {
+            if (AppState.rtcPeerConn) {
+                try { AppState.rtcPeerConn.close(); } catch (e) {}
+            }
+
+            const pc = new RTCPeerConnection({ iceServers: HYBRID_ICE_SERVERS });
+            AppState.rtcPeerConn = pc;
+
+            // Attach local camera or synthetic video tracks
+            if (AppState.camStream) {
+                AppState.camStream.getTracks().forEach(track => {
+                    pc.addTrack(track, AppState.camStream);
+                });
+            }
+
+            // Create DataChannel for Tally & PTZ
+            const dc = pc.createDataChannel('prism-control');
+            setupCameraDataChannel(dc);
+
+            const topicSig = `prismdeck/v35/${code}/signal`;
+
+            pc.onicecandidate = (event) => {
+                if (event.candidate && AppState.mqttClient && AppState.mqttConnected) {
+                    AppState.mqttClient.publish(topicSig, JSON.stringify({
+                        sender: 'CAMERA',
+                        type: 'ICE_CANDIDATE',
+                        candidate: event.candidate
+                    }));
+                }
+            };
+
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === 'connected') {
+                    document.getElementById('camPeerStatus').textContent = 'متصل به میز کارگردانی (LIVE ✅)';
+                    updateConnectionBadge('متصل به کارگردان (LIVE)', 'bg-emerald-400');
+                    showToast('ارتباط تصویری با میز کارگردانی برقرار شد!', 'success');
+                }
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            if (AppState.mqttClient && AppState.mqttConnected) {
+                AppState.mqttClient.publish(topicSig, JSON.stringify({
+                    sender: 'CAMERA',
+                    type: 'WEBRTC_OFFER',
+                    sdp: pc.localDescription
+                }));
+            }
+        }
+
+        function setupCameraDataChannel(dc) {
+            AppState.rtcDataChannel = dc;
+            dc.onopen = () => {
+                document.getElementById('camPeerStatus').textContent = 'متصل به میز کارگردانی (LIVE ✅)';
+            };
+            dc.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleIncomingDirectorCommand(data);
+                } catch (e) {}
+            };
+        }
+
+        // Secondary Backup Channel: PeerJS with custom ICE/TURN
+        function initCameraPeerJsSignaling(code) {
+            try {
+                const peerId = `prismdeck-v35-${code}`;
+                const peer = new Peer(peerId, {
+                    config: { iceServers: HYBRID_ICE_SERVERS },
+                    debug: 0
+                });
+                AppState.peer = peer;
+
+                peer.on('open', () => {
+                    AppState.peerConnected = true;
+                    updateProtocolBadges();
+                    markCameraCodeReady('MQTT+PeerJS');
+                });
+
+                peer.on('connection', (conn) => {
+                    AppState.peerDataConn = conn;
+                    conn.on('open', () => {
+                        document.getElementById('camPeerStatus').textContent = 'متصل به کارگردان (PeerJS ✅)';
+                        if (AppState.camStream) {
+                            AppState.peerMediaCall = peer.call(conn.peer, AppState.camStream);
+                        }
+                    });
+                    conn.on('data', (data) => handleIncomingDirectorCommand(data));
+                });
+
+                peer.on('call', (call) => {
+                    AppState.peerMediaCall = call;
+                    call.answer(AppState.camStream);
+                });
+            } catch (e) {}
+        }
+
+        /********************************************************************
+         * 5. CAMERA NODE CONTROLS & TALLY HANDLER
+         ********************************************************************/
+        function handleIncomingDirectorCommand(msg) {
+            if (!msg || !msg.type) return;
+            switch (msg.type) {
+                case 'TALLY':
+                    setCameraNodeTally(msg.state);
+                    break;
+                case 'ZOOM':
+                    applyCameraNodeZoom(parseFloat(msg.value));
+                    document.getElementById('camLocalZoomSlider').value = msg.value;
+                    break;
+                case 'SWITCH_LENS':
+                    switchCameraNodeLens();
+                    break;
+                case 'TORCH':
+                    toggleCameraNodeTorch();
+                    break;
+                case 'MIRROR':
+                    toggleCameraNodeMirror();
+                    break;
+                case 'INTERCOM':
+                    showCameraDirectorPrompt(msg.text);
+                    break;
+            }
+        }
+
+        function setCameraNodeTally(state) {
+            const frame = document.getElementById('camTallyFrame');
+            const pill = document.getElementById('camTallyPill');
+            const dot = document.getElementById('camTallyDot');
+            const label = document.getElementById('camTallyLabel');
+
+            frame.classList.remove('tally-border-pgm', 'tally-border-pvw', 'tally-border-stby');
+
+            if (state === 'PGM') {
+                frame.classList.add('tally-border-pgm');
+                pill.className = 'bg-red-600 backdrop-blur border border-red-300 px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-2xl';
+                dot.className = 'w-3 h-3 rounded-full bg-white animate-rec';
+                label.textContent = 'ON AIR • روی آنتن (PGM)';
+            } else if (state === 'PVW') {
+                frame.classList.add('tally-border-pvw');
+                pill.className = 'bg-emerald-600 backdrop-blur border border-emerald-300 px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-2xl';
+                dot.className = 'w-3 h-3 rounded-full bg-white';
+                label.textContent = 'PREVIEW • پیش‌نمایش (PVW)';
+            } else {
+                frame.classList.add('tally-border-stby');
+                pill.className = 'bg-gray-900/90 backdrop-blur border border-gray-600 px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-lg';
+                dot.className = 'w-3 h-3 rounded-full bg-gray-400';
+                label.textContent = 'STANDBY • آماده';
+            }
+        }
+
+        async function applyCameraNodeZoom(zoomVal) {
+            AppState.camZoom = parseFloat(zoomVal) || 1.0;
+            document.getElementById('camZoomInfo').textContent = `${AppState.camZoom.toFixed(1)}x`;
+            const videoEl = document.getElementById('camNodeVideo');
+            const scaleX = AppState.camMirrored ? -AppState.camZoom : AppState.camZoom;
+            videoEl.style.transform = `scale(${scaleX}, ${AppState.camZoom})`;
+        }
+
+        function switchCameraNodeLens() {
+            AppState.facingMode = AppState.facingMode === 'environment' ? 'user' : 'environment';
+            initCameraNodeHardware();
+        }
+
+        async function toggleCameraNodeTorch() {
+            if (!AppState.camStream || AppState.isSynthStream) return;
+            const track = AppState.camStream.getVideoTracks()[0];
+            if (track && track.getCapabilities && track.getCapabilities().torch) {
+                AppState.camTorch = !AppState.camTorch;
+                await track.applyConstraints({ advanced: [{ torch: AppState.camTorch }] }).catch(() => {});
+            } else {
+                showToast('فلاش روی این لنز پشتیبانی نمی‌شود', 'warn');
+            }
+        }
+
+        function toggleCameraNodeMirror() {
+            AppState.camMirrored = !AppState.camMirrored;
+            applyCameraNodeZoom(AppState.camZoom);
+        }
+
+        function showCameraDirectorPrompt(text) {
+            if (!text) return;
+            const box = document.getElementById('camDirectorPrompt');
+            document.getElementById('camDirectorPromptText').textContent = text;
+            box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 6000);
+        }
+
+        /********************************************************************
+         * 6. MODE 2: DIRECTOR SWITCHER & HYBRID RECEIVER
+         ********************************************************************/
+        async function startDirectorMode(isSingleDeviceSandbox = false) {
+            cleanupConnections();
+            AppState.mode = 'DIRECTOR';
+            document.getElementById('launcherView').classList.add('hidden');
+            document.getElementById('directorView').classList.remove('hidden');
+            document.getElementById('btnSwitchMode').classList.remove('hidden');
+
+            initWebAudioMixer();
+            startCompositorLoop();
+
+            // Pre-connect MQTT client on Director so pairing is instant
+            const client = mqtt.connect(MQTT_BROKERS[0], { keepalive: 30, reconnectPeriod: 3000 });
+            AppState.mqttClient = client;
+            client.on('connect', () => {
+                AppState.mqttConnected = true;
+                updateProtocolBadges();
+                updateConnectionBadge('میز کارگردانی آنلاین (آماده ورود کد)', 'bg-emerald-500');
+                logDiag('میز کارگردانی به سرور MQTT متصل شد. کد ۴ رقمی دوربین ۱ را وارد کرده و اتصال را بزنید.');
+            });
+
+            // Also init PeerJS client backup
+            try {
+                const dirPeer = new Peer({ config: { iceServers: HYBRID_ICE_SERVERS }, debug: 0 });
+                AppState.peer = dirPeer;
+                dirPeer.on('open', () => {
+                    AppState.peerConnected = true;
+                    updateProtocolBadges();
+                });
+                dirPeer.on('call', (call) => {
+                    call.answer();
+                    call.on('stream', (remoteStream) => attachRemoteCameraStream(remoteStream, 'PeerJS'));
+                });
+            } catch (e) {}
+
+            if (isSingleDeviceSandbox) {
+                showToast('استودیوی یکپارچه فعال شد', 'info');
+                await enableLocalDirectorCam(true);
+            }
+        }
+
+        function connectToCameraNode() {
+            const code = document.getElementById('dirRoomInput').value.trim();
+            if (!code || code.length < 4) {
+                showToast('لطفاً کد ۴ رقمی دوربین ۱ را کامل وارد کنید', 'warn');
+                return;
+            }
+            AppState.roomCode = code;
+            updateConnectionBadge(`در حال جستجوی دوربین ${code}...`, 'bg-yellow-400');
+            logDiag(`در حال ارسال درخواست اتصال هم‌زمان از طریق MQTT و PeerJS به کد ${code}...`);
+
+            // PATH A: Connect via MQTT WebSocket Signaling (Primary)
+            const topicSig = `prismdeck/v35/${code}/signal`;
+            if (AppState.mqttClient && AppState.mqttConnected) {
+                AppState.mqttClient.subscribe(topicSig, () => {
+                    // Send Ping to wake up Camera 1
+                    AppState.mqttClient.publish(topicSig, JSON.stringify({
+                        sender: 'DIRECTOR',
+                        type: 'DIRECTOR_JOIN_PING',
+                        timestamp: Date.now()
+                    }));
+                });
+
+                AppState.mqttClient.removeAllListeners('message');
+                AppState.mqttClient.on('message', async (topic, payload) => {
+                    try {
+                        const msg = JSON.parse(payload.toString());
+                        if (msg.sender === 'DIRECTOR') return;
+
+                        if (msg.type === 'WEBRTC_OFFER') {
+                            logDiag(`دوربین ${code} پاسخ داد! در حال باز کردن کانال ویدیویی...`);
+                            await handleIncomingCameraOffer(code, msg.sdp);
+                        } else if (msg.type === 'ICE_CANDIDATE' && AppState.rtcPeerConn && msg.candidate) {
+                            await AppState.rtcPeerConn.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(() => {});
+                        }
+                    } catch (e) {}
+                });
+            }
+
+            // PATH B: Also attempt PeerJS connection in parallel
+            if (AppState.peer && AppState.peerConnected) {
+                try {
+                    const targetPeerId = `prismdeck-v35-${code}`;
+                    const conn = AppState.peer.connect(targetPeerId, { reliable: true });
+                    AppState.peerDataConn = conn;
+                    conn.on('open', () => {
+                        syncTallyToCameraNode();
+                    });
+                } catch (e) {}
+            }
+        }
+
+        async function handleIncomingCameraOffer(code, offerSdp) {
+            if (AppState.rtcPeerConn) {
+                try { AppState.rtcPeerConn.close(); } catch (e) {}
+            }
+
+            const pc = new RTCPeerConnection({ iceServers: HYBRID_ICE_SERVERS });
+            AppState.rtcPeerConn = pc;
+
+            const topicSig = `prismdeck/v35/${code}/signal`;
+
+            pc.onicecandidate = (event) => {
+                if (event.candidate && AppState.mqttClient && AppState.mqttConnected) {
+                    AppState.mqttClient.publish(topicSig, JSON.stringify({
+                        sender: 'DIRECTOR',
+                        type: 'ICE_CANDIDATE',
+                        candidate: event.candidate
+                    }));
+                }
+            };
+
+            pc.ontrack = (event) => {
+                if (event.streams && event.streams[0]) {
+                    attachRemoteCameraStream(event.streams[0], 'MQTT-WebRTC');
+                }
+            };
+
+            pc.ondatachannel = (event) => {
+                AppState.rtcDataChannel = event.channel;
+                AppState.rtcDataChannel.onopen = () => {
+                    syncTallyToCameraNode();
+                };
+            };
+
+            await pc.setRemoteDescription(new RTCSessionDescription(offerSdp));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+
+            if (AppState.mqttClient && AppState.mqttConnected) {
+                AppState.mqttClient.publish(topicSig, JSON.stringify({
+                    sender: 'DIRECTOR',
+                    type: 'WEBRTC_ANSWER',
+                    sdp: pc.localDescription
+                }));
+            }
+        }
+
+        function attachRemoteCameraStream(remoteStream, viaProtocol) {
+            const remoteVid = document.getElementById('remoteCam1Video');
+            if (remoteVid.srcObject === remoteStream) return;
+
+            remoteVid.srcObject = remoteStream;
+            remoteVid.play().catch(() => {});
+
+            if (AppState.audioCtx && remoteStream.getAudioTracks().length > 0) {
+                try {
+                    const src = AppState.audioCtx.createMediaStreamSource(remoteStream);
+                    src.connect(AppState.gainNodes.CAM1);
+                } catch (e) {}
+            }
+
+            updateConnectionBadge(`متصل به دوربین ${AppState.roomCode} ✅`, 'bg-emerald-400');
+            document.getElementById('remoteCamBadge').textContent = `ONLINE #${AppState.roomCode}`;
+            document.getElementById('remoteCamBadge').className = 'text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-600 px-2 py-0.5 rounded font-bold';
+            logDiag(`تصویر زنده دوربین ۱ با موفقیت از طریق ${viaProtocol} دریافت شد!`);
+            showToast(`تصویر دوربین ۱ (${AppState.roomCode}) روی میز کارگردانی دریافت شد!`, 'success');
+            syncTallyToCameraNode();
+        }
+
+        async function enableLocalDirectorCam(alsoUseAsCam1 = false) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const localVid = document.getElementById('localCam2Video');
+                localVid.srcObject = stream;
+                localVid.play().catch(() => {});
+
+                if (alsoUseAsCam1) {
+                    const remoteVid = document.getElementById('remoteCam1Video');
+                    remoteVid.srcObject = stream;
+                    remoteVid.play().catch(() => {});
+                }
+
+                if (AppState.audioCtx && stream.getAudioTracks().length > 0) {
+                    try {
+                        const src = AppState.audioCtx.createMediaStreamSource(stream);
+                        src.connect(AppState.gainNodes.DIR);
+                    } catch (e) {}
+                }
+
+                document.getElementById('btnEnableLocalCam').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>دوربین ۲ فعال است</span>`;
+                showToast('دوربین محلی (CAM 2) فعال شد', 'success');
+            } catch (err) {
+                showToast('عدم دسترسی به دوربین محلی دستگاه', 'warn');
+            }
+        }
+
+        /********************************************************************
+         * 7. SWITCHER, REMOTE PTZ & TALLY COMMAND DISPATCHER
+         ********************************************************************/
+        const SCENE_NAMES = {
+            CAM1: 'CAM 1',
+            CAM2: 'CAM 2',
+            MEDIA: 'MEDIA',
+            PIP_MEDIA: 'PiP (تصویر در تصویر)',
+            SPLIT: 'SPLIT (دو قاب)',
+            SLATE: 'STANDBY SLATE'
+        };
+
+        function sendCommandToCamera1(payloadObj) {
+            // Send via WebRTC DataChannel
+            if (AppState.rtcDataChannel && AppState.rtcDataChannel.readyState === 'open') {
+                AppState.rtcDataChannel.send(JSON.stringify(payloadObj));
+            }
+            // Also send via MQTT topic for 100% delivery guarantee
+            if (AppState.mqttClient && AppState.mqttConnected && AppState.roomCode) {
+                const topicSig = `prismdeck/v35/${AppState.roomCode}/signal`;
+                AppState.mqttClient.publish(topicSig, JSON.stringify({
+                    sender: 'DIRECTOR',
+                    type: 'CMD',
+                    data: payloadObj
+                }));
+            }
+            // Also send via PeerJS if open
+            if (AppState.peerDataConn && AppState.peerDataConn.open) {
+                AppState.peerDataConn.send(payloadObj);
+            }
+        }
+
+        function setPreviewScene(scene) {
+            AppState.pvwScene = scene;
+            document.getElementById('pvwSourceBadge').textContent = SCENE_NAMES[scene] || scene;
+            updateSwitcherButtonsUI();
+            syncTallyToCameraNode();
+        }
+
+        function setDirectProgram(scene) {
+            AppState.pgmScene = scene;
+            document.getElementById('pgmSourceBadge').textContent = SCENE_NAMES[scene] || scene;
+            updateSwitcherButtonsUI();
+            syncTallyToCameraNode();
+        }
+
+        function executeCutTransition() {
+            const temp = AppState.pgmScene;
+            AppState.pgmScene = AppState.pvwScene;
+            AppState.pvwScene = temp;
+            document.getElementById('pgmSourceBadge').textContent = SCENE_NAMES[AppState.pgmScene];
+            document.getElementById('pvwSourceBadge').textContent = SCENE_NAMES[AppState.pvwScene];
+            updateSwitcherButtonsUI();
+            syncTallyToCameraNode();
+        }
+
+        function executeAutoFadeTransition() {
+            if (AppState.isTransitioning) return;
+            AppState.prevScene = AppState.pgmScene;
+            const nextScene = AppState.pvwScene;
+            AppState.pvwScene = AppState.pgmScene;
+            AppState.pgmScene = nextScene;
+
+            AppState.isTransitioning = true;
+            AppState.transitionAlpha = 1.0;
+
+            document.getElementById('pgmSourceBadge').textContent = SCENE_NAMES[AppState.pgmScene];
+            document.getElementById('pvwSourceBadge').textContent = SCENE_NAMES[AppState.pvwScene];
+            updateSwitcherButtonsUI();
+            syncTallyToCameraNode();
+        }
+
+        function updateSwitcherButtonsUI() {
+            const scenes = ['CAM1', 'CAM2', 'MEDIA', 'PIP_MEDIA', 'SPLIT', 'SLATE'];
+            scenes.forEach(s => {
+                const pgmBtn = document.getElementById(`pgmBtn_${s}`);
+                const pvwBtn = document.getElementById(`pvwBtn_${s}`);
+                if (pgmBtn) {
+                    pgmBtn.className = AppState.pgmScene === s
+                        ? 'hw-btn hw-btn-pgm-active py-2 px-1.5 rounded-lg text-xs font-bold border flex flex-col items-center gap-1'
+                        : 'hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1';
+                }
+                if (pvwBtn) {
+                    pvwBtn.className = AppState.pvwScene === s
+                        ? 'hw-btn hw-btn-pvw-active py-2 px-1.5 rounded-lg text-xs font-bold border flex flex-col items-center gap-1'
+                        : 'hw-btn bg-studio-800 text-gray-300 py-2 px-1.5 rounded-lg text-xs font-bold border border-studio-600 flex flex-col items-center gap-1';
+                }
+            });
+        }
+
+        function syncTallyToCameraNode() {
+            const cam1InPgm = ['CAM1', 'PIP_MEDIA', 'SPLIT'].includes(AppState.pgmScene);
+            const cam1InPvw = ['CAM1', 'PIP_MEDIA', 'SPLIT'].includes(AppState.pvwScene);
+            let tallyState = 'STANDBY';
+            if (cam1InPgm) tallyState = 'PGM';
+            else if (cam1InPvw) tallyState = 'PVW';
+            sendCommandToCamera1({ type: 'TALLY', state: tallyState });
+        }
+
+        function sendRemoteCamCommand(type, value = null) {
+            if (type === 'ZOOM') {
+                document.getElementById('dirZoomLabel').textContent = `${parseFloat(value).toFixed(1)}x`;
+            }
+            sendCommandToCamera1({ type, value });
+        }
+
+        function sendIntercomCue() {
+            const input = document.getElementById('intercomInput');
+            const text = input.value.trim();
+            if (!text) return;
+            sendCommandToCamera1({ type: 'INTERCOM', text });
+            showToast('پیام روی صفحه دوربین ۱ ارسال شد', 'success');
+            input.value = '';
+        }
+
+        /********************************************************************
+         * 8. MEDIA PLAYER & GRAPHICS OVERLAYS
+         ********************************************************************/
+        function handleMediaFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            document.getElementById('mediaFileName').textContent = file.name;
+            document.getElementById('brollPlaceholder').classList.add('hidden');
+
+            const vidEl = document.getElementById('brollVideo');
+            const imgEl = document.getElementById('brollImage');
+
+            if (file.type.startsWith('video/')) {
+                AppState.mediaType = 'VIDEO';
+                imgEl.classList.add('hidden');
+                vidEl.classList.remove('hidden');
+                vidEl.src = url;
+                vidEl.play();
+                showToast('ویدیوی مدیا آماده پخش است', 'success');
+            } else if (file.type.startsWith('image/')) {
+                AppState.mediaType = 'IMAGE';
+                vidEl.pause();
+                vidEl.classList.add('hidden');
+                imgEl.classList.remove('hidden');
+                imgEl.src = url;
+                showToast('تصویر مدیا بارگذاری شد', 'success');
+            }
+        }
+
+        function toggleBrollPlayback() {
+            const vidEl = document.getElementById('brollVideo');
+            if (AppState.mediaType === 'VIDEO') {
+                if (vidEl.paused) vidEl.play();
+                else vidEl.pause();
+            }
+        }
+
+        function restartBrollVideo() {
+            const vidEl = document.getElementById('brollVideo');
+            if (AppState.mediaType === 'VIDEO') {
+                vidEl.currentTime = 0;
+                vidEl.play();
+            }
+        }
+
+        function swapPipCorner() {
+            AppState.pipCorner = (AppState.pipCorner + 1) % 4;
+        }
+
+        function updateGraphicsState() {
+            AppState.ltTitle = document.getElementById('ltTitleInput').value;
+            AppState.ltSubtitle = document.getElementById('ltSubInput').value;
+            AppState.tickerText = document.getElementById('tickerTextInput').value;
+        }
+
+        function toggleLowerThird() {
+            AppState.showLowerThird = !AppState.showLowerThird;
+            const btn = document.getElementById('btnToggleLowerThird');
+            const txt = document.getElementById('lowerThirdStateText');
+            btn.className = AppState.showLowerThird
+                ? 'hw-btn bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5'
+                : 'hw-btn bg-studio-800 text-gray-400 text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5';
+            txt.textContent = AppState.showLowerThird ? 'نمایش روی آنتن' : 'مخفی';
+        }
+
+        function setLowerThirdTheme(theme) { AppState.ltTheme = theme; }
+
+        function toggleTicker() {
+            AppState.showTicker = !AppState.showTicker;
+            const btn = document.getElementById('btnToggleTicker');
+            btn.className = AppState.showTicker
+                ? 'bg-amber-600 text-black font-bold text-[11px] px-2.5 py-1 rounded-lg'
+                : 'bg-studio-800 border border-studio-600 text-gray-300 text-[11px] px-2.5 py-1 rounded-lg';
+            btn.textContent = AppState.showTicker ? 'نوار خبر فعال است' : 'فعال‌سازی نوار خبر';
+        }
+
+        function toggleLiveBug() { AppState.showLiveBug = !AppState.showLiveBug; }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const img = new Image();
+            img.onload = () => {
+                AppState.logoImg = img;
+                showToast('لوگوی شبکه بارگذاری شد', 'success');
+            };
+            img.src = URL.createObjectURL(file);
+        }
+
+        /********************************************************************
+         * 9. 60FPS HTML5 CANVAS COMPOSITOR (PVW & PGM)
+         ********************************************************************/
+        function startCompositorLoop() {
+            const pgmCanvas = document.getElementById('pgmCanvas');
+            const pgmCtx = pgmCanvas.getContext('2d');
+            const pvwCanvas = document.getElementById('pvwCanvas');
+            const pvwCtx = pvwCanvas.getContext('2d');
+
+            let animTick = 0;
+
+            function renderFrame() {
+                if (AppState.mode !== 'DIRECTOR') return;
+                animTick++;
+
+                renderSceneComposition(pvwCtx, 640, 360, AppState.pvwScene, animTick);
+                renderSceneComposition(pgmCtx, 1280, 720, AppState.pgmScene, animTick);
+
+                if (AppState.isTransitioning) {
+                    pgmCtx.save();
+                    pgmCtx.globalAlpha = AppState.transitionAlpha;
+                    renderSceneComposition(pgmCtx, 1280, 720, AppState.prevScene, animTick);
+                    pgmCtx.restore();
+
+                    AppState.transitionAlpha -= 0.04;
+                    if (AppState.transitionAlpha <= 0) {
+                        AppState.transitionAlpha = 0;
+                        AppState.isTransitioning = false;
+                    }
+                }
+
+                renderBroadcastOverlays(pgmCtx, 1280, 720, animTick);
+                requestAnimationFrame(renderFrame);
+            }
+
+            requestAnimationFrame(renderFrame);
+        }
+
+        function renderSceneComposition(ctx, w, h, sceneType, tick) {
+            ctx.fillStyle = '#070a12';
+            ctx.fillRect(0, 0, w, h);
+
+            if (sceneType === 'CAM1') {
+                drawCameraSource(ctx, document.getElementById('remoteCam1Video'), 0, 0, w, h, 'دوربین ۱ (بی‌سیم)');
+            } else if (sceneType === 'CAM2') {
+                drawCameraSource(ctx, document.getElementById('localCam2Video'), 0, 0, w, h, 'دوربین ۲ (محلی)');
+            } else if (sceneType === 'MEDIA') {
+                drawMediaSource(ctx, 0, 0, w, h, tick);
+            } else if (sceneType === 'PIP_MEDIA') {
+                drawCameraSource(ctx, document.getElementById('remoteCam1Video'), 0, 0, w, h, 'دوربین ۱ (بی‌سیم)');
+                const pipW = w * 0.34, pipH = h * 0.34, pad = w * 0.03;
+                const coords = [
+                    [pad, h - pipH - (h * 0.16)],
+                    [w - pipW - pad, h - pipH - (h * 0.16)],
+                    [pad, pad + (h * 0.08)],
+                    [w - pipW - pad, pad + (h * 0.08)]
+                ][AppState.pipCorner];
+
+                ctx.save();
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = Math.max(2, w * 0.003);
+                drawMediaSource(ctx, coords[0], coords[1], pipW, pipH, tick);
+                ctx.strokeRect(coords[0], coords[1], pipW, pipH);
+                ctx.restore();
+            } else if (sceneType === 'SPLIT') {
+                const halfW = w / 2;
+                drawCameraSource(ctx, document.getElementById('remoteCam1Video'), 0, 0, halfW - 2, h, 'دوربین ۱');
+                drawMediaSource(ctx, halfW + 2, 0, halfW - 2, h, tick);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(halfW - 2, 0, 4, h);
+            } else if (sceneType === 'SLATE') {
+                ctx.save();
+                ctx.fillStyle = '#060913';
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#ef4444';
+                ctx.font = `900 ${Math.round(w * 0.05)}px Vazirmatn, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText('پخش زنده به زودی آغاز می‌شود', w / 2, h / 2 - 10);
+                ctx.restore();
+            }
+        }
+
+        function drawCameraSource(ctx, videoEl, x, y, w, h, label) {
+            if (videoEl && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(x, y, w, h);
+                ctx.clip();
+                const vidRatio = videoEl.videoWidth / videoEl.videoHeight;
+                const boxRatio = w / h;
+                let drawW = w, drawH = h, drawX = x, drawY = y;
+                if (vidRatio > boxRatio) {
+                    drawW = h * vidRatio;
+                    drawX = x - (drawW - w) / 2;
+                } else {
+                    drawH = w / vidRatio;
+                    drawY = y - (drawH - h) / 2;
+                }
+                ctx.drawImage(videoEl, drawX, drawY, drawW, drawH);
+                ctx.restore();
+            } else {
+                ctx.save();
+                const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+                grad.addColorStop(0, '#0f172a');
+                grad.addColorStop(1, '#1e1b4b');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, w, h);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = `bold ${Math.round(w * 0.032)}px Vazirmatn, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText(label, x + w / 2, y + h / 2 - 10);
+                ctx.font = `${Math.round(w * 0.022)}px Vazirmatn, sans-serif`;
+                ctx.fillStyle = '#64748b';
+                ctx.fillText('کد ۴ رقمی دوربین ۱ را در بالا وارد کرده و دکمه اتصال بی‌سیم را بزنید', x + w / 2, y + h / 2 + 22);
+                ctx.restore();
+            }
+        }
+
+        function drawMediaSource(ctx, x, y, w, h, tick) {
+            const vidEl = document.getElementById('brollVideo');
+            const imgEl = document.getElementById('brollImage');
+            if (AppState.mediaType === 'VIDEO' && vidEl.readyState >= 2) {
+                ctx.drawImage(vidEl, x, y, w, h);
+            } else if (AppState.mediaType === 'IMAGE' && imgEl.complete && imgEl.naturalWidth > 0) {
+                ctx.drawImage(imgEl, x, y, w, h);
+            } else {
+                ctx.save();
+                const g = ctx.createLinearGradient(x, y, x + w, y + h);
+                g.addColorStop(0, '#1e1b4b');
+                g.addColorStop(0.5, '#311042');
+                g.addColorStop(1, '#090d16');
+                ctx.fillStyle = g;
+                ctx.fillRect(x, y, w, h);
+
+                ctx.strokeStyle = 'rgba(168, 85, 247, 0.25)';
+                ctx.lineWidth = 3;
+                for (let i = 1; i <= 3; i++) {
+                    const r = ((tick * 1.5 + i * 60) % 220) * (w / 640);
+                    ctx.beginPath();
+                    ctx.arc(x + w / 2, y + h / 2, r, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.font = `900 ${Math.round(w * 0.04)}px Vazirmatn, sans-serif`;
+                ctx.fillText('پخش زنده مدیا (B-ROLL)', x + w / 2, y + h / 2 - 5);
+                ctx.fillStyle = '#c084fc';
+                ctx.font = `500 ${Math.round(w * 0.024)}px Vazirmatn, sans-serif`;
+                ctx.fillText('از بخش پلیر، ویدیو یا عکس دلخواه خود را آپلود کنید', x + w / 2, y + h / 2 + 28);
+                ctx.restore();
+            }
+        }
+
+        function renderBroadcastOverlays(ctx, w, h, tick) {
+            ctx.save();
+
+            if (AppState.showLiveBug) {
+                ctx.fillStyle = 'rgba(220, 38, 38, 0.92)';
+                ctx.beginPath();
+                ctx.roundRect(w - 190, 28, 72, 34, 6);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('● LIVE', w - 154, 50);
+
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                ctx.beginPath();
+                ctx.roundRect(w - 112, 28, 84, 34, 6);
+                ctx.fill();
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 15px "JetBrains Mono", monospace';
+                ctx.fillText(new Date().toTimeString().split(' ')[0], w - 70, 50);
+            }
+
+            if (AppState.logoImg) {
+                const maxW = 130, maxH = 70;
+                const ratio = Math.min(maxW / AppState.logoImg.width, maxH / AppState.logoImg.height);
+                ctx.drawImage(AppState.logoImg, 32, 28, AppState.logoImg.width * ratio, AppState.logoImg.height * ratio);
+            }
+
+            if (AppState.showLowerThird && (AppState.ltTitle || AppState.ltSubtitle)) {
+                const boxW = 620, boxH = 88;
+                const boxX = w - boxW - 42;
+                const boxY = h - (AppState.showTicker ? 145 : 110);
+
+                const themeColors = {
+                    RED: { accent: '#ef4444', bg: 'rgba(15, 23, 42, 0.92)' },
+                    BLUE: { accent: '#3b82f6', bg: 'rgba(15, 23, 42, 0.92)' },
+                    GOLD: { accent: '#f59e0b', bg: 'rgba(17, 24, 39, 0.94)' }
+                }[AppState.ltTheme || 'RED'];
+
+                ctx.fillStyle = themeColors.bg;
+                ctx.beginPath();
+                ctx.roundRect(boxX, boxY, boxW, boxH, 10);
+                ctx.fill();
+
+                ctx.fillStyle = themeColors.accent;
+                ctx.beginPath();
+                ctx.roundRect(boxX + boxW - 12, boxY, 12, boxH, [0, 10, 10, 0]);
+                ctx.fill();
+
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '800 28px Vazirmatn, sans-serif';
+                ctx.fillText(AppState.ltTitle, boxX + boxW - 28, boxY + 42);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '500 19px Vazirmatn, sans-serif';
+                ctx.fillText(AppState.ltSubtitle, boxX + boxW - 28, boxY + 72);
+            }
+
+            if (AppState.showTicker && AppState.tickerText) {
+                const tickerH = 44, tickerY = h - tickerH;
+                ctx.fillStyle = 'rgba(9, 13, 22, 0.95)';
+                ctx.fillRect(0, tickerY, w, tickerH);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(0, tickerY, w, 3);
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 20px Vazirmatn, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(AppState.tickerText, AppState.tickerOffset, tickerY + 29);
+
+                AppState.tickerOffset += 2.5;
+                if (AppState.tickerOffset > w + 1400) AppState.tickerOffset = 0;
+            }
+
+            ctx.restore();
+        }
+
+        /********************************************************************
+         * 10. WEB AUDIO MIXER & MASTER RECORDER
+         ********************************************************************/
+        function initWebAudioMixer() {
+            if (AppState.audioCtx) return;
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContextClass();
+            const dest = ctx.createMediaStreamDestination();
+
+            const gainCam1 = ctx.createGain();
+            const gainDir = ctx.createGain();
+            const gainMedia = ctx.createGain();
+            gainMedia.gain.value = 0.8;
+
+            gainCam1.connect(dest);
+            gainDir.connect(dest);
+            gainMedia.connect(dest);
+
+            AppState.audioCtx = ctx;
+            AppState.audioDest = dest;
+            AppState.gainNodes = { CAM1: gainCam1, DIR: gainDir, MEDIA: gainMedia };
+        }
+
+        function setChannelGain(ch, val) {
+            const v = parseFloat(val);
+            if (AppState.gainNodes[ch]) AppState.gainNodes[ch].gain.value = v;
+            const pct = Math.round(v * 100) + '%';
+            if (ch === 'CAM1') document.getElementById('gainLabelCam1').textContent = pct;
+            if (ch === 'DIR') document.getElementById('gainLabelDir').textContent = pct;
+            if (ch === 'MEDIA') document.getElementById('gainLabelMedia').textContent = pct;
+        }
+
+        function toggleMasterRecording() {
+            if (!AppState.isRecording) startMasterRecording();
+            else stopMasterRecording();
+        }
+
+        function startMasterRecording() {
+            if (AppState.audioCtx && AppState.audioCtx.state === 'suspended') AppState.audioCtx.resume();
+            const pgmCanvas = document.getElementById('pgmCanvas');
+            const canvasStream = pgmCanvas.captureStream(30);
+            const combinedTracks = [...canvasStream.getVideoTracks()];
+            if (AppState.audioDest && AppState.audioDest.stream.getAudioTracks().length > 0) {
+                combinedTracks.push(...AppState.audioDest.stream.getAudioTracks());
+            }
+
+            const masterStream = new MediaStream(combinedTracks);
+            AppState.recordedChunks = [];
+            let mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm';
+
+            try {
+                const recorder = new MediaRecorder(masterStream, { mimeType, videoBitsPerSecond: 4000000 });
+                recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) AppState.recordedChunks.push(e.data); };
+                recorder.onstop = () => {
+                    const blob = new Blob(AppState.recordedChunks, { type: mimeType });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `PRISM_Output_${Date.now()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    showToast('ویدیوی ضبط‌شده ذخیره شد!', 'success');
+                };
+                recorder.start(1000);
+                AppState.mediaRecorder = recorder;
+                AppState.isRecording = true;
+                AppState.recStartTime = Date.now();
+
+                document.getElementById('recTimerBadge').classList.remove('hidden');
+                document.getElementById('recTimerBadge').classList.add('flex');
+                document.getElementById('btnMasterRecordText').textContent = 'توقف و ذخیره';
+                AppState.recInterval = setInterval(() => {
+                    const sec = Math.floor((Date.now() - AppState.recStartTime) / 1000);
+                    document.getElementById('recTimerText').textContent = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+                }, 1000);
+            } catch (e) {
+                showToast('خطا در ضبط ویدیو', 'error');
+            }
+        }
+
+        function stopMasterRecording() {
+            if (AppState.mediaRecorder && AppState.isRecording) {
+                AppState.mediaRecorder.stop();
+                AppState.isRecording = false;
+                clearInterval(AppState.recInterval);
+                document.getElementById('recTimerBadge').classList.add('hidden');
+                document.getElementById('btnMasterRecordText').textContent = 'ضبط مستر خروجی (PGM)';
+            }
+        }
+
+        function takeProgramSnapshot() {
+            const pgmCanvas = document.getElementById('pgmCanvas');
+            const a = document.createElement('a');
+            a.href = pgmCanvas.toDataURL('image/png');
+            a.download = `Snapshot_${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+    </script>
+</body>
+</html>
