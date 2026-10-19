@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#06080e">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.0</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.2</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -111,7 +111,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.0 AI</span>
+                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.2 FIX</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -143,13 +143,13 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span>✨ نسخه ۴.۰: زوم سخت‌افزاری سنسور + سوییچ لنز اپتیکال + بوکه پرتره هوش مصنوعی (AI Bokeh)</span>
+                    <span>✨ نسخه ۴.۲: اصلاح کامل چرخش افقی (Landscape) + زوم سخت‌افزاری + بوکه پرتره</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
                 </h1>
                 <p class="text-slate-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
-                    انتقال تصویر با کیفیت <strong>Full HD 1080p / 4K</strong> و بیت‌ریت ۸ مگابیت، همراه با کنترل لنزهای فیزیکی گوشی و تاری پس‌زمینه (پرتره زنده).
+                    مجهز به ماتریس تراز خودکار و دستی زاویه تصویر (۰°، ۹۰°، ۱۸۰°، ۲۷۰°)، انتخاب لنز اپتیکال و تاری پس‌زمینه.
                 </p>
             </div>
 
@@ -166,7 +166,7 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۱. واحد دوربین بی‌سیم</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            مجهز به انتخابگر لنز فیزیکی (تله‌فوتو/واید/اصلی)، زوم سخت‌افزاری بدون افت کیفیت و افکت بوکه (تاری پس‌زمینه پرتره).
+                            پشتیبانی از حالت افقی و عمودی بدون کشیدگی، انتخاب لنز فیزیکی، زوم سخت‌افزاری و بوکه پرتره.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400">
@@ -186,7 +186,7 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۲. میز کارگردانی تلویزیونی</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            کنترل از راه دور زوم اپتیکال، تغییر لنز و شدت بوکه دوربین اول + پخش ویدیو از گالری، زیرنویس زنده و ضبط خروجی.
+                            کنترل زاویه و چرخش ۹۰ درجه تصویر دوربین ۱، کنترل زوم و بوکه از راه دور، پخش مدیا و ضبط خروجی.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-blue-400">
@@ -206,7 +206,7 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۳. استودیوی یکپارچه</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            تست فوری میز کارگردانی، بوکه هوش مصنوعی و ضبط ویدیو با دوربین همین دستگاه بدون نیاز به گوشی دوم.
+                            تست فوری میز کارگردانی و ضبط ویدیو با دوربین همین دستگاه بدون نیاز به گوشی دوم.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-purple-400">
@@ -237,7 +237,7 @@
                 </div>
             </div>
 
-            <!-- Lens, Resolution & Bokeh Selectors right on the Camera Unit -->
+            <!-- Lens & Resolution Selectors -->
             <div class="flex flex-wrap items-center gap-1.5">
                 <select id="cam-lens-select" onchange="changePhysicalLens(this.value)" class="bg-slate-900/90 border border-slate-700 text-white text-[11px] rounded-lg px-2 py-1.5 outline-none focus:border-emerald-500 max-w-[160px]">
                     <option value="">در حال شناسایی لنزها...</option>
@@ -252,12 +252,10 @@
 
         <!-- Camera Live Viewfinder -->
         <div class="flex-1 relative flex items-center justify-center bg-studio-950 overflow-hidden">
-            <!-- Raw Video (Hidden when Bokeh Canvas is shown, or used as source) -->
-            <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-            <!-- Processed Output Canvas (Used when AI Bokeh Portrait mode is active) -->
-            <canvas id="cam-bokeh-canvas" width="1280" height="720" class="hidden w-full h-full object-cover"></canvas>
+            <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-contain"></video>
+            <canvas id="cam-bokeh-canvas" width="1280" height="720" class="hidden w-full h-full object-contain"></canvas>
 
-            <!-- Permission / Fallback Overlay -->
+            <!-- Permission Overlay -->
             <div id="cam-permission-overlay" class="hidden absolute inset-0 z-45 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
                 <div class="max-w-sm bg-studio-900 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-2xl">
                     <h3 class="text-base font-bold text-white">نیاز به مجوز دوربین</h3>
@@ -278,14 +276,14 @@
             <!-- Hardware Status Badge -->
             <div class="absolute top-3 left-3 z-30 bg-black/70 backdrop-blur px-2.5 py-1.5 rounded-lg border border-white/10 font-mono text-[10px] text-slate-300 space-y-0.5 pointer-events-none">
                 <div id="cam-res-indicator">RES: 1920x1080</div>
-                <div id="cam-zoom-indicator" class="text-emerald-400">ZOOM: 1.0x (OPTICAL/HW)</div>
+                <div id="cam-rot-indicator" class="text-amber-400">ROTATION: 0°</div>
+                <div id="cam-zoom-indicator" class="text-emerald-400">ZOOM: 1.0x</div>
                 <div id="cam-bokeh-indicator" class="text-purple-400">BOKEH: OFF</div>
             </div>
         </div>
 
-        <!-- Camera Bottom Pro Controls (Zoom + Bokeh + Torch + Lens) -->
+        <!-- Camera Bottom Pro Controls -->
         <div class="relative z-40 bg-studio-900/95 border-t border-slate-800 p-3 flex flex-col gap-2.5">
-            <!-- Row 1: Optical/Hardware Zoom & AI Bokeh Sliders -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <!-- Zoom Control -->
                 <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2">
@@ -294,33 +292,35 @@
                     <span id="cam-zoom-val" class="font-mono text-xs text-white w-9 text-left">1.0x</span>
                 </div>
 
-                <!-- AI Bokeh (Portrait Background Blur) Control -->
+                <!-- AI Bokeh Control -->
                 <div class="bg-slate-950/80 border border-purple-500/30 rounded-xl px-3 py-2 flex items-center gap-2">
-                    <span class="text-[11px] font-bold text-purple-400 whitespace-nowrap">✨ بوکه پرتره (تاری بک‌گراند):</span>
+                    <span class="text-[11px] font-bold text-purple-400 whitespace-nowrap">✨ بوکه پرتره:</span>
                     <input id="cam-bokeh-slider" type="range" min="0" max="20" step="2" value="0" oninput="setCameraBokeh(this.value)" class="flex-1 accent-purple-500 cursor-pointer">
                     <span id="cam-bokeh-val" class="font-mono text-xs text-purple-300 w-10 text-left">خاموش</span>
                 </div>
             </div>
 
-            <!-- Row 2: Quick Action Buttons -->
+            <!-- Action Buttons including 90-deg Rotation Fix -->
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <div class="flex items-center gap-1.5">
-                    <button onclick="flipLocalCamera()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1">
-                        <span>🔄 چرخش عقب/سلفی</span>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button onclick="rotateCameraFeedFromNode()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1">
+                        <span>📐 چرخش ۹۰° تصویر (افقی/عمودی)</span>
+                    </button>
+                    <button onclick="flipLocalCamera()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
+                        🔄 عقب/سلفی
                     </button>
                     <button onclick="triggerRefocus()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 text-xs font-bold">
-                        🎯 قفل فوکوس خودکار
+                        🎯 فوکوس
                     </button>
-                    <button onclick="toggleTorch()" id="btn-cam-torch" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
+                    <button onclick="toggleTorch()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
                         🔦 فلاش
                     </button>
                 </div>
 
-                <!-- Quick Bokeh Presets -->
                 <div class="flex items-center gap-1">
-                    <button onclick="setCameraBokeh(0)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] text-slate-300 hover:bg-slate-700">بدون بوکه</button>
-                    <button onclick="setCameraBokeh(8)" class="px-2.5 py-1 rounded-lg bg-purple-900/50 border border-purple-500/40 text-[11px] text-purple-200 hover:bg-purple-800/60">پرتره ملایم</button>
-                    <button onclick="setCameraBokeh(16)" class="px-2.5 py-1 rounded-lg bg-purple-600 text-[11px] text-white font-bold hover:bg-purple-500">بوکه سینمایی</button>
+                    <button onclick="setCameraBokeh(0)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] text-slate-300">بدون بوکه</button>
+                    <button onclick="setCameraBokeh(8)" class="px-2.5 py-1 rounded-lg bg-purple-900/50 border border-purple-500/40 text-[11px] text-purple-200">پرتره ملایم</button>
+                    <button onclick="setCameraBokeh(16)" class="px-2.5 py-1 rounded-lg bg-purple-600 text-[11px] text-white font-bold">بوکه سینمایی</button>
                 </div>
             </div>
         </div>
@@ -340,18 +340,23 @@
                     </button>
                 </div>
 
+                <!-- Quick Orientation Fix Buttons right in the top bar for instant access -->
+                <button onclick="cycleCam1Rotation()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition">
+                    <span>📐 چرخش دوربین ۱:</span>
+                    <span id="dir-rot-badge" class="font-mono">0°</span>
+                </button>
+
+                <button onclick="toggleCam1FitMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition">
+                    <span id="dir-fit-badge">🖼️ قاب: پر کردن صفحه (Cover)</span>
+                </button>
+
                 <button onclick="toggleDirectorLocalCam()" id="btn-dir-localcam" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                    <span>📱 فعال‌سازی دوربین همین گوشی (CAM 2)</span>
+                    <span>📱 دوربین ۲ (همین گوشی)</span>
                 </button>
             </div>
 
             <!-- Master Record & Snapshot -->
             <div class="flex items-center gap-2">
-                <div id="rec-timer-badge" class="hidden items-center gap-1.5 bg-red-500/20 border border-red-500/50 text-red-300 px-2.5 py-1 rounded-md font-mono text-xs">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                    <span id="rec-timer-text">00:00:00</span>
-                </div>
-
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
                     <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
                     <span id="btn-record-label">ضبط مستر خروجی (1080p)</span>
@@ -477,23 +482,32 @@
                 </div>
             </div>
 
-            <!-- Right Column: Media Player, Graphics, Audio & Remote PTZ + Bokeh (5 cols) -->
+            <!-- Right Column: Remote PTZ + Rotation + Bokeh, Media, Graphics, Audio (5 cols) -->
             <div class="lg:col-span-5 bg-studio-900 border border-slate-800 rounded-xl flex flex-col overflow-hidden">
                 
                 <!-- Tab Headers -->
                 <div class="grid grid-cols-4 bg-slate-950 border-b border-slate-800 text-xs font-bold">
-                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60">📡 لنز و بوکه</button>
+                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60">📡 لنز و چرخش</button>
                     <button onclick="switchDirectorTab('media')" id="tab-btn-media" class="py-2.5 text-slate-400 hover:text-white">🎬 پخش فیلم</button>
                     <button onclick="switchDirectorTab('gfx')" id="tab-btn-gfx" class="py-2.5 text-slate-400 hover:text-white">📝 زیرنویس</button>
                     <button onclick="switchDirectorTab('audio')" id="tab-btn-audio" class="py-2.5 text-slate-400 hover:text-white">🎚️ صدا</button>
                 </div>
 
-                <!-- TAB 1: Remote Camera Lens, Hardware Zoom & AI Bokeh Control -->
-                <div id="tab-content-ptz" class="p-3 space-y-3 flex-1 flex flex-col justify-between">
+                <!-- TAB 1: Remote Camera Lens, Orientation, Hardware Zoom & AI Bokeh -->
+                <div id="tab-content-ptz" class="p-3 space-y-2.5 flex-1 flex flex-col justify-between">
                     <div class="space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-300">کنترل سخت‌افزاری دوربین ۱ (از راه دور)</span>
-                            <span id="ptz-status-tag" class="text-[10px] font-mono bg-emerald-500/10 text-emerald-300 px-2 py-0.5 rounded">OPTICAL + AI BOKEH</span>
+                        <!-- Orientation & Aspect Ratio Controls -->
+                        <div class="bg-slate-950 p-2.5 rounded-lg border border-amber-500/40 space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-amber-300 font-bold">📐 تراز افقی/عمودی تصویر (Orientation Fix):</span>
+                                <button onclick="toggleCam1Mirror()" id="btn-cam1-mirror" class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">↔️ قرینه: خاموش</button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <button onclick="setCam1Rotation(0)" id="rot-btn-0" class="py-1.5 rounded bg-amber-500 text-black font-mono font-bold text-xs">0° عادی</button>
+                                <button onclick="setCam1Rotation(90)" id="rot-btn-90" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs">90° راست</button>
+                                <button onclick="setCam1Rotation(180)" id="rot-btn-180" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs">180° وارونه</button>
+                                <button onclick="setCam1Rotation(270)" id="rot-btn-270" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs">270° چپ</button>
+                            </div>
                         </div>
 
                         <!-- Remote Lens Selector & Resolution -->
@@ -515,7 +529,7 @@
                         </div>
 
                         <!-- Remote Hardware Zoom -->
-                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-1.5">
+                        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 space-y-1">
                             <div class="flex justify-between text-xs">
                                 <span class="text-slate-300">🔍 زوم اپتیکال / سخت‌افزاری سنسور:</span>
                                 <span id="remote-zoom-label" class="font-mono text-emerald-400">1.0x</span>
@@ -524,41 +538,33 @@
                         </div>
 
                         <!-- Remote AI Bokeh (Portrait Blur) -->
-                        <div class="bg-slate-950 p-2.5 rounded-lg border border-purple-500/40 space-y-1.5">
+                        <div class="bg-slate-950 p-2 rounded-lg border border-purple-500/40 space-y-1">
                             <div class="flex justify-between text-xs">
                                 <span class="text-purple-300 font-bold">✨ تاری پس‌زمینه (بوکه پرتره زنده):</span>
                                 <span id="remote-bokeh-label" class="font-mono text-purple-400">خاموش</span>
                             </div>
                             <input type="range" min="0" max="20" step="2" value="0" oninput="sendRemoteBokeh(this.value)" class="w-full accent-purple-500">
-                            <div class="flex gap-1.5 pt-1">
-                                <button onclick="sendRemoteBokeh(0)" class="flex-1 py-1 bg-slate-800 text-[10px] rounded text-slate-300">خاموش</button>
-                                <button onclick="sendRemoteBokeh(8)" class="flex-1 py-1 bg-purple-900/40 border border-purple-500/30 text-[10px] rounded text-purple-200">بوکه ملایم</button>
-                                <button onclick="sendRemoteBokeh(16)" class="flex-1 py-1 bg-purple-600 text-[10px] rounded text-white font-bold">بوکه سینمایی</button>
-                            </div>
                         </div>
 
                         <!-- Flip, Refocus & Torch -->
                         <div class="grid grid-cols-3 gap-1.5">
-                            <button onclick="sendRemoteCommand({type:'flip'})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold py-2 rounded-lg border border-slate-700">
+                            <button onclick="sendRemoteCommand({type:'flip'})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold py-1.5 rounded-lg border border-slate-700">
                                 🔄 سلفی/عقب
                             </button>
-                            <button onclick="sendRemoteCommand({type:'refocus'})" class="bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[11px] font-bold py-2 rounded-lg border border-slate-700">
+                            <button onclick="sendRemoteCommand({type:'refocus'})" class="bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[11px] font-bold py-1.5 rounded-lg border border-slate-700">
                                 🎯 فوکوس مجدد
                             </button>
-                            <button onclick="sendRemoteCommand({type:'torch'})" class="bg-slate-800 hover:bg-slate-700 text-amber-300 text-[11px] font-bold py-2 rounded-lg border border-slate-700">
+                            <button onclick="sendRemoteCommand({type:'torch'})" class="bg-slate-800 hover:bg-slate-700 text-amber-300 text-[11px] font-bold py-1.5 rounded-lg border border-slate-700">
                                 🔦 فلاش
                             </button>
                         </div>
 
                         <!-- Director Intercom -->
-                        <div class="space-y-1 pt-1">
-                            <label class="text-[11px] text-slate-400">ارسال پیام فوری روی صفحه دوربین ۱:</label>
-                            <div class="flex gap-1.5">
-                                <input id="intercom-input" type="text" placeholder="مثلاً: به دوربین نگاه کن..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
-                                <button onclick="sendIntercomMessage()" class="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3 py-1.5 rounded-lg">
-                                    ارسال
-                                </button>
-                            </div>
+                        <div class="flex gap-1.5 pt-0.5">
+                            <input id="intercom-input" type="text" placeholder="ارسال پیام فوری به صفحه دوربین ۱..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+                            <button onclick="sendIntercomMessage()" class="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3 py-1.5 rounded-lg">
+                                ارسال
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -604,7 +610,7 @@
                             <span class="text-xs text-slate-300">نوار خبر متحرک (Ticker)</span>
                             <button onclick="toggleTicker()" id="btn-toggle-ticker" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded">خاموش</button>
                         </div>
-                        <input id="ticker-input" type="text" value="🔴 ارتباط زنده برقرار است • زوم سخت‌افزاری و بوکه هوش مصنوعی فعال شد..." oninput="updateGraphicsText()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none">
+                        <input id="ticker-input" type="text" value="🔴 ارتباط زنده برقرار است • تراز افقی و عمودی تصویر فعال شد..." oninput="updateGraphicsText()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none">
                     </div>
                 </div>
 
@@ -659,7 +665,7 @@
         <img id="hidden-media-img" alt="">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v4.0 AI Bokeh + Optical/HW Zoom) ================= -->
+    <!-- ================= APPLICATION LOGIC (v4.2 Rotation & Landscape Fix) ================= -->
     <script>
         const RTC_CONFIG = {
             iceServers: [
@@ -683,7 +689,6 @@
             pinCode: '',
             mqttClient: null,
             mqttConnected: false,
-            peer: null,
             rtcPeerConn: null,
             activeVideoSender: null,
 
@@ -696,6 +701,11 @@
             currentResHeight: 1080,
             currentZoom: 1.0,
             torchOn: false,
+
+            // Orientation & Aspect Ratio Compensation
+            cam1Rotation: 0,      // 0, 90, 180, 270 degrees
+            cam1Mirror: false,    // Horizontal flip
+            cam1FitMode: 'cover', // 'cover' (fill 16:9) or 'contain' (fit inside with bars)
 
             // AI Bokeh (MediaPipe Selfie Segmentation)
             bokehBlurPx: 0,
@@ -714,12 +724,11 @@
 
             // Media & Graphics
             mediaType: 'demo',
-            mediaLoop: true,
             lowerThirdVisible: true,
             ltTitle: 'استودیو پخش زنده PRISM',
             ltSub: 'کارگردانی چند دوربینه با کیفیت 1080p و بوکه هوشمند',
             tickerVisible: false,
-            tickerText: '🔴 ارتباط زنده برقرار است • زوم سخت‌افزاری و بوکه هوش مصنوعی فعال شد...',
+            tickerText: '🔴 ارتباط زنده برقرار است • تراز افقی و عمودی تصویر فعال شد...',
             tickerOffset: 0,
 
             // Audio & Recording
@@ -729,10 +738,67 @@
             gainNodes: {},
             mediaRecorder: null,
             recordedChunks: [],
-            isRecording: false,
-            recStartTime: 0,
-            recInterval: null
+            isRecording: false
         };
+
+        // ============================================================================
+        // ORIENTATION & ROTATION MATRIX CONTROLS
+        // ============================================================================
+        function setCam1Rotation(deg) {
+            state.cam1Rotation = ((deg % 360) + 360) % 360;
+            const badge = document.getElementById('dir-rot-badge');
+            if (badge) badge.innerText = `${state.cam1Rotation}°`;
+
+            const camInd = document.getElementById('cam-rot-indicator');
+            if (camInd) camInd.innerText = `ROTATION: ${state.cam1Rotation}°`;
+
+            [0, 90, 180, 270].forEach(d => {
+                const btn = document.getElementById(`rot-btn-${d}`);
+                if (btn) {
+                    btn.className = (d === state.cam1Rotation)
+                        ? 'py-1.5 rounded bg-amber-500 text-black font-mono font-bold text-xs'
+                        : 'py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs';
+                }
+            });
+        }
+
+        function cycleCam1Rotation() {
+            const next = (state.cam1Rotation + 90) % 360;
+            setCam1Rotation(next);
+        }
+
+        function rotateCameraFeedFromNode() {
+            const next = (state.cam1Rotation + 90) % 360;
+            setCam1Rotation(next);
+            // Tell Director mixer to rotate incoming camera 1 canvas immediately
+            publishMqttSignal('cam-rotate', { rotation: next });
+        }
+
+        function toggleCam1FitMode() {
+            state.cam1FitMode = state.cam1FitMode === 'cover' ? 'contain' : 'cover';
+            const badge = document.getElementById('dir-fit-badge');
+            if (badge) {
+                badge.innerText = state.cam1FitMode === 'cover'
+                    ? '🖼️ قاب: پر کردن صفحه (Cover)'
+                    : '🖼️ قاب: نمایش کامل (Fit)';
+            }
+        }
+
+        function toggleCam1Mirror() {
+            state.cam1Mirror = !state.cam1Mirror;
+            const btn = document.getElementById('btn-cam1-mirror');
+            if (btn) {
+                btn.innerText = state.cam1Mirror ? '↔️ قرینه: روشن' : '↔️ قرینه: خاموش';
+            }
+        }
+
+        // Listen for physical screen orientation changes on Camera Phone
+        window.addEventListener('resize', () => {
+            const vid = document.getElementById('cam-local-video');
+            if (vid && vid.videoWidth) {
+                document.getElementById('cam-res-indicator').innerText = `RES: ${vid.videoWidth}x${vid.videoHeight}`;
+            }
+        });
 
         // ============================================================================
         // HIGH BITRATE WEBRTC ENFORCER (8 Mbps + Maintain Resolution)
@@ -748,15 +814,13 @@
                         if (!params.encodings || params.encodings.length === 0) {
                             params.encodings = [{}];
                         }
-                        params.encodings[0].maxBitrate = 8000000; // 8 Mbps for crisp zoom
+                        params.encodings[0].maxBitrate = 8000000;
                         params.encodings[0].maxFramerate = 30;
                         params.degradationPreference = 'maintain-resolution';
                         await sender.setParameters(params);
                     }
                 }
-            } catch (e) {
-                console.warn('Bitrate boost note:', e);
-            }
+            } catch (e) {}
         }
 
         // ============================================================================
@@ -773,12 +837,10 @@
 
                 const selectEl = document.getElementById('cam-lens-select');
                 if (selectEl && state.availableLenses.length > 0) {
-                    selectEl.innerHTML = state.availableLenses.map((l, i) =>
+                    selectEl.innerHTML = state.availableLenses.map((l) =>
                         `<option value="${l.deviceId}" ${l.deviceId === state.currentDeviceId ? 'selected' : ''}>📷 ${l.label}</option>`
                     ).join('');
                 }
-
-                // Send lens list to Director phone if connected
                 publishMqttSignal('lenses', { lenses: state.availableLenses, current: state.currentDeviceId });
             } catch (e) {}
         }
@@ -791,6 +853,7 @@
                 state.localCamStream.getTracks().forEach(t => t.stop());
             }
 
+            // Do not force fixed aspect ratio so rotating the phone doesn't crop or distort sensor output
             const videoConstraints = {
                 width: { ideal: widthIdeal },
                 height: { ideal: heightIdeal },
@@ -814,7 +877,6 @@
                 const settings = state.rawVideoTrack.getSettings();
                 if (settings.deviceId) state.currentDeviceId = settings.deviceId;
 
-                // Enable Continuous Autofocus & Continuous Exposure on Hardware Track
                 try {
                     const caps = state.rawVideoTrack.getCapabilities ? state.rawVideoTrack.getCapabilities() : {};
                     const adv = {};
@@ -823,7 +885,6 @@
                     if (Object.keys(adv).length > 0) {
                         await state.rawVideoTrack.applyConstraints({ advanced: [adv] });
                     }
-                    // Update Zoom Slider range to match hardware capabilities
                     if (caps.zoom) {
                         const zSlider = document.getElementById('cam-zoom-slider');
                         if (zSlider) {
@@ -839,11 +900,9 @@
                 await vid.play().catch(() => {});
 
                 document.getElementById('cam-permission-overlay').classList.add('hidden');
-                document.getElementById('cam-res-indicator').innerText = `RES: ${settings.width || widthIdeal}x${settings.height || heightIdeal}`;
+                document.getElementById('cam-res-indicator').innerText = `RES: ${vid.videoWidth || widthIdeal}x${vid.videoHeight || heightIdeal}`;
 
                 await enumeratePhysicalLenses();
-
-                // Update active WebRTC track if connected
                 await syncActiveStreamTrackToWebRTC();
                 return true;
             } catch (err) {
@@ -876,7 +935,7 @@
         }
 
         // ============================================================================
-        // TRUE HARDWARE SENSOR ZOOM (NO BLUR)
+        // TRUE HARDWARE SENSOR ZOOM
         // ============================================================================
         async function applyLocalCameraZoom(val) {
             const z = parseFloat(val) || 1.0;
@@ -895,9 +954,7 @@
                         });
                         usedHardwareZoom = true;
                     }
-                } catch (e) {
-                    console.warn('HW zoom fallback:', e);
-                }
+                } catch (e) {}
             }
 
             const vid = document.getElementById('cam-local-video');
@@ -911,7 +968,7 @@
         }
 
         // ============================================================================
-        // AI PORTRAIT BOKEH ENGINE (MediaPipe Selfie Segmentation)
+        // AI PORTRAIT BOKEH ENGINE (Dynamic Aspect-Ratio Sync)
         // ============================================================================
         async function initMediaPipeBokeh() {
             if (state.selfieSegmentation) return;
@@ -920,31 +977,33 @@
             const segmentation = new SelfieSegmentation({
                 locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
             });
-            segmentation.setOptions({ modelSelection: 1 }); // 1 = Landscape/General faster model
+            segmentation.setOptions({ modelSelection: 1 });
             segmentation.onResults(onBokehSegmentationResults);
             state.selfieSegmentation = segmentation;
         }
 
         function onBokehSegmentationResults(results) {
             const canvas = document.getElementById('cam-bokeh-canvas');
+            const imgW = results.image.width || 1280;
+            const imgH = results.image.height || 720;
+
+            // Dynamically match canvas resolution to actual camera orientation (fixes landscape squash!)
+            if (canvas.width !== imgW || canvas.height !== imgH) {
+                canvas.width = imgW;
+                canvas.height = imgH;
+            }
+
             const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-
             ctx.save();
-            ctx.clearRect(0, 0, w, h);
+            ctx.clearRect(0, 0, imgW, imgH);
 
-            // 1. Draw segmentation mask
-            ctx.drawImage(results.segmentationMask, 0, 0, w, h);
-
-            // 2. Keep sharp person only where mask is present
+            ctx.drawImage(results.segmentationMask, 0, 0, imgW, imgH);
             ctx.globalCompositeOperation = 'source-in';
-            ctx.drawImage(results.image, 0, 0, w, h);
+            ctx.drawImage(results.image, 0, 0, imgW, imgH);
 
-            // 3. Draw blurred background behind the person
             ctx.globalCompositeOperation = 'destination-over';
             ctx.filter = `blur(${state.bokehBlurPx}px)`;
-            ctx.drawImage(results.image, 0, 0, w, h);
+            ctx.drawImage(results.image, 0, 0, imgW, imgH);
 
             ctx.restore();
         }
@@ -962,9 +1021,8 @@
 
             if (blurPx > 0) {
                 await initMediaPipeBokeh();
-                const settings = state.rawVideoTrack ? state.rawVideoTrack.getSettings() : {};
-                bokehCanvas.width = settings.width || 1280;
-                bokehCanvas.height = settings.height || 720;
+                bokehCanvas.width = vidEl.videoWidth || 1280;
+                bokehCanvas.height = vidEl.videoHeight || 720;
 
                 bokehCanvas.classList.remove('hidden');
                 vidEl.classList.add('hidden');
@@ -996,7 +1054,6 @@
 
         async function syncActiveStreamTrackToWebRTC() {
             let outgoingVideoTrack = state.rawVideoTrack;
-
             if (state.bokehBlurPx > 0) {
                 const bokehCanvas = document.getElementById('cam-bokeh-canvas');
                 if (!state.bokehCanvasStream) {
@@ -1004,7 +1061,6 @@
                 }
                 outgoingVideoTrack = state.bokehCanvasStream.getVideoTracks()[0];
             }
-
             if (state.activeVideoSender && outgoingVideoTrack) {
                 try {
                     await state.activeVideoSender.replaceTrack(outgoingVideoTrack);
@@ -1038,7 +1094,7 @@
 
             const dot = document.getElementById('mqtt-dot');
             const label = document.getElementById('mqtt-label');
-            const clientId = 'prism_v4_' + Math.random().toString(16).substring(2, 10);
+            const clientId = 'prism_v42_' + Math.random().toString(16).substring(2, 10);
             const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
                 clientId,
                 keepalive: 30,
@@ -1046,7 +1102,7 @@
             });
 
             state.mqttClient = client;
-            const baseTopic = `prismdeck_v4_ir/${pin}`;
+            const baseTopic = `prismdeck_v42_ir/${pin}`;
 
             client.on('connect', () => {
                 state.mqttConnected = true;
@@ -1071,7 +1127,7 @@
 
         function publishMqttSignal(subTopic, payloadObj) {
             if (!state.mqttClient || !state.mqttConnected || !state.pinCode) return;
-            const topic = `prismdeck_v4_ir/${state.pinCode}/${subTopic}`;
+            const topic = `prismdeck_v42_ir/${state.pinCode}/${subTopic}`;
             const msg = JSON.stringify({
                 ...payloadObj,
                 senderId: state.mqttClient.options.clientId,
@@ -1284,6 +1340,8 @@
                 publishMqttSignal('dir-join', { role: 'director' });
             } else if (topic.endsWith('/lenses')) {
                 populateRemoteLensesDropdown(data.lenses, data.current);
+            } else if (topic.endsWith('/cam-rotate')) {
+                setCam1Rotation(data.rotation || 0);
             } else if (topic.endsWith('/webrtc-offer')) {
                 await handleIncomingCameraOffer(data.sdp);
             } else if (topic.endsWith('/ice-cam')) {
@@ -1339,7 +1397,7 @@
             if (state.directorCam2Stream && !forceOn) {
                 state.directorCam2Stream.getTracks().forEach(t => t.stop());
                 state.directorCam2Stream = null;
-                btn.innerText = '📱 فعال‌سازی دوربین همین گوشی (CAM 2)';
+                btn.innerText = '📱 دوربین ۲ (همین گوشی)';
                 return;
             }
             try {
@@ -1352,7 +1410,7 @@
                 v2.srcObject = stream;
                 await v2.play();
                 connectStreamToAudioMixer('cam2', stream);
-                btn.innerText = '✅ دوربین ۲ فعال است';
+                btn.innerText = '✅ دوربین ۲ فعال';
             } catch (err) {}
         }
 
@@ -1454,7 +1512,7 @@
         }
 
         // ============================================================================
-        // 60FPS CANVAS COMPOSITOR (1080p MASTER PROGRAM)
+        // 60FPS CANVAS COMPOSITOR WITH ROTATION MATRIX & ASPECT RATIO PROTECTION
         // ============================================================================
         let compositorRunning = false;
         function startCanvasCompositorLoop() {
@@ -1472,10 +1530,8 @@
                     return;
                 }
 
-                // Render Preview (1280x720)
                 drawSourceScene(ctxPvw, state.pvwSource, cPvw.width, cPvw.height, timestamp);
 
-                // Render Program (1920x1080 Full HD)
                 ctxPgm.save();
                 drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height, timestamp);
 
@@ -1503,13 +1559,13 @@
             ctx.fillRect(0, 0, w, h);
 
             if (sourceType === 'cam1') {
-                drawVideoCover(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1 (دوربین ۱ بی‌سیم)');
+                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1 (دوربین ۱ بی‌سیم)', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
             } else if (sourceType === 'cam2') {
-                drawVideoCover(ctx, document.getElementById('hidden-cam2-video'), 0, 0, w, h, 'CAM 2 (دوربین کارگردان)');
+                drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), 0, 0, w, h, 'CAM 2 (دوربین کارگردان)', 0, 'cover', false);
             } else if (sourceType === 'media') {
                 drawMediaLayer(ctx, 0, 0, w, h, ts);
             } else if (sourceType === 'pip') {
-                drawVideoCover(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1');
+                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
                 const pw = w * 0.32, ph = h * 0.32, px = w - pw - (w*0.025), py = h * 0.04;
                 ctx.save();
                 ctx.strokeStyle = '#3b82f6';
@@ -1519,9 +1575,9 @@
                 ctx.restore();
             } else if (sourceType === 'split') {
                 const halfW = w / 2 - 4;
-                drawVideoCover(ctx, document.getElementById('hidden-cam1-video'), 0, 0, halfW, h, 'CAM 1');
+                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror);
                 if (state.directorCam2Stream) {
-                    drawVideoCover(ctx, document.getElementById('hidden-cam2-video'), halfW + 8, 0, halfW, h, 'CAM 2');
+                    drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), halfW + 8, 0, halfW, h, 'CAM 2', 0, 'cover', false);
                 } else {
                     drawMediaLayer(ctx, halfW + 8, 0, halfW, h, ts);
                 }
@@ -1530,13 +1586,46 @@
             }
         }
 
-        function drawVideoCover(ctx, videoEl, x, y, w, h, label) {
+        // Smart Video Renderer with 90/180/270 Rotation Matrix & Aspect-Ratio Preservation
+        function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 0, fitMode = 'cover', mirror = false) {
             if (videoEl && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
-                const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
-                const scale = Math.max(w / vw, h / vh);
-                const sw = w / scale, sh = h / scale;
-                const sx = (vw - sw) / 2, sy = (vh - sh) / 2;
-                ctx.drawImage(videoEl, sx, sy, sw, sh, x, y, w, h);
+                const rawW = videoEl.videoWidth;
+                const rawH = videoEl.videoHeight;
+                const isRotated90 = (rotationDeg === 90 || rotationDeg === 270);
+
+                // Effective dimensions after rotation
+                const effW = isRotated90 ? rawH : rawW;
+                const effH = isRotated90 ? rawW : rawH;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(x, y, w, h);
+                ctx.clip();
+
+                // Background fill for 'contain' mode bars
+                ctx.fillStyle = '#05070b';
+                ctx.fillRect(x, y, w, h);
+
+                const cx = x + w / 2;
+                const cy = y + h / 2;
+                ctx.translate(cx, cy);
+
+                if (rotationDeg !== 0) {
+                    ctx.rotate((rotationDeg * Math.PI) / 180);
+                }
+                if (mirror) {
+                    ctx.scale(-1, 1);
+                }
+
+                const scale = (fitMode === 'contain')
+                    ? Math.min(w / effW, h / effH)
+                    : Math.max(w / effW, h / effH);
+
+                const drawW = rawW * scale;
+                const drawH = rawH * scale;
+
+                ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                ctx.restore();
             } else {
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(x, y, w, h);
@@ -1549,7 +1638,7 @@
 
         function drawMediaLayer(ctx, x, y, w, h, ts) {
             if (state.mediaType === 'video') {
-                drawVideoCover(ctx, document.getElementById('hidden-media-video'), x, y, w, h, 'MEDIA');
+                drawVideoSmart(ctx, document.getElementById('hidden-media-video'), x, y, w, h, 'MEDIA', 0, 'contain', false);
             } else if (state.mediaType === 'image') {
                 const img = document.getElementById('hidden-media-img');
                 if (img && img.complete && img.naturalWidth > 0) {
@@ -1733,15 +1822,12 @@
             state.isRecording = true;
 
             document.getElementById('btn-record-label').innerText = 'توقف و ذخیره ویدیو';
-            document.getElementById('rec-timer-badge').classList.remove('hidden');
-            document.getElementById('rec-timer-badge').classList.add('flex');
         }
 
         function stopProgramRecording() {
             if (state.mediaRecorder && state.isRecording) state.mediaRecorder.stop();
             state.isRecording = false;
             document.getElementById('btn-record-label').innerText = 'ضبط مستر خروجی (1080p)';
-            document.getElementById('rec-timer-badge').classList.add('hidden');
         }
 
         function saveRecordedVideo() {
