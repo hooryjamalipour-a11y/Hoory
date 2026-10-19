@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#06080e">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v5.2 WakeLock</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v5.4 QuickMedia</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -71,10 +71,10 @@
             box-shadow: inset 0 0 0 6px #10b981, 0 0 25px rgba(16, 185, 129, 0.35);
         }
         .tally-screen-pgm {
-            box-shadow: inset 0 0 0 12px #ef4444, inset 0 0 50px rgba(239, 68, 68, 0.65);
+            box-shadow: inset 0 0 0 10px #ef4444, 0 0 40px rgba(239, 68, 68, 0.65);
         }
         .tally-screen-pvw {
-            box-shadow: inset 0 0 0 12px #10b981, inset 0 0 50px rgba(16, 185, 129, 0.5);
+            box-shadow: inset 0 0 0 10px #10b981, 0 0 40px rgba(16, 185, 129, 0.5);
         }
 
         input[type=range].t-bar {
@@ -101,6 +101,13 @@
             background-image: radial-gradient(#1e293b 1px, transparent 1px);
             background-size: 16px 16px;
         }
+
+        .broadcast-grid {
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px);
+            background-size: 33.333% 33.333%;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-studio-950 text-slate-100">
@@ -111,7 +118,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v5.2 AWAKE</span>
+                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v5.4 PRO</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -120,13 +127,11 @@
 
         <!-- Wake Lock + Live Broadcast Status + Connection Badges -->
         <div class="flex items-center gap-1.5 text-xs">
-            <!-- Screen Wake Lock Status Button -->
             <button onclick="forceActivateWakeLock()" id="wakelock-badge" class="flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 px-2 py-1 rounded-md text-[10px] font-bold transition" title="جلوگیری از خاموش شدن صفحه موبایل">
                 <span id="wakelock-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span id="wakelock-text">☀️ صفحه روشن: فعال</span>
+                <span id="wakelock-text">☀️ صفحه روشن</span>
             </button>
 
-            <!-- YouTube Live On-Air Header Badge -->
             <div id="yt-live-header-badge" class="hidden items-center gap-1.5 bg-red-600 text-white px-2.5 py-1 rounded-full font-mono text-xs font-black shadow-lg shadow-red-600/40 animate-pulse">
                 <span class="w-2 h-2 rounded-full bg-white"></span>
                 <span>LIVE</span>
@@ -157,13 +162,13 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span>☀️ نسخه ۵.۲: قفل دائمی روشن ماندن صفحه (Screen Wake Lock) روی هر دو گوشی + لایو یوتیوب</span>
+                    <span>🎬 نسخه ۵.۴: دکمه انتخاب سریع ویدیو/عکس در نوار بالا + کادر ۱۶:۹ افقی + ارتباط بین‌شهری</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
-                    استودیوی کارگردانی و پخش زنده یوتیوب
+                    استودیوی کارگردانی و پخش زنده یوتیوب (16:9)
                 </h1>
                 <p class="text-slate-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
-                    مجهز به سیستم جلوگیری از خاموش شدن صفحه در هر دو موبایل، زوم اپتیکال، بوکه پرتره، شمارش معکوس ۵ ثانیه‌ای و نمایش کامنت و دونیت روی آنتن.
+                    قاب‌بندی استاندارد <strong>16:9 Landscape</strong> به صورت پیش‌فرض، دسترسی فوری به گالری ویدیو/عکس در نوار بالا، اتصال از طریق وای‌فای یا <strong>اینترنت بین‌شهری</strong> و نمایش کامنت و دونیت.
                 </p>
             </div>
 
@@ -176,15 +181,15 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         </div>
                         <div>
-                            <span class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold">گوشی اول • CAMERA UNIT</span>
-                            <h2 class="text-lg font-bold text-white mt-0.5">۱. واحد دوربین بی‌سیم</h2>
+                            <span class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold">گوشی اول • 16:9 CAMERA</span>
+                            <h2 class="text-lg font-bold text-white mt-0.5">۱. واحد دوربین بی‌سیم (16:9)</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            قفل خودکار روشن ماندن صفحه بدون رفتن به حالت خواب، همراه با شمارش معکوس لایو و نمایش کامنت برای مجری.
+                            ویوفایندر افقی ۱۶:۹ پیش‌فرض، تراز خودکار افقی با سنسور ژیروسکوپ و اتصال از هر نقطه یا شهر دیگر با کد ۴ رقمی.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400">
-                        <span>راه‌اندازی دوربین ۱ (صفحه همیشه روشن)</span>
+                        <span>راه‌اندازی دوربین ۱۶:۹</span>
                         <span>←</span>
                     </div>
                 </div>
@@ -200,11 +205,11 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۲. میز کارگردانی و لایو یوتیوب</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            روشن ماندن دائمی صفحه برای کات زدن آنی، مدیریت کامنت‌های یوتیوب، نمایش دونیت و ضبط ۱۰۸۰p.
+                            دکمه انتخاب فوری فیلم/عکس از گالری در نوار بالا، دریافت تصویر ۱۶:۹، شمارش معکوس لایو و نمایش کامنت و دونیت.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-red-400">
-                        <span>ورود به اتاق فرمان (صفحه همیشه روشن)</span>
+                        <span>ورود به اتاق فرمان</span>
                         <span>←</span>
                     </div>
                 </div>
@@ -220,7 +225,7 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۳. استودیوی یکپارچه</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            تست فوری شمارش معکوس لایو، کامنت‌ها و اعلان دونیت با دوربین همین دستگاه بدون نیاز به گوشی دوم.
+                            تست فوری شمارش معکوس لایو، پخش ویدیو از گالری، کامنت‌ها و اعلان دونیت با دوربین همین دستگاه.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-purple-400">
@@ -232,10 +237,8 @@
         </div>
     </main>
 
-    <!-- ================= 2. WIRELESS CAMERA NODE VIEW (PHONE 1) ================= -->
-    <section id="view-camera-node" class="hidden flex-1 flex flex-col relative bg-black overflow-hidden">
-        <!-- Tally Border Overlay -->
-        <div id="cam-tally-border" class="absolute inset-0 pointer-events-none z-30 transition-all duration-200"></div>
+    <!-- ================= 2. WIRELESS CAMERA NODE VIEW (PHONE 1 - STRICT 16:9 LANDSCAPE) ================= -->
+    <section id="view-camera-node" class="hidden flex-1 flex flex-col justify-between relative bg-black overflow-hidden">
 
         <!-- FULLSCREEN 5-SECOND COUNTDOWN OVERLAY ON CAMERA 1 -->
         <div id="cam-countdown-overlay" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center text-center pointer-events-none">
@@ -244,14 +247,14 @@
         </div>
 
         <!-- Camera Top HUD -->
-        <div class="relative z-40 bg-gradient-to-b from-black/95 via-black/75 to-transparent p-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="relative z-40 bg-studio-900/95 border-b border-slate-800 p-2.5 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
                 <div id="cam-tally-pill" class="px-3 py-1 rounded-full bg-slate-800 border border-slate-600 text-slate-200 font-bold text-xs flex items-center gap-1.5">
                     <span id="cam-tally-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
                     <span id="cam-tally-label">STANDBY • آماده</span>
                 </div>
                 <div id="cam-live-pill" class="hidden px-3 py-1 rounded-full bg-red-600 text-white font-black text-xs items-center gap-1.5 animate-pulse shadow-lg shadow-red-600/50">
-                    <span>🔴 LIVE ON YOUTUBE</span>
+                    <span>🔴 LIVE</span>
                 </div>
                 <div class="bg-black/80 border border-emerald-500/50 rounded-lg px-2.5 py-1 flex items-center gap-1.5">
                     <span class="text-[11px] text-slate-300">کد اتصال:</span>
@@ -260,78 +263,88 @@
                 </div>
             </div>
 
-            <!-- Lens & Resolution Selectors -->
+            <!-- Network Mode (LAN vs Cross-City WAN), Lens & Resolution Selectors -->
             <div class="flex flex-wrap items-center gap-1.5">
-                <select id="cam-lens-select" onchange="changePhysicalLens(this.value)" class="bg-slate-900/90 border border-slate-700 text-white text-[11px] rounded-lg px-2 py-1.5 outline-none focus:border-emerald-500 max-w-[160px]">
-                    <option value="">در حال شناسایی لنزها...</option>
+                <select id="cam-netmode-select" onchange="changeNetworkBitrateMode(this.value)" class="bg-slate-900 border border-blue-500/40 text-blue-300 text-[11px] font-bold rounded-lg px-2 py-1.5 outline-none">
+                    <option value="lan">🏠 شبکه وای‌فای (8 Mbps)</option>
+                    <option value="wan" selected>🌍 اینترنت بین‌شهری (2.5 Mbps پایدار)</option>
                 </select>
-                <select id="cam-res-select" onchange="changeCameraResolution(this.value)" class="bg-slate-900/90 border border-slate-700 text-emerald-300 font-mono text-[11px] rounded-lg px-2 py-1.5 outline-none">
-                    <option value="1080" selected>1080p Full HD</option>
-                    <option value="2160">4K Ultra HD</option>
-                    <option value="720">720p HD (سریع)</option>
+                <select id="cam-lens-select" onchange="changePhysicalLens(this.value)" class="bg-slate-900 border border-slate-700 text-white text-[11px] rounded-lg px-2 py-1.5 outline-none max-w-[150px]">
+                    <option value="">شناسایی لنزها...</option>
                 </select>
+                <button onclick="lockScreenLandscape()" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[11px] font-bold px-2.5 py-1.5 rounded-lg">
+                    ⛶ تمام‌صفحه افقی 16:9
+                </button>
             </div>
         </div>
 
-        <!-- Camera Live Viewfinder -->
-        <div class="flex-1 relative flex items-center justify-center bg-studio-950 overflow-hidden">
-            <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-contain"></video>
-            <canvas id="cam-bokeh-canvas" width="1280" height="720" class="hidden w-full h-full object-contain"></canvas>
-
-            <!-- Permission Overlay -->
-            <div id="cam-permission-overlay" class="hidden absolute inset-0 z-45 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
-                <div class="max-w-sm bg-studio-900 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-2xl">
-                    <h3 class="text-base font-bold text-white">نیاز به مجوز دوربین</h3>
-                    <p id="cam-error-reason" class="text-xs text-slate-400 leading-relaxed">
-                        روی دکمه زیر بزنید و گزینه Allow را انتخاب کنید.
-                    </p>
-                    <button onclick="retryCameraPermission()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
-                        📷 فعال‌سازی مجدد دوربین
-                    </button>
+        <!-- STRICT 16:9 LANDSCAPE BROADCAST VIEWFINDER CONTAINER -->
+        <div class="flex-1 flex items-center justify-center p-2 bg-studio-950 overflow-hidden relative">
+            <div id="cam-16x9-frame" class="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-2xl flex items-center justify-center">
+                
+                <!-- 16:9 Rule-of-Thirds Safe Area Grid -->
+                <div class="absolute inset-0 broadcast-grid pointer-events-none z-20"></div>
+                <div class="absolute top-2 right-2 z-20 bg-black/70 border border-emerald-500/40 text-emerald-400 font-mono text-[10px] font-bold px-2 py-0.5 rounded pointer-events-none">
+                    16:9 LANDSCAPE FRAME
                 </div>
-            </div>
 
-            <!-- Director Teleprompter / Pinned Comment / Donation Alert on Camera 1 Screen for Host -->
-            <div id="cam-intercom-toast" class="hidden absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-black font-black px-5 py-2.5 rounded-2xl shadow-2xl border-2 border-white text-base md:text-xl animate-bounce text-center max-w-lg w-[90%]">
-                فرمان کارگردان: <span id="cam-intercom-text">آماده باشید!</span>
-            </div>
+                <!-- Raw Video & Bokeh Canvas (Locked to Cover 16:9 Widescreen) -->
+                <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                <canvas id="cam-bokeh-canvas" width="1280" height="720" class="hidden w-full h-full object-cover"></canvas>
 
-            <!-- Pinned Viewer Comment HUD on Camera Phone -->
-            <div id="cam-comment-hud" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-45 bg-slate-900/95 border-2 border-blue-500 rounded-2xl px-4 py-3 shadow-2xl max-w-md w-[92%] text-right">
-                <div class="flex items-center justify-between text-xs text-blue-400 font-bold mb-1">
-                    <span id="cam-comment-author">💬 کامنت مخاطب روی آنتن:</span>
-                    <span class="text-[10px] bg-blue-500/20 px-2 py-0.5 rounded">ON AIR</span>
+                <!-- Permission Overlay -->
+                <div id="cam-permission-overlay" class="hidden absolute inset-0 z-45 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+                    <div class="max-w-sm bg-studio-900 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-2xl">
+                        <h3 class="text-base font-bold text-white">نیاز به مجوز دوربین</h3>
+                        <p id="cam-error-reason" class="text-xs text-slate-400 leading-relaxed">
+                            روی دکمه زیر بزنید و گزینه Allow را انتخاب کنید.
+                        </p>
+                        <button onclick="retryCameraPermission()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
+                            📷 فعال‌سازی مجدد دوربین
+                        </button>
+                    </div>
                 </div>
-                <div id="cam-comment-body" class="text-sm font-bold text-white leading-relaxed"></div>
-            </div>
 
-            <!-- Donation Alert HUD on Camera Phone -->
-            <div id="cam-donation-hud" class="hidden absolute top-28 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black rounded-2xl px-5 py-3 shadow-2xl border-2 border-white max-w-md w-[92%] text-center animate-bounce">
-                <div class="text-xs font-black uppercase tracking-wider">💎 دونیت / حمایت مالی جدید!</div>
-                <div id="cam-donation-title" class="text-lg font-black mt-0.5"></div>
-                <div id="cam-donation-msg" class="text-xs font-bold mt-1 bg-black/15 rounded-lg py-1 px-2"></div>
-            </div>
+                <!-- Director Teleprompter Message -->
+                <div id="cam-intercom-toast" class="hidden absolute top-10 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-black font-black px-5 py-2 rounded-2xl shadow-2xl border-2 border-white text-sm md:text-lg animate-bounce text-center max-w-lg w-[90%]">
+                    فرمان کارگردان: <span id="cam-intercom-text">آماده باشید!</span>
+                </div>
 
-            <!-- Hardware Status Badge -->
-            <div class="absolute top-3 left-3 z-30 bg-black/70 backdrop-blur px-2.5 py-1.5 rounded-lg border border-white/10 font-mono text-[10px] text-slate-300 space-y-0.5 pointer-events-none">
-                <div id="cam-res-indicator">RES: 1920x1080</div>
-                <div id="cam-rot-indicator" class="text-amber-400">ROTATION: 0°</div>
-                <div id="cam-zoom-indicator" class="text-emerald-400">ZOOM: 1.0x</div>
-                <div id="cam-bokeh-indicator" class="text-purple-400">BOKEH: OFF</div>
-                <div class="text-emerald-300">WAKE-LOCK: ACTIVE ☀️</div>
+                <!-- Pinned Viewer Comment HUD on Camera Phone -->
+                <div id="cam-comment-hud" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-45 bg-slate-900/95 border-2 border-blue-500 rounded-2xl px-4 py-2.5 shadow-2xl max-w-md w-[92%] text-right">
+                    <div class="flex items-center justify-between text-xs text-blue-400 font-bold mb-0.5">
+                        <span id="cam-comment-author">💬 کامنت مخاطب روی آنتن:</span>
+                        <span class="text-[10px] bg-blue-500/20 px-2 py-0.5 rounded">ON AIR</span>
+                    </div>
+                    <div id="cam-comment-body" class="text-xs md:text-sm font-bold text-white leading-relaxed"></div>
+                </div>
+
+                <!-- Donation Alert HUD on Camera Phone -->
+                <div id="cam-donation-hud" class="hidden absolute top-12 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black rounded-2xl px-5 py-2.5 shadow-2xl border-2 border-white max-w-md w-[92%] text-center animate-bounce">
+                    <div class="text-xs font-black uppercase tracking-wider">💎 دونیت / حمایت مالی جدید!</div>
+                    <div id="cam-donation-title" class="text-base font-black mt-0.5"></div>
+                    <div id="cam-donation-msg" class="text-xs font-bold mt-1 bg-black/15 rounded-lg py-1 px-2"></div>
+                </div>
+
+                <!-- Hardware Status Badge -->
+                <div class="absolute top-2 left-2 z-30 bg-black/70 backdrop-blur px-2.5 py-1 rounded-lg border border-white/10 font-mono text-[10px] text-slate-300 space-y-0.5 pointer-events-none">
+                    <div id="cam-res-indicator">16:9 • 1920x1080</div>
+                    <div id="cam-rot-indicator" class="text-amber-400">HORIZON: AUTO 16:9</div>
+                    <div id="cam-zoom-indicator" class="text-emerald-400">ZOOM: 1.0x</div>
+                </div>
             </div>
         </div>
 
         <!-- Camera Bottom Pro Controls -->
-        <div class="relative z-40 bg-studio-900/95 border-t border-slate-800 p-3 flex flex-col gap-2.5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2">
+        <div class="relative z-40 bg-studio-900/95 border-t border-slate-800 p-2.5 flex flex-col gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
                     <span class="text-[11px] font-bold text-emerald-400 whitespace-nowrap">🔍 زوم لنز:</span>
                     <input id="cam-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="applyLocalCameraZoom(this.value)" class="flex-1 accent-emerald-500 cursor-pointer">
                     <span id="cam-zoom-val" class="font-mono text-xs text-white w-9 text-left">1.0x</span>
                 </div>
 
-                <div class="bg-slate-950/80 border border-purple-500/30 rounded-xl px-3 py-2 flex items-center gap-2">
+                <div class="bg-slate-950/80 border border-purple-500/30 rounded-xl px-3 py-1.5 flex items-center gap-2">
                     <span class="text-[11px] font-bold text-purple-400 whitespace-nowrap">✨ بوکه پرتره:</span>
                     <input id="cam-bokeh-slider" type="range" min="0" max="20" step="2" value="0" oninput="setCameraBokeh(this.value)" class="flex-1 accent-purple-500 cursor-pointer">
                     <span id="cam-bokeh-val" class="font-mono text-xs text-purple-300 w-10 text-left">خاموش</span>
@@ -340,16 +353,16 @@
 
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex flex-wrap items-center gap-1.5">
-                    <button onclick="rotateCameraFeedFromNode()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1">
-                        <span>📐 چرخش ۹۰° تصویر</span>
+                    <button onclick="toggleAutoGravityHorizon()" id="btn-auto-horizon" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
+                        🧭 تراز خودکار افقی ۱۶:۹: روشن
                     </button>
-                    <button onclick="flipLocalCamera()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
+                    <button onclick="rotateCameraFeedFromNode()" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold">
+                        📐 چرخش دستی ۹۰°
+                    </button>
+                    <button onclick="flipLocalCamera()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
                         🔄 عقب/سلفی
                     </button>
-                    <button onclick="triggerRefocus()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 text-xs font-bold">
-                        🎯 فوکوس
-                    </button>
-                    <button onclick="toggleTorch()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
+                    <button onclick="toggleTorch()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
                         🔦 فلاش
                     </button>
                 </div>
@@ -366,41 +379,60 @@
     <!-- ================= 3. DIRECTOR SWITCHER STUDIO VIEW (PHONE 2) ================= -->
     <section id="view-director" class="hidden flex-1 flex flex-col bg-studio-950 overflow-y-auto">
         
-        <!-- Top Connection, YouTube Live Countdown & Recording Toolbar -->
+        <!-- Top Connection, Quick Media Picker, YouTube Live Countdown & Recording Toolbar -->
         <div class="bg-studio-900 border-b border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <!-- Camera 1 PIN Input -->
                 <div class="flex items-center bg-slate-950 border border-slate-700 rounded-lg overflow-hidden focus-within:border-emerald-500">
                     <span class="px-2 text-xs text-slate-400">🔗 کد دوربین ۱:</span>
-                    <input id="dir-connect-input" type="text" maxlength="6" placeholder="مثلاً 4821" class="bg-transparent text-white font-mono font-bold text-sm w-20 px-1.5 py-1 outline-none text-center tracking-widest">
-                    <button onclick="connectToWirelessCamera()" id="btn-dir-connect" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 transition">
+                    <input id="dir-connect-input" type="text" maxlength="6" placeholder="مثلاً 4821" class="bg-transparent text-white font-mono font-bold text-sm w-16 px-1 py-1 outline-none text-center tracking-widest">
+                    <button onclick="connectToWirelessCamera()" id="btn-dir-connect" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1.5 transition">
                         اتصال
                     </button>
                 </div>
 
-                <button onclick="cycleCam1Rotation()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition">
-                    <span>📐 چرخش:</span>
-                    <span id="dir-rot-badge" class="font-mono">0°</span>
+                <!-- 16:9 Angle -->
+                <button onclick="cycleCam1Rotation()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 py-1.5 rounded-lg font-bold flex items-center gap-1 transition">
+                    <span>📐 زاویه:</span>
+                    <span id="dir-rot-badge" class="font-mono">AUTO</span>
                 </button>
 
+                <!-- Cover / Fit Toggle -->
                 <button onclick="toggleCam1FitMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition">
-                    <span id="dir-fit-badge">🖼️ قاب: Cover</span>
+                    <span id="dir-fit-badge">🖼️ قاب: 16:9 پر (Cover)</span>
                 </button>
 
-                <button onclick="toggleDirectorLocalCam()" id="btn-dir-localcam" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition">
+                <!-- Camera 2 Toggle -->
+                <button onclick="toggleDirectorLocalCam()" id="btn-dir-localcam" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1 font-bold transition">
                     <span>📱 دوربین ۲</span>
+                </button>
+
+                <!-- NEW: QUICK GALLERY VIDEO/IMAGE PICKER RIGHT IN THE TOP BAR -->
+                <label class="cursor-pointer text-xs bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/50 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition shadow-sm">
+                    <span>🎬 انتخاب فیلم/عکس</span>
+                    <span id="top-media-badge" class="hidden text-[10px] bg-purple-500 text-white px-1.5 rounded font-mono max-w-[90px] truncate">آماده</span>
+                    <input type="file" accept="video/*,image/*" class="hidden" onchange="handleMediaUpload(event)">
+                </label>
+
+                <!-- NEW: QUICK PLAY/PAUSE & ON-AIR MEDIA BUTTONS (APPEAR WHEN MEDIA IS SELECTED) -->
+                <button onclick="quickToggleMediaOnAir()" id="btn-top-media-air" class="hidden text-xs bg-purple-600 hover:bg-purple-500 text-white px-2.5 py-1.5 rounded-lg font-bold items-center gap-1 transition shadow-md">
+                    <span>⚡ پخش مدیا روی آنتن</span>
+                </button>
+                <button onclick="toggleMediaPlayback()" id="btn-top-media-play" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/40 px-2 py-1.5 rounded-lg font-bold transition" title="پخش / توقف ویدیوی گالری">
+                    ⏯
                 </button>
             </div>
 
             <!-- GO LIVE ON YOUTUBE (5s COUNTDOWN) + RECORD -->
             <div class="flex items-center gap-2">
-                <button onclick="triggerGoLiveWithCountdown()" id="btn-go-live" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs px-4 py-1.5 rounded-lg shadow-lg shadow-red-600/30 flex items-center gap-1.5 transition border border-red-400/40">
+                <button onclick="triggerGoLiveWithCountdown()" id="btn-go-live" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs px-3.5 py-1.5 rounded-lg shadow-lg shadow-red-600/30 flex items-center gap-1.5 transition border border-red-400/40">
                     <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
-                    <span id="btn-go-live-label">🔴 شروع لایو یوتیوب (شمارش معکوس ۵ ثانیه)</span>
+                    <span id="btn-go-live-label">🔴 شروع لایو یوتیوب (۵ ثانیه)</span>
                 </button>
 
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
                     <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                    <span id="btn-record-label">ضبط فایل</span>
+                    <span id="btn-record-label">ضبط 16:9</span>
                 </button>
 
                 <button onclick="takeProgramSnapshot()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-2.5 py-1.5 rounded-lg" title="ثبت عکس">
@@ -409,15 +441,15 @@
             </div>
         </div>
 
-        <!-- Dual Broadcast Monitors: PREVIEW (PVW) & PROGRAM (PGM) -->
+        <!-- Dual 16:9 Broadcast Monitors: PREVIEW (PVW) & PROGRAM (PGM) -->
         <div class="p-3 grid grid-cols-1 lg:grid-cols-2 gap-3 max-w-7xl mx-auto w-full">
             
-            <!-- PREVIEW MONITOR (GREEN) -->
+            <!-- PREVIEW MONITOR (GREEN - 16:9) -->
             <div class="bg-studio-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
                 <div class="bg-emerald-950/50 border-b border-emerald-500/30 px-3 py-1.5 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                        <span class="font-mono font-bold text-xs text-emerald-400 tracking-wider">PREVIEW (PVW) • پیش‌نمایش</span>
+                        <span class="font-mono font-bold text-xs text-emerald-400 tracking-wider">PREVIEW (16:9) • پیش‌نمایش</span>
                     </div>
                     <span id="pvw-source-label" class="font-mono text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">CAM 1</span>
                 </div>
@@ -426,12 +458,12 @@
                 </div>
             </div>
 
-            <!-- PROGRAM MONITOR (RED - ON AIR) -->
+            <!-- PROGRAM MONITOR (RED - ON AIR - 16:9) -->
             <div class="bg-studio-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
                 <div class="bg-red-950/50 border-b border-red-500/30 px-3 py-1.5 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-                        <span class="font-mono font-bold text-xs text-red-400 tracking-wider">PROGRAM (PGM) • خروجی روی آنتن</span>
+                        <span class="font-mono font-bold text-xs text-red-400 tracking-wider">PROGRAM (16:9) • خروجی روی آنتن</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-live-chip" class="hidden font-mono text-[10px] bg-red-600 text-white px-2 py-0.5 rounded font-black animate-pulse">● LIVE ON AIR</span>
@@ -453,7 +485,7 @@
                 <!-- Input Sources Matrix -->
                 <div class="space-y-2.5">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-bold text-slate-300">🎛️ میز سوییچر تصاویر و چیدمان (Scene Switcher)</h3>
+                        <h3 class="text-xs font-bold text-slate-300">🎛️ میز سوییچر تصاویر ۱۶:۹ (Scene Switcher)</h3>
                         <button onclick="clearActiveOverlays()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-amber-300 px-2.5 py-0.5 rounded border border-slate-700">
                             پاک کردن کامنت/دونیت از صفحه
                         </button>
@@ -532,7 +564,7 @@
                 <div class="grid grid-cols-5 bg-slate-950 border-b border-slate-800 text-[11px] font-bold">
                     <button onclick="switchDirectorTab('yt')" id="tab-btn-yt" class="py-2.5 text-red-400 border-b-2 border-red-500 bg-slate-900/60">🔴 لایو و کامنت</button>
                     <button onclick="switchDirectorTab('donate')" id="tab-btn-donate" class="py-2.5 text-amber-400 hover:text-white">💎 دونیت</button>
-                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-slate-400 hover:text-white">📡 لنز و چرخش</button>
+                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-slate-400 hover:text-white">📡 لنز و ۱۶:۹</button>
                     <button onclick="switchDirectorTab('media')" id="tab-btn-media" class="py-2.5 text-slate-400 hover:text-white">🎬 مدیا</button>
                     <button onclick="switchDirectorTab('gfx')" id="tab-btn-gfx" class="py-2.5 text-slate-400 hover:text-white">📝 زیرنویس/صدا</button>
                 </div>
@@ -615,19 +647,20 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: Remote Camera Lens, Orientation, Hardware Zoom & AI Bokeh -->
+                <!-- TAB 3: Remote Camera Lens, 16:9 Orientation, Hardware Zoom & AI Bokeh -->
                 <div id="tab-content-ptz" class="hidden p-3 space-y-2.5 flex-1 flex flex-col justify-between">
                     <div class="space-y-2.5">
                         <div class="bg-slate-950 p-2.5 rounded-lg border border-amber-500/40 space-y-1.5">
                             <div class="flex items-center justify-between text-xs">
-                                <span class="text-amber-300 font-bold">📐 تراز افقی/عمودی تصویر (Orientation Fix):</span>
+                                <span class="text-amber-300 font-bold">📐 قفل افقی ۱۶:۹ تصویر (Landscape Lock):</span>
                                 <button onclick="toggleCam1Mirror()" id="btn-cam1-mirror" class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">↔️ قرینه: خاموش</button>
                             </div>
-                            <div class="grid grid-cols-4 gap-1.5">
-                                <button onclick="setCam1Rotation(0)" id="rot-btn-0" class="py-1.5 rounded bg-amber-500 text-black font-mono font-bold text-xs">0° عادی</button>
-                                <button onclick="setCam1Rotation(90)" id="rot-btn-90" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs">90° راست</button>
-                                <button onclick="setCam1Rotation(180)" id="rot-btn-180" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs">180° وارونه</button>
-                                <button onclick="setCam1Rotation(270)" id="rot-btn-270" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs">270° چپ</button>
+                            <div class="grid grid-cols-5 gap-1">
+                                <button onclick="setCam1Rotation('auto')" id="rot-btn-auto" class="py-1.5 rounded bg-emerald-500 text-black font-mono font-bold text-[11px]">خودکار 16:9</button>
+                                <button onclick="setCam1Rotation(0)" id="rot-btn-0" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">0°</button>
+                                <button onclick="setCam1Rotation(90)" id="rot-btn-90" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">90°</button>
+                                <button onclick="setCam1Rotation(180)" id="rot-btn-180" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">180°</button>
+                                <button onclick="setCam1Rotation(270)" id="rot-btn-270" class="py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">270°</button>
                             </div>
                         </div>
 
@@ -639,11 +672,10 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">کیفیت تصویر ارسالی:</label>
-                                <select onchange="sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
-                                    <option value="1080" selected>1080p Full HD</option>
-                                    <option value="2160">4K Ultra HD</option>
-                                    <option value="720">720p HD</option>
+                                <label class="text-[10px] text-slate-400 block mb-1">حالت شبکه (محلی / بین‌شهری):</label>
+                                <select onchange="sendRemoteCommand({type:'setNetMode', mode: this.value})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-blue-300 font-bold outline-none">
+                                    <option value="wan" selected>🌍 اینترنت بین‌شهری (پایدار)</option>
+                                    <option value="lan">🏠 وای‌فای محلی (8 Mbps)</option>
                                 </select>
                             </div>
                         </div>
@@ -686,10 +718,10 @@
                         <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between">
                             <div class="truncate pr-1">
                                 <div id="media-filename" class="text-xs font-bold text-slate-200 truncate">دموی گرافیکی آماده پخش</div>
-                                <div id="media-status" class="text-[10px] text-slate-400">برای پخش ویدیوی شخصی، فایل را انتخاب کنید</div>
+                                <div id="media-status" class="text-[10px] text-slate-400">از دکمه بالای صفحه یا این بخش فایل را انتخاب کنید</div>
                             </div>
                             <div class="flex items-center gap-1">
-                                <button onclick="toggleMediaPlayback()" id="btn-media-play" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1.5 rounded font-bold">▶ پخش</button>
+                                <button onclick="toggleMediaPlayback()" id="btn-media-play" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1.5 rounded font-bold">▶ پخش/توقف</button>
                                 <button onclick="restartMedia()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2 py-1.5 rounded">⏮</button>
                             </div>
                         </div>
@@ -720,6 +752,10 @@
                                 <span class="text-slate-300">🎙️ صدای دوربین ۲:</span>
                                 <input type="range" min="0" max="150" value="100" oninput="setAudioGain('cam2', this.value)" class="w-40 accent-blue-500">
                             </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-purple-300">🎵 صدای ویدیوی گالری (MEDIA):</span>
+                                <input type="range" min="0" max="150" value="95" oninput="setAudioGain('media', this.value)" class="w-40 accent-purple-500">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -732,7 +768,7 @@
     <div id="qr-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-studio-900 border border-slate-700 rounded-2xl max-w-xs w-full p-5 text-center space-y-4 shadow-2xl">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-emerald-400">اتصال سریع دوربین</span>
+                <span class="text-xs font-bold text-emerald-400">اتصال سریع دوربین (محلی و اینترنتی)</span>
                 <button onclick="toggleQrModal(false)" class="text-slate-400 hover:text-white text-sm">✕</button>
             </div>
             <div id="qrcode-box" class="bg-white p-3 rounded-xl inline-block mx-auto"></div>
@@ -749,23 +785,25 @@
         <img id="hidden-media-img" alt="">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v5.2 Dual-Layer Screen Wake Lock) ================= -->
+    <!-- ================= APPLICATION LOGIC (v5.4 Quick Top Media + 16:9 WAN + WakeLock) ================= -->
     <script>
         const RTC_CONFIG = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:global.stun.twilio.com:3478' },
                 {
-                    urls: 'turn:openrelay.metered.ca:80',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443',
+                    urls: [
+                        'turn:openrelay.metered.ca:80',
+                        'turn:openrelay.metered.ca:443',
+                        'turn:openrelay.metered.ca:443?transport=tcp',
+                        'turns:openrelay.metered.ca:443?transport=tcp'
+                    ],
                     username: 'openrelayproject',
                     credential: 'openrelayproject'
                 }
-            ]
+            ],
+            iceCandidatePoolSize: 10
         };
 
         const state = {
@@ -775,12 +813,13 @@
             mqttConnected: false,
             rtcPeerConn: null,
             activeVideoSender: null,
+            networkMode: 'wan',
 
-            // Dual-Layer Screen Wake Lock State
+            // Dual-Layer Screen Wake Lock
             wakeLockSentinel: null,
             noSleepVideoActive: false,
 
-            // Camera Hardware
+            // Camera Hardware (Default 16:9 Landscape)
             localCamStream: null,
             rawVideoTrack: null,
             availableLenses: [],
@@ -790,8 +829,10 @@
             currentZoom: 1.0,
             torchOn: false,
 
-            // Orientation & Aspect Ratio
-            cam1Rotation: 0,
+            // 16:9 Default Landscape & Gravity Auto-Horizon
+            autoGravityHorizon: true,
+            detectedGravityRotation: 0,
+            cam1Rotation: 'auto',
             cam1Mirror: false,
             cam1FitMode: 'cover',
 
@@ -806,11 +847,12 @@
             directorCam2Stream: null,
             pvwSource: 'cam1',
             pgmSource: 'cam1',
+            lastNonMediaSource: 'cam1',
             transitionProgress: 0,
             isAutoTransitioning: false,
             ftbActive: false,
 
-            // YouTube Live & 5-Second Countdown State
+            // YouTube Live & 5-Second Countdown
             isLiveOnYouTube: false,
             countdownValue: 0,
             liveStartTime: 0,
@@ -818,10 +860,10 @@
             wsRelaySocket: null,
             wsMediaRecorder: null,
 
-            // Live Comments & Donations on PGM Canvas
+            // Live Comments & Donations
             commentsList: [
-                { id: 'c1', author: 'علی براوو', text: 'سلام! تصویر و صدا فوق‌العاده شفافه 🔥', time: 'الان' },
-                { id: 'c2', author: 'مرتضی', text: 'زاویه دوربین ۱ و بوکه بک‌گراند خیلی خوب شده', time: '۱ دقیقه پیش' },
+                { id: 'c1', author: 'علی براوو', text: 'سلام! کادر ۱۶:۹ و کیفیت تصویر عالیه 🔥', time: 'الان' },
+                { id: 'c2', author: 'مرتضی', text: 'ارتباط بین دو تا گوشی کاملاً روانه', time: '۱ دقیقه پیش' },
                 { id: 'c3', author: 'غزاله', text: 'میشه درباره موضوع امشب بیشتر توضیح بدید؟', time: '۲ دقیقه پیش' }
             ],
             pinnedComment: null,
@@ -835,14 +877,11 @@
             lowerThirdVisible: true,
             ltTitle: 'استودیو پخش زنده یوتیوب',
             ltSub: 'همراه با نمایش زنده کامنت‌ها و اعلان دونیت مخاطبان',
-            tickerVisible: false,
-            tickerText: '🔴 پخش زنده در جریان است...',
-            tickerOffset: 0,
 
             // Audio & Recording
             audioCtx: null,
             destNode: null,
-            gains: { cam1: 1.0, cam2: 1.0, media: 0.9 },
+            gains: { cam1: 1.0, cam2: 1.0, media: 0.95 },
             gainNodes: {},
             mediaRecorder: null,
             recordedChunks: [],
@@ -850,27 +889,60 @@
         };
 
         // ============================================================================
-        // DUAL-LAYER SCREEN WAKE LOCK ENGINE (PREVENTS BOTH PHONES FROM SLEEPING)
+        // GRAVITY / ACCELEROMETER AUTO-LANDSCAPE 16:9 SENSOR
+        // ============================================================================
+        window.addEventListener('devicemotion', (e) => {
+            if (state.role !== 'camera' || !state.autoGravityHorizon) return;
+            const acc = e.accelerationIncludingGravity;
+            if (!acc || acc.x === null || acc.y === null) return;
+
+            const screenAngle = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+            if (screenAngle === 0 && Math.abs(acc.x) > 6.0 && Math.abs(acc.y) < 4.5) {
+                const neededRot = acc.x > 0 ? 270 : 90;
+                if (state.detectedGravityRotation !== neededRot) {
+                    state.detectedGravityRotation = neededRot;
+                    publishMqttSignal('cam-gravity', { rotation: neededRot });
+                }
+            } else if (Math.abs(acc.y) > 6.5 && state.detectedGravityRotation !== 0) {
+                state.detectedGravityRotation = 0;
+                publishMqttSignal('cam-gravity', { rotation: 0 });
+            }
+        }, { passive: true });
+
+        function toggleAutoGravityHorizon() {
+            state.autoGravityHorizon = !state.autoGravityHorizon;
+            const btn = document.getElementById('btn-auto-horizon');
+            if (btn) {
+                btn.innerText = state.autoGravityHorizon
+                    ? '🧭 تراز خودکار افقی ۱۶:۹: روشن'
+                    : '🧭 تراز خودکار افقی ۱۶:۹: خاموش';
+            }
+        }
+
+        async function lockScreenLandscape() {
+            try {
+                if (document.documentElement.requestFullscreen) {
+                    await document.documentElement.requestFullscreen();
+                }
+                if (screen.orientation && screen.orientation.lock) {
+                    await screen.orientation.lock('landscape');
+                }
+            } catch (e) {}
+        }
+
+        // ============================================================================
+        // DUAL-LAYER SCREEN WAKE LOCK ENGINE
         // ============================================================================
         async function requestNativeWakeLock() {
             if ('wakeLock' in navigator) {
                 try {
-                    if (state.wakeLockSentinel && !state.wakeLockSentinel.released) {
-                        updateWakeLockUI(true);
-                        return true;
-                    }
+                    if (state.wakeLockSentinel && !state.wakeLockSentinel.released) return true;
                     state.wakeLockSentinel = await navigator.wakeLock.request('screen');
                     state.wakeLockSentinel.addEventListener('release', () => {
-                        // Automatically re-request if still visible
-                        if (document.visibilityState === 'visible') {
-                            setTimeout(requestNativeWakeLock, 500);
-                        }
+                        if (document.visibilityState === 'visible') setTimeout(requestNativeWakeLock, 500);
                     });
-                    updateWakeLockUI(true);
                     return true;
-                } catch (e) {
-                    console.warn('Native WakeLock fallback active:', e);
-                }
+                } catch (e) {}
             }
             return false;
         }
@@ -883,19 +955,12 @@
                 tinyCanvas.width = 16;
                 tinyCanvas.height = 16;
                 const ctx = tinyCanvas.getContext('2d');
-
-                // Continuously update 1 pixel every second so Android sees active video decoding
                 setInterval(() => {
                     ctx.fillStyle = (Date.now() % 2000 < 1000) ? '#05070b' : '#060911';
                     ctx.fillRect(0, 0, 16, 16);
                 }, 1000);
-
-                const stream = tinyCanvas.captureStream(2);
-                nsVideo.srcObject = stream;
-                nsVideo.play().then(() => {
-                    state.noSleepVideoActive = true;
-                    updateWakeLockUI(true);
-                }).catch(() => {});
+                nsVideo.srcObject = tinyCanvas.captureStream(2);
+                nsVideo.play().then(() => { state.noSleepVideoActive = true; }).catch(() => {});
             } catch (e) {}
         }
 
@@ -904,53 +969,27 @@
             startNoSleepCanvasVideoFallback();
         }
 
-        function updateWakeLockUI(locked) {
-            const dot = document.getElementById('wakelock-dot');
-            const txt = document.getElementById('wakelock-text');
-            if (!dot || !txt) return;
-            if (locked) {
-                dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-                txt.innerText = '☀️ صفحه روشن: قفل فعال';
-            } else {
-                dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-                txt.innerText = '☀️ کلیک برای قفل صفحه';
-            }
-        }
-
-        // Auto-activate Wake Lock on ANY user touch/click & re-acquire on visibility change
         ['pointerdown', 'touchstart', 'click'].forEach(evt => {
-            window.addEventListener(evt, () => {
-                forceActivateWakeLock();
-            }, { passive: true });
+            window.addEventListener(evt, () => forceActivateWakeLock(), { passive: true });
         });
 
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                forceActivateWakeLock();
-            }
+            if (document.visibilityState === 'visible') forceActivateWakeLock();
         });
 
-        // Watchdog every 5 seconds to guarantee neither phone ever sleeps
         setInterval(() => {
             if (document.visibilityState === 'visible') {
-                if (!state.wakeLockSentinel || state.wakeLockSentinel.released) {
-                    requestNativeWakeLock();
-                }
-                const nsVideo = document.getElementById('nosleep-fallback-video');
-                if (nsVideo && nsVideo.paused && state.noSleepVideoActive) {
-                    nsVideo.play().catch(() => {});
-                }
+                if (!state.wakeLockSentinel || state.wakeLockSentinel.released) requestNativeWakeLock();
             }
         }, 5000);
 
         // ============================================================================
-        // SYNTHESIZED BROADCAST SOUND EFFECTS (Countdown Beeps & Donation Fanfare)
+        // SYNTHESIZED BROADCAST SOUND EFFECTS
         // ============================================================================
         function playStudioSound(type) {
             initWebAudioMixer();
             if (!state.audioCtx) return;
             if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
-
             const now = state.audioCtx.currentTime;
 
             if (type === 'beep') {
@@ -978,8 +1017,7 @@
                 osc.start(now);
                 osc.stop(now + 0.66);
             } else if (type === 'donation') {
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, idx) => {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
                     const osc = state.audioCtx.createOscillator();
                     const gain = state.audioCtx.createGain();
                     osc.type = 'triangle';
@@ -1039,8 +1077,8 @@
             document.getElementById('pgm-live-chip').classList.remove('hidden');
 
             const btn = document.getElementById('btn-go-live');
-            btn.className = 'bg-slate-900 hover:bg-red-950 text-red-400 border-2 border-red-500 font-black text-xs px-4 py-1.5 rounded-lg flex items-center gap-1.5 transition';
-            document.getElementById('btn-go-live-label').innerText = '⏹ پایان لایو یوتیوب (END STREAM)';
+            btn.className = 'bg-slate-900 hover:bg-red-950 text-red-400 border-2 border-red-500 font-black text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition';
+            document.getElementById('btn-go-live-label').innerText = '⏹ پایان لایو یوتیوب';
 
             state.liveTimerInterval = setInterval(() => {
                 const diff = Math.floor((Date.now() - state.liveStartTime) / 1000);
@@ -1061,11 +1099,10 @@
             document.getElementById('pgm-live-chip').classList.add('hidden');
 
             const btn = document.getElementById('btn-go-live');
-            btn.className = 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs px-4 py-1.5 rounded-lg shadow-lg shadow-red-600/30 flex items-center gap-1.5 transition border border-red-400/40';
-            document.getElementById('btn-go-live-label').innerText = '🔴 شروع لایو یوتیوب (شمارش معکوس ۵ ثانیه)';
+            btn.className = 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs px-3.5 py-1.5 rounded-lg shadow-lg shadow-red-600/30 flex items-center gap-1.5 transition border border-red-400/40';
+            document.getElementById('btn-go-live-label').innerText = '🔴 شروع لایو یوتیوب (۵ ثانیه)';
 
             publishMqttSignal('cmd', { type: 'live-ended' });
-
             if (state.wsMediaRecorder) { try { state.wsMediaRecorder.stop(); } catch(e){} state.wsMediaRecorder = null; }
             if (state.wsRelaySocket) { try { state.wsRelaySocket.close(); } catch(e){} state.wsRelaySocket = null; }
         }
@@ -1087,9 +1124,7 @@
                     const rec = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 4500000 });
                     state.wsMediaRecorder = rec;
                     rec.ondataavailable = (e) => {
-                        if (e.data && e.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-                            ws.send(e.data);
-                        }
+                        if (e.data && e.data.size > 0 && ws.readyState === WebSocket.OPEN) ws.send(e.data);
                     };
                     rec.start(500);
                 };
@@ -1097,7 +1132,7 @@
         }
 
         // ============================================================================
-        // YOUTUBE LIVE COMMENTS & DONATION ALERTS ENGINE
+        // COMMENTS & DONATIONS ENGINE
         // ============================================================================
         function renderCommentsList() {
             const container = document.getElementById('yt-comments-list');
@@ -1130,11 +1165,7 @@
                 return;
             }
             const found = state.commentsList.find(c => c.id === commentId);
-            if (state.pinnedComment && state.pinnedComment.id === commentId) {
-                state.pinnedComment = null;
-            } else {
-                state.pinnedComment = found || null;
-            }
+            state.pinnedComment = (state.pinnedComment && state.pinnedComment.id === commentId) ? null : (found || null);
             publishMqttSignal('cmd', { type: 'pin-comment', comment: state.pinnedComment });
             renderCommentsList();
         }
@@ -1143,7 +1174,6 @@
             const author = document.getElementById('manual-comment-author').value.trim() || 'مخاطب لایو';
             const text = document.getElementById('manual-comment-text').value.trim();
             if (!text) return;
-
             const newComment = { id: 'c_' + Date.now(), author, text, time: 'الان' };
             state.commentsList.unshift(newComment);
             document.getElementById('manual-comment-text').value = '';
@@ -1152,14 +1182,12 @@
 
         function addSimulatedViewerComment() {
             const samples = [
-                { author: 'رضا کاظمی', text: 'کیفیت تصویر توی این لایو عالیه، خسته نباشید! 👏' },
-                { author: 'یاسر', text: 'لطفاً لینک این ابزار رو هم توی توضیحات ویدیو بذارید.' },
-                { author: 'سارا احمدی', text: 'چطوری دو تا گوشی رو بدون تاخیر به هم وصل کردید؟' },
-                { author: 'محمدامین', text: 'صدای میکروفون خیلی شفاف و بدون نویزه 🎙️🔥' }
+                { author: 'رضا کاظمی', text: 'کیفیت تصویر ۱۶:۹ توی این لایو عالیه! 👏' },
+                { author: 'یاسر', text: 'ارتباط بین‌شهری بدون تاخیر داره کار می‌کنه.' },
+                { author: 'سارا احمدی', text: 'چطوری دو تا گوشی رو از دو شهر مختلف وصل کردید؟' }
             ];
             const pick = samples[Math.floor(Math.random() * samples.length)];
-            const newC = { id: 'c_' + Date.now(), author: pick.author, text: pick.text, time: 'الان' };
-            state.commentsList.unshift(newC);
+            state.commentsList.unshift({ id: 'c_' + Date.now(), author: pick.author, text: pick.text, time: 'الان' });
             renderCommentsList();
         }
 
@@ -1167,27 +1195,20 @@
             const videoId = document.getElementById('yt-video-id').value.trim();
             const apiKey = document.getElementById('yt-api-key').value.trim();
             if (!videoId || !apiKey) {
-                alert('برای دریافت خودکار کامنت‌های یوتیوب، Video ID و API Key را وارد کنید؛ یا از دکمه "+ تست کامنت نمونه" و کادر پایین برای نمایش کامنت‌ها استفاده کنید.');
+                alert('لطفاً Video ID و API Key را وارد کنید یا از دکمه "+ تست کامنت نمونه" استفاده نمایید.');
                 return;
             }
-
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${encodeURIComponent(videoId)}&key=${encodeURIComponent(apiKey)}`);
                 const data = await res.json();
                 const chatId = data.items?.[0]?.liveStreamingDetails?.activeLiveChatId;
-                if (!chatId) {
-                    alert('چت فعالی برای این Video ID یافت نشد. مطمئن شوید ویدیو در حالت Live است.');
-                    return;
-                }
+                if (!chatId) return alert('چت فعالی برای این ویدیو یافت نشد.');
                 state.ytLiveChatId = chatId;
-                document.getElementById('btn-yt-chat-conn').innerText = '✅ متصل به چت یوتیوب';
-
+                document.getElementById('btn-yt-chat-conn').innerText = '✅ متصل به چت';
                 if (state.ytPollInterval) clearInterval(state.ytPollInterval);
                 state.ytPollInterval = setInterval(() => pollYouTubeMessages(apiKey), 4000);
                 pollYouTubeMessages(apiKey);
-            } catch (e) {
-                alert('خطا در ارتباط با API یوتیوب.');
-            }
+            } catch (e) {}
         }
 
         async function pollYouTubeMessages(apiKey) {
@@ -1197,15 +1218,11 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 if (!data.items) return;
-
                 data.items.slice(-8).forEach(item => {
-                    const id = item.id;
-                    if (state.commentsList.some(c => c.id === id)) return;
-
+                    if (state.commentsList.some(c => c.id === item.id)) return;
                     const author = item.authorDetails.displayName;
                     const text = item.snippet.displayMessage;
-                    state.commentsList.unshift({ id, author, text, time: 'زنده' });
-
+                    state.commentsList.unshift({ id: item.id, author, text, time: 'زنده' });
                     if (item.snippet.type === 'superChatEvent' && item.snippet.superChatDetails) {
                         const sc = item.snippet.superChatDetails;
                         triggerDonationAlert(author, sc.amountDisplayString, sc.userComment || 'Super Chat!');
@@ -1216,7 +1233,7 @@
         }
 
         function triggerDonationAlertFromForm() {
-            const name = document.getElementById('donate-name-input').value.trim() || 'حامی ناشناس';
+            const name = document.getElementById('donate-name-input').value.trim() || 'حامی';
             const amount = document.getElementById('donate-amount-input').value.trim() || '۱۰۰,۰۰۰ تومان';
             const msg = document.getElementById('donate-msg-input').value.trim() || 'حمایت از پخش زنده ❤️';
             triggerDonationAlert(name, amount, msg);
@@ -1232,12 +1249,10 @@
                 expiresAt: performance.now() + 9000
             };
             state.activeDonation = alertObj;
-
             if (!state.donationsHistory.some(d => d.name === name && d.amount === amount && d.msg === msg)) {
                 state.donationsHistory.unshift(alertObj);
                 renderDonationsHistory();
             }
-
             playStudioSound('donation');
             publishMqttSignal('cmd', { type: 'donation', donation: alertObj });
         }
@@ -1271,33 +1286,32 @@
         }
 
         // ============================================================================
-        // ORIENTATION & ROTATION MATRIX CONTROLS
+        // 16:9 ORIENTATION & ROTATION MATRIX CONTROLS
         // ============================================================================
-        function setCam1Rotation(deg) {
-            state.cam1Rotation = ((deg % 360) + 360) % 360;
+        function setCam1Rotation(modeOrDeg) {
+            state.cam1Rotation = modeOrDeg;
             const badge = document.getElementById('dir-rot-badge');
-            if (badge) badge.innerText = `${state.cam1Rotation}°`;
+            if (badge) badge.innerText = modeOrDeg === 'auto' ? 'AUTO' : `${modeOrDeg}°`;
 
-            const camInd = document.getElementById('cam-rot-indicator');
-            if (camInd) camInd.innerText = `ROTATION: ${state.cam1Rotation}°`;
-
-            [0, 90, 180, 270].forEach(d => {
+            ['auto', 0, 90, 180, 270].forEach(d => {
                 const btn = document.getElementById(`rot-btn-${d}`);
                 if (btn) {
-                    btn.className = (d === state.cam1Rotation)
-                        ? 'py-1.5 rounded bg-amber-500 text-black font-mono font-bold text-xs'
-                        : 'py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-xs';
+                    btn.className = (d === modeOrDeg)
+                        ? 'py-1.5 rounded bg-emerald-500 text-black font-mono font-bold text-[11px]'
+                        : 'py-1.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]';
                 }
             });
         }
 
         function cycleCam1Rotation() {
-            setCam1Rotation((state.cam1Rotation + 90) % 360);
+            const order = ['auto', 0, 90, 180, 270];
+            const idx = order.indexOf(state.cam1Rotation);
+            setCam1Rotation(order[(idx + 1) % order.length]);
         }
 
         function rotateCameraFeedFromNode() {
-            const next = (state.cam1Rotation + 90) % 360;
-            setCam1Rotation(next);
+            const next = (typeof state.cam1Rotation === 'number' ? (state.cam1Rotation + 90) % 360 : 90);
+            state.cam1Rotation = next;
             publishMqttSignal('cam-rotate', { rotation: next });
         }
 
@@ -1305,7 +1319,7 @@
             state.cam1FitMode = state.cam1FitMode === 'cover' ? 'contain' : 'cover';
             const badge = document.getElementById('dir-fit-badge');
             if (badge) {
-                badge.innerText = state.cam1FitMode === 'cover' ? '🖼️ قاب: Cover' : '🖼️ قاب: Fit';
+                badge.innerText = state.cam1FitMode === 'cover' ? '🖼️ قاب: 16:9 پر (Cover)' : '🖼️ قاب: کامل (Fit)';
             }
         }
 
@@ -1316,18 +1330,26 @@
         }
 
         // ============================================================================
-        // HARDWARE CAMERA, LENS SWITCHER & AI BOKEH
+        // NETWORK BITRATE OPTIMIZER
         // ============================================================================
+        async function changeNetworkBitrateMode(mode) {
+            state.networkMode = mode;
+            if (state.rtcPeerConn) {
+                await enforceHighBitrateWebRTC(state.rtcPeerConn);
+            }
+        }
+
         async function enforceHighBitrateWebRTC(pc) {
             if (!pc) return;
             try {
+                const maxBps = state.networkMode === 'lan' ? 8000000 : 2500000;
                 const senders = pc.getSenders();
                 for (const sender of senders) {
                     if (sender.track && sender.track.kind === 'video') {
                         state.activeVideoSender = sender;
                         const params = sender.getParameters();
                         if (!params.encodings || params.encodings.length === 0) params.encodings = [{}];
-                        params.encodings[0].maxBitrate = 8000000;
+                        params.encodings[0].maxBitrate = maxBps;
                         params.encodings[0].maxFramerate = 30;
                         params.degradationPreference = 'maintain-resolution';
                         await sender.setParameters(params);
@@ -1336,6 +1358,9 @@
             } catch (e) {}
         }
 
+        // ============================================================================
+        // HARDWARE CAMERA (STRICT 16:9 REQUEST)
+        // ============================================================================
         async function enumeratePhysicalLenses() {
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
@@ -1364,6 +1389,7 @@
             }
 
             const videoConstraints = {
+                aspectRatio: { ideal: 1.7777777778 },
                 width: { ideal: widthIdeal },
                 height: { ideal: heightIdeal },
                 frameRate: { ideal: 30 }
@@ -1399,7 +1425,7 @@
                 await vid.play().catch(() => {});
 
                 document.getElementById('cam-permission-overlay').classList.add('hidden');
-                document.getElementById('cam-res-indicator').innerText = `RES: ${vid.videoWidth || widthIdeal}x${vid.videoHeight || heightIdeal}`;
+                document.getElementById('cam-res-indicator').innerText = `16:9 • ${vid.videoWidth || widthIdeal}x${vid.videoHeight || heightIdeal}`;
 
                 await enumeratePhysicalLenses();
                 await syncActiveStreamTrackToWebRTC();
@@ -1416,21 +1442,6 @@
             state.currentDeviceId = deviceId;
             await startHardwareCamera({ deviceId, height: state.currentResHeight });
             applyLocalCameraZoom(state.currentZoom);
-        }
-
-        async function changeCameraResolution(heightVal) {
-            state.currentResHeight = Number(heightVal);
-            await startHardwareCamera({ deviceId: state.currentDeviceId || undefined, height: state.currentResHeight });
-        }
-
-        async function triggerRefocus() {
-            if (!state.rawVideoTrack || !state.rawVideoTrack.getCapabilities) return;
-            try {
-                const caps = state.rawVideoTrack.getCapabilities();
-                if (caps.focusMode && caps.focusMode.includes('continuous')) {
-                    await state.rawVideoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
-                }
-            } catch (e) {}
         }
 
         async function applyLocalCameraZoom(val) {
@@ -1454,10 +1465,10 @@
             const vid = document.getElementById('cam-local-video');
             if (usedHardwareZoom) {
                 vid.style.transform = 'scale(1)';
-                document.getElementById('cam-zoom-indicator').innerText = `ZOOM: ${z.toFixed(1)}x (OPTICAL/HW)`;
+                document.getElementById('cam-zoom-indicator').innerText = `ZOOM: ${z.toFixed(1)}x (OPTICAL)`;
             } else {
                 vid.style.transform = `scale(${z})`;
-                document.getElementById('cam-zoom-indicator').innerText = `ZOOM: ${z.toFixed(1)}x (DIGITAL HQ)`;
+                document.getElementById('cam-zoom-indicator').innerText = `ZOOM: ${z.toFixed(1)}x (DIGITAL)`;
             }
         }
 
@@ -1496,7 +1507,6 @@
             state.bokehBlurPx = blurPx;
             document.getElementById('cam-bokeh-slider').value = blurPx;
             document.getElementById('cam-bokeh-val').innerText = blurPx === 0 ? 'خاموش' : `${blurPx}px`;
-            document.getElementById('cam-bokeh-indicator').innerText = blurPx === 0 ? 'BOKEH: OFF' : `BOKEH: AI ${blurPx}px`;
 
             const vidEl = document.getElementById('cam-local-video');
             const bokehCanvas = document.getElementById('cam-bokeh-canvas');
@@ -1556,14 +1566,14 @@
         }
 
         // ============================================================================
-        // MQTT & WEBRTC SIGNALING
+        // GLOBAL MQTT SIGNALING
         // ============================================================================
         function connectMqttSignaling(pin, onMessageCallback) {
             if (state.mqttClient) { try { state.mqttClient.end(true); } catch(e) {} }
 
             const dot = document.getElementById('mqtt-dot');
             const label = document.getElementById('mqtt-label');
-            const clientId = 'prism_v52_' + Math.random().toString(16).substring(2, 10);
+            const clientId = 'prism_v54_' + Math.random().toString(16).substring(2, 10);
             const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
                 clientId,
                 keepalive: 30,
@@ -1571,12 +1581,12 @@
             });
 
             state.mqttClient = client;
-            const baseTopic = `prismdeck_v52_ir/${pin}`;
+            const baseTopic = `prismdeck_v54_ir/${pin}`;
 
             client.on('connect', () => {
                 state.mqttConnected = true;
                 if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                if (label) label.innerText = 'MQTT: ONLINE ✅';
+                if (label) label.innerText = 'CLOUD: ONLINE ✅';
                 client.subscribe(`${baseTopic}/#`, () => {
                     if (state.role === 'camera') {
                         updateConnectionBadge('ready', `آماده اتصال (${pin})`);
@@ -1596,7 +1606,7 @@
 
         function publishMqttSignal(subTopic, payloadObj) {
             if (!state.mqttClient || !state.mqttConnected || !state.pinCode) return;
-            const topic = `prismdeck_v52_ir/${state.pinCode}/${subTopic}`;
+            const topic = `prismdeck_v54_ir/${state.pinCode}/${subTopic}`;
             const msg = JSON.stringify({
                 ...payloadObj,
                 senderId: state.mqttClient.options.clientId,
@@ -1753,13 +1763,11 @@
                 setCameraBokeh(data.value);
             } else if (data.type === 'setLens') {
                 changePhysicalLens(data.deviceId);
-            } else if (data.type === 'setRes') {
-                document.getElementById('cam-res-select').value = data.height;
-                changeCameraResolution(data.height);
+            } else if (data.type === 'setNetMode') {
+                document.getElementById('cam-netmode-select').value = data.mode;
+                changeNetworkBitrateMode(data.mode);
             } else if (data.type === 'flip') {
                 flipLocalCamera();
-            } else if (data.type === 'refocus') {
-                triggerRefocus();
             } else if (data.type === 'torch') {
                 toggleTorch();
             } else if (data.type === 'intercom') {
@@ -1768,19 +1776,19 @@
         }
 
         function updateCameraTallyUI(tallyState) {
-            const border = document.getElementById('cam-tally-border');
+            const frame = document.getElementById('cam-16x9-frame');
             const pill = document.getElementById('cam-tally-pill');
             const dot = document.getElementById('cam-tally-dot');
             const label = document.getElementById('cam-tally-label');
 
-            border.className = 'absolute inset-0 pointer-events-none z-30 transition-all duration-200';
+            frame.className = 'relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden border-2 border-slate-700 shadow-2xl flex items-center justify-center transition-all duration-200';
             if (tallyState === 'pgm') {
-                border.classList.add('tally-screen-pgm');
+                frame.classList.add('tally-screen-pgm');
                 pill.className = 'px-3 py-1 rounded-full bg-red-600 text-white font-black text-xs flex items-center gap-1.5 shadow-lg shadow-red-600/50';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-white animate-ping';
                 label.innerText = 'ON AIR • روی آنتن زنده';
             } else if (tallyState === 'pvw') {
-                border.classList.add('tally-screen-pvw');
+                frame.classList.add('tally-screen-pvw');
                 pill.className = 'px-3 py-1 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-white';
                 label.innerText = 'PREVIEW • در پیش‌نمایش';
@@ -1835,7 +1843,7 @@
             if (!pin) return;
             state.pinCode = pin;
             document.getElementById('header-room-id').innerText = pin;
-            updateConnectionBadge('ready', `جستجوی دوربین ${pin}...`);
+            updateConnectionBadge('ready', `جستجوی اینترنتی کد ${pin}...`);
 
             connectMqttSignaling(pin, handleDirectorMqttMessage);
             setTimeout(() => publishMqttSignal('dir-join', { role: 'director' }), 600);
@@ -1849,6 +1857,8 @@
                 populateRemoteLensesDropdown(data.lenses, data.current);
             } else if (topic.endsWith('/cam-rotate')) {
                 setCam1Rotation(data.rotation || 0);
+            } else if (topic.endsWith('/cam-gravity')) {
+                state.detectedGravityRotation = data.rotation || 0;
             } else if (topic.endsWith('/webrtc-offer')) {
                 await handleIncomingCameraOffer(data.sdp);
             } else if (topic.endsWith('/ice-cam')) {
@@ -1893,7 +1903,7 @@
             v1.play().catch(() => {});
 
             connectStreamToAudioMixer('cam1', stream);
-            updateConnectionBadge('connected', 'دوربین ۱ متصل شد');
+            updateConnectionBadge('connected', 'دوربین ۱ متصل شد (16:9)');
             syncRemoteTallyState();
         }
 
@@ -1907,7 +1917,7 @@
             }
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: 'user' },
+                    video: { aspectRatio: { ideal: 1.7777777778 }, width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: 'user' },
                     audio: true
                 });
                 state.directorCam2Stream = stream;
@@ -1935,6 +1945,7 @@
         }
 
         function directCutToProgram(src) {
+            if (src !== 'media') state.lastNonMediaSource = src;
             state.pgmSource = src;
             state.transitionProgress = 0;
             document.getElementById('tbar-slider').value = 0;
@@ -1945,7 +1956,30 @@
                     ? 'pgm-btn py-2 px-2 rounded-lg font-bold text-xs border-2 border-red-500 bg-red-500/20 text-white transition'
                     : 'pgm-btn py-2 px-2 rounded-lg font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition';
             });
+
+            // Update top bar quick media button appearance
+            const topAirBtn = document.getElementById('btn-top-media-air');
+            if (topAirBtn) {
+                if (src === 'media') {
+                    topAirBtn.className = 'flex text-xs bg-red-600 hover:bg-red-500 text-white px-2.5 py-1.5 rounded-lg font-black items-center gap-1 transition shadow-md animate-pulse';
+                    topAirBtn.innerHTML = '<span>🔙 بازگشت به دوربین</span>';
+                } else if (state.mediaType !== 'demo') {
+                    topAirBtn.className = 'flex text-xs bg-purple-600 hover:bg-purple-500 text-white px-2.5 py-1.5 rounded-lg font-bold items-center gap-1 transition shadow-md';
+                    topAirBtn.innerHTML = '<span>⚡ پخش مدیا روی آنتن</span>';
+                }
+            }
+
             syncRemoteTallyState();
+        }
+
+        function quickToggleMediaOnAir() {
+            if (state.pgmSource === 'media') {
+                directCutToProgram(state.lastNonMediaSource || 'cam1');
+            } else {
+                const v = document.getElementById('hidden-media-video');
+                if (state.mediaType === 'video' && v.paused) v.play().catch(() => {});
+                directCutToProgram('media');
+            }
         }
 
         function performCut() {
@@ -2016,7 +2050,7 @@
         }
 
         // ============================================================================
-        // 60FPS CANVAS COMPOSITOR
+        // 60FPS 16:9 LANDSCAPE COMPOSITOR
         // ============================================================================
         let compositorRunning = false;
         function startCanvasCompositorLoop() {
@@ -2062,18 +2096,27 @@
             requestAnimationFrame(renderLoop);
         }
 
+        function resolveEffectiveCam1Rotation(videoEl) {
+            if (typeof state.cam1Rotation === 'number') return state.cam1Rotation;
+            if (state.detectedGravityRotation !== 0) return state.detectedGravityRotation;
+            return 0;
+        }
+
         function drawSourceScene(ctx, sourceType, w, h, ts) {
             ctx.fillStyle = '#070b14';
             ctx.fillRect(0, 0, w, h);
 
+            const v1 = document.getElementById('hidden-cam1-video');
+            const rot1 = resolveEffectiveCam1Rotation(v1);
+
             if (sourceType === 'cam1') {
-                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1 (دوربین ۱ بی‌سیم)', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
+                drawVideoSmart(ctx, v1, 0, 0, w, h, 'CAM 1 (قاب افقی 16:9)', rot1, state.cam1FitMode, state.cam1Mirror);
             } else if (sourceType === 'cam2') {
-                drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), 0, 0, w, h, 'CAM 2 (دوربین کارگردان)', 0, 'cover', false);
+                drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), 0, 0, w, h, 'CAM 2 (دوربین کارگردان 16:9)', 0, 'cover', false);
             } else if (sourceType === 'media') {
                 drawMediaLayer(ctx, 0, 0, w, h, ts);
             } else if (sourceType === 'pip') {
-                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
+                drawVideoSmart(ctx, v1, 0, 0, w, h, 'CAM 1', rot1, state.cam1FitMode, state.cam1Mirror);
                 const pw = w * 0.32, ph = h * 0.32, px = w - pw - (w*0.025), py = h * 0.04;
                 ctx.save();
                 ctx.strokeStyle = '#3b82f6';
@@ -2083,7 +2126,7 @@
                 ctx.restore();
             } else if (sourceType === 'split') {
                 const halfW = w / 2 - 4;
-                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror);
+                drawVideoSmart(ctx, v1, 0, 0, halfW, h, 'CAM 1', rot1, 'cover', state.cam1Mirror);
                 if (state.directorCam2Stream) {
                     drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), halfW + 8, 0, halfW, h, 'CAM 2', 0, 'cover', false);
                 } else {
@@ -2137,7 +2180,14 @@
                 drawVideoSmart(ctx, document.getElementById('hidden-media-video'), x, y, w, h, 'MEDIA', 0, 'contain', false);
             } else if (state.mediaType === 'image') {
                 const img = document.getElementById('hidden-media-img');
-                if (img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, x, y, w, h);
+                if (img && img.complete && img.naturalWidth > 0) {
+                    const iw = img.naturalWidth, ih = img.naturalHeight;
+                    const scale = Math.min(w / iw, h / ih);
+                    const dw = iw * scale, dh = ih * scale;
+                    ctx.fillStyle = '#05070b';
+                    ctx.fillRect(x, y, w, h);
+                    ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+                }
             } else {
                 const grad = ctx.createLinearGradient(x, y, x + w, y + h);
                 grad.addColorStop(0, '#1e1b4b');
@@ -2147,7 +2197,7 @@
                 ctx.fillStyle = '#e2e8f0';
                 ctx.font = `bold ${Math.round(w*0.02)}px Vazirmatn, sans-serif`;
                 ctx.textAlign = 'center';
-                ctx.fillText('پخش زنده مدیا (B-ROLL)', x + w / 2, y + h / 2);
+                ctx.fillText('پخش زنده مدیا (16:9 B-ROLL)', x + w / 2, y + h / 2);
             }
         }
 
@@ -2265,34 +2315,53 @@
         // MEDIA, GRAPHICS, AUDIO & RECORDING
         // ============================================================================
         function handleMediaUpload(e) {
+            forceActivateWakeLock();
             const file = e.target.files[0];
             if (!file) return;
             const url = URL.createObjectURL(file);
             document.getElementById('media-filename').innerText = file.name;
+
+            // Update Top Toolbar Quick Media Badges & Buttons
+            const topBadge = document.getElementById('top-media-badge');
+            const topAirBtn = document.getElementById('btn-top-media-air');
+            const topPlayBtn = document.getElementById('btn-top-media-play');
+            if (topBadge) {
+                topBadge.innerText = file.name;
+                topBadge.classList.remove('hidden');
+            }
+            if (topAirBtn) {
+                topAirBtn.classList.remove('hidden');
+                topAirBtn.classList.add('flex');
+            }
 
             if (file.type.startsWith('video/')) {
                 state.mediaType = 'video';
                 const v = document.getElementById('hidden-media-video');
                 v.src = url;
                 v.loop = true;
-                v.play();
+                v.play().catch(() => {});
                 connectMediaElementToAudioMixer(v);
+                if (topPlayBtn) topPlayBtn.classList.remove('hidden');
             } else if (file.type.startsWith('image/')) {
                 state.mediaType = 'image';
                 document.getElementById('hidden-media-img').src = url;
+                if (topPlayBtn) topPlayBtn.classList.add('hidden');
             }
+
+            // Immediately put selected media into Preview (PVW) so Director sees it right away
             selectPreviewSource('media');
         }
 
         function toggleMediaPlayback() {
             const v = document.getElementById('hidden-media-video');
-            if (v.paused) v.play(); else v.pause();
+            if (v.paused) v.play().catch(() => {});
+            else v.pause();
         }
 
         function restartMedia() {
             const v = document.getElementById('hidden-media-video');
             v.currentTime = 0;
-            v.play();
+            v.play().catch(() => {});
         }
 
         function updateGraphicsText() {
@@ -2309,11 +2378,9 @@
             ['yt', 'donate', 'ptz', 'media', 'gfx'].forEach(t => {
                 document.getElementById(`tab-content-${t}`).classList.toggle('hidden', t !== tab);
                 const btn = document.getElementById(`tab-btn-${t}`);
-                if (t === tab) {
-                    btn.className = 'py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60';
-                } else {
-                    btn.className = 'py-2.5 text-slate-400 hover:text-white';
-                }
+                btn.className = t === tab
+                    ? 'py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60'
+                    : 'py-2.5 text-slate-400 hover:text-white';
             });
         }
 
@@ -2386,7 +2453,7 @@
         function stopProgramRecording() {
             if (state.mediaRecorder && state.isRecording) state.mediaRecorder.stop();
             state.isRecording = false;
-            document.getElementById('btn-record-label').innerText = 'ضبط فایل';
+            document.getElementById('btn-record-label').innerText = 'ضبط 16:9';
         }
 
         function saveRecordedVideo() {
@@ -2394,7 +2461,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `PRISM_YouTubeLive_1080p_${Date.now()}.webm`;
+            a.download = `PRISM_16x9_1080p_${Date.now()}.webm`;
             a.click();
         }
 
@@ -2402,7 +2469,7 @@
             const cPgm = document.getElementById('canvas-pgm');
             const a = document.createElement('a');
             a.href = cPgm.toDataURL('image/png');
-            a.download = `Snapshot_${Date.now()}.png`;
+            a.download = `Snapshot_16x9_${Date.now()}.png`;
             a.click();
         }
 
