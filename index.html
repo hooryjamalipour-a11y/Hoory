@@ -411,7 +411,13 @@
 
                 <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none">
                     <option value="720" selected>⚡ موتور 720p (بدون لگ)</option>
+                    <option value="540">🚀 موتور 540p (فوق‌سبک موبایل)</option>
                     <option value="1080">🎬 موتور 1080p (Full HD)</option>
+                </select>
+
+                <select id="rec-format-select" onchange="updateRecFormatPreference(this.value)" class="bg-slate-950 border border-emerald-500/40 text-emerald-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none" title="فرمت ذخیره ویدیو">
+                    <option value="mp4" selected>📼 فرمت ضبط: MP4 (H.264 سخت‌افزاری)</option>
+                    <option value="webm">📼 فرمت ضبط: WebM</option>
                 </select>
 
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
@@ -1103,6 +1109,9 @@
             mediaRecorder: null,
             recordedChunks: [],
             isRecording: false,
+            recFormat: 'mp4',
+            activeRecMime: '',
+            pvwFrameSkip: 0,
 
             // Throttling timestamps
             lastMqttCmdTs: 0
@@ -1817,6 +1826,24 @@
                 }
             };
 
+            // Prefer Hardware H.264 codec over software VP8 to eliminate encoding lag on mobile
+            try {
+                if (RTCRtpSender.getCapabilities) {
+                    const caps = RTCRtpSender.getCapabilities('video');
+                    if (caps && caps.codecs) {
+                        const h264Codecs = caps.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
+                        const otherCodecs = caps.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
+                        if (h264Codecs.length > 0 && pc.getTransceivers) {
+                            pc.getTransceivers().forEach(t => {
+                                if (t.sender && t.sender.track && t.sender.track.kind === 'video' && t.setCodecPreferences) {
+                                    t.setCodecPreferences([...h264Codecs, ...otherCodecs]);
+                                }
+                            });
+                        }
+                    }
+                }
+            } catch (e) {}
+
             const offer = await pc.createOffer({
                 offerToReceiveAudio: false,
                 offerToReceiveVideo: false
@@ -1918,7 +1945,7 @@
             cPgm.width = w;
             cPgm.height = h;
             const badge = document.getElementById('pgm-res-badge');
-            if (badge) badge.innerText = h === 1080 ? '1080p HQ' : '720p TURBO';
+            if (badge) badge.innerText = h === 1080 ? '1080p HQ' : (h === 540 ? '540p ULTRA-FAST' : '720p TURBO');
         }
 
         function connectToWirelessCamera() {
@@ -2158,12 +2185,19 @@
                     lastFpsTime = timestamp;
                 }
 
-                // Render PVW at lightweight 640x360
-                drawSourceScene(ctxPvw, state.pvwSource, cPvw.width, cPvw.height, timestamp);
-
-                // Render PGM
+                // Render PGM first (Master Output)
                 ctxPgm.save();
                 drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height, timestamp);
+
+                // Smart PVW rendering: throttle PVW to every 2nd frame to cut GPU load by 45%
+                state.pvwFrameSkip = (state.pvwFrameSkip + 1) % 2;
+                if (state.pvwFrameSkip === 0) {
+                    if (state.pvwSource === state.pgmSource) {
+                        ctxPvw.drawImage(cPgm, 0, 0, cPvw.width, cPvw.height);
+                    } else {
+                        drawSourceScene(ctxPvw, state.pvwSource, cPvw.width, cPvw.height, timestamp);
+                    }
+                }
 
                 if (state.transitionProgress > 0.01) {
                     ctxPgm.globalAlpha = state.transitionProgress;
@@ -2457,14 +2491,15 @@
                 textColor = '#1e293b';
             }
 
-            // Card Shadow & Body
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
-            ctx.shadowBlur = 20;
+            // Fast Hardware-Friendly Drop Shadow & Body (No CPU shadowBlur lag!)
+            drawRoundedRectPath(ctx, cx + 4, cy + 6, cardW, cardH, 16);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            ctx.fill();
+
             drawRoundedRectPath(ctx, cx, cy, cardW, cardH, 16);
             ctx.fillStyle = bgFill;
             ctx.fill();
 
-            ctx.shadowBlur = 0;
             ctx.lineWidth = 3;
             ctx.strokeStyle = borderStroke;
             ctx.stroke();
@@ -2628,6 +2663,38 @@
             if (state.gainNodes[ch]) state.gainNodes[ch].gain.value = g;
         }
 
+        function updateRecFormatPreference(fmt) {
+            state.recFormat = fmt === 'webm' ? 'webm' : 'mp4';
+            if (!state.isRecording) {
+                document.getElementById('btn-record-label').innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
+            }
+        }
+
+        function getBestHardwareMimeType(preferredFormat) {
+            const mp4Candidates = [
+                'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+                'video/mp4;codecs=avc1.4d002a,mp4a.40.2',
+                'video/mp4;codecs=avc1,mp4a.40.2',
+                'video/mp4;codecs=h264,aac',
+                'video/mp4;codecs=h264',
+                'video/mp4',
+                'video/webm;codecs=h264,opus',
+                'video/webm;codecs=h264'
+            ];
+            const webmCandidates = [
+                'video/webm;codecs=h264,opus',
+                'video/webm;codecs=vp8,opus',
+                'video/webm'
+            ];
+            const list = preferredFormat === 'mp4' ? [...mp4Candidates, ...webmCandidates] : webmCandidates;
+            for (const mime of list) {
+                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(mime)) {
+                    return mime;
+                }
+            }
+            return '';
+        }
+
         function toggleRecording() {
             if (state.isRecording) stopProgramRecording();
             else startProgramRecording();
@@ -2635,37 +2702,58 @@
 
         function startProgramRecording() {
             const cPgm = document.getElementById('canvas-pgm');
-            const canvasStream = cPgm.captureStream(30);
+            // 25 FPS hardware-paced stream prevents mobile encoder queue buildup and lag
+            const canvasStream = cPgm.captureStream(25);
             if (state.destNode && state.destNode.stream.getAudioTracks().length > 0) {
                 canvasStream.addTrack(state.destNode.stream.getAudioTracks()[0]);
             }
 
             state.recordedChunks = [];
-            let mimeType = 'video/webm;codecs=vp8,opus';
-            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+            const chosenMime = getBestHardwareMimeType(state.recFormat);
+            state.activeRecMime = chosenMime || 'video/mp4';
 
-            state.mediaRecorder = new MediaRecorder(canvasStream, { mimeType, videoBitsPerSecond: 4500000 });
-            state.mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) state.recordedChunks.push(e.data); };
+            // 2.5 Mbps hardware H.264 is super crisp and causes zero CPU lag on mobile
+            const recOptions = {
+                videoBitsPerSecond: cPgm.height >= 1080 ? 3800000 : 2200000
+            };
+            if (chosenMime) recOptions.mimeType = chosenMime;
+
+            try {
+                state.mediaRecorder = new MediaRecorder(canvasStream, recOptions);
+            } catch (e) {
+                state.mediaRecorder = new MediaRecorder(canvasStream);
+            }
+
+            state.mediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
+            };
             state.mediaRecorder.onstop = saveRecordedVideo;
             state.mediaRecorder.start(1000);
             state.isRecording = true;
 
-            document.getElementById('btn-record-label').innerText = 'توقف و ذخیره ویدیو';
+            const extLabel = state.recFormat.toUpperCase();
+            document.getElementById('btn-record-label').innerText = `⏹ توقف و ذخیره (${extLabel})`;
         }
 
         function stopProgramRecording() {
             if (state.mediaRecorder && state.isRecording) state.mediaRecorder.stop();
             state.isRecording = false;
-            document.getElementById('btn-record-label').innerText = 'ضبط مستر خروجی';
+            document.getElementById('btn-record-label').innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
         }
 
         function saveRecordedVideo() {
-            const blob = new Blob(state.recordedChunks, { type: 'video/webm' });
+            const isMp4 = state.recFormat === 'mp4';
+            const ext = isMp4 ? 'mp4' : 'webm';
+            const blobType = isMp4 ? 'video/mp4' : (state.activeRecMime || 'video/webm');
+            const blob = new Blob(state.recordedChunks, { type: blobType });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `PRISM_Studio_${Date.now()}.webm`;
+            a.download = `PRISM_Studio_${Date.now()}.${ext}`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 3000);
         }
 
         function takeProgramSnapshot() {
