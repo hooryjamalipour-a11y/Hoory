@@ -397,14 +397,24 @@
                 </button>
             </div>
 
-            <!-- Master Performance Mode, Record & Snapshot -->
-            <div class="flex flex-wrap items-center gap-2">
-                <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2.5 py-1.5 rounded-lg outline-none">
-                    <option value="720" selected>⚡ موتور 720p (فوق‌روان • بدون لگ)</option>
+            <!-- Master Performance Mode, YouTube Live, Record & Snapshot -->
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="switchDirectorTab('yt')" id="btn-top-yt-status" class="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 text-red-200 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <span id="top-yt-dot" class="w-2 h-2 rounded-full bg-red-500"></span>
+                    <span id="top-yt-label">▶️ لایو یوتیوب و کامنت‌ها</span>
+                    <span id="top-yt-timer" class="hidden font-mono text-[11px] bg-red-600 text-white px-1.5 rounded">00:00</span>
+                </button>
+
+                <button onclick="toggleCleanProgramFullscreen()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs px-2.5 py-1.5 rounded-lg font-bold transition" title="خروجی تمیز تمام‌صفحه برای استریم یوتیوب / OBS">
+                    🖥️ خروجی تمیز (OBS/Live)
+                </button>
+
+                <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none">
+                    <option value="720" selected>⚡ موتور 720p (بدون لگ)</option>
                     <option value="1080">🎬 موتور 1080p (Full HD)</option>
                 </select>
 
-                <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
+                <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
                     <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
                     <span id="btn-record-label">ضبط مستر خروجی</span>
                 </button>
@@ -527,21 +537,39 @@
                         FTB (سیاه)
                     </button>
                 </div>
+
+                <!-- Active On-Screen YouTube Comment Quick Bar -->
+                <div id="active-comment-banner" class="hidden bg-gradient-to-r from-red-950/80 via-slate-900 to-slate-950 border border-red-500/40 rounded-xl p-2.5 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="px-2 py-0.5 rounded bg-red-600 text-white font-bold text-[10px] whitespace-nowrap animate-pulse">💬 کامنت روی آنتن</span>
+                        <div class="truncate text-xs">
+                            <strong id="active-comment-author" class="text-amber-300 ml-1">کاربر:</strong>
+                            <span id="active-comment-text" class="text-slate-200">متن کامنت...</span>
+                        </div>
+                    </div>
+                    <button onclick="clearCommentFromScreen()" class="bg-red-600 hover:bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap transition">
+                        ✕ برداشتن از صفحه
+                    </button>
+                </div>
             </div>
 
             <!-- Right Column: Remote PTZ + Rotation + Bokeh, Media, Graphics, Audio (5 cols) -->
             <div class="lg:col-span-5 bg-studio-900 border border-slate-800 rounded-xl flex flex-col overflow-hidden">
 
                 <!-- Tab Headers -->
-                <div class="grid grid-cols-4 bg-slate-950 border-b border-slate-800 text-xs font-bold">
-                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60">📡 لنز و چرخش</button>
+                <div class="grid grid-cols-5 bg-slate-950 border-b border-slate-800 text-[11px] sm:text-xs font-bold">
+                    <button onclick="switchDirectorTab('yt')" id="tab-btn-yt" class="py-2.5 text-red-400 border-b-2 border-red-500 bg-red-950/25 flex items-center justify-center gap-1">
+                        <span>🔴 یوتیوب و چت</span>
+                        <span id="yt-unread-badge" class="bg-red-600 text-white text-[9px] px-1.5 rounded-full font-mono">4</span>
+                    </button>
+                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-slate-400 hover:text-white">📡 لنز و چرخش</button>
                     <button onclick="switchDirectorTab('media')" id="tab-btn-media" class="py-2.5 text-slate-400 hover:text-white">🎬 پخش فیلم</button>
                     <button onclick="switchDirectorTab('gfx')" id="tab-btn-gfx" class="py-2.5 text-slate-400 hover:text-white">📝 زیرنویس</button>
                     <button onclick="switchDirectorTab('audio')" id="tab-btn-audio" class="py-2.5 text-slate-400 hover:text-white">🎚️ صدا</button>
                 </div>
 
                 <!-- TAB 1: Remote Camera Lens, Orientation, Hardware Zoom & AI Bokeh -->
-                <div id="tab-content-ptz" class="p-3 space-y-2.5 flex-1 flex flex-col justify-between">
+                <div id="tab-content-ptz" class="hidden p-3 space-y-2.5 flex-1 flex flex-col justify-between">
                     <div class="space-y-2.5">
                         <!-- Orientation & Aspect Ratio Controls -->
                         <div class="bg-slate-950 p-2.5 rounded-lg border border-amber-500/40 space-y-1.5">
@@ -688,9 +716,223 @@
                     </div>
                 </div>
 
+                <!-- TAB 5: YOUTUBE LIVE BROADCAST & INTERACTIVE LIVE CHAT OVERLAY -->
+                <div id="tab-content-yt" class="p-3 space-y-3 flex-1 flex flex-col justify-between overflow-y-auto max-h-[540px]">
+                    <!-- Sub-navigation inside YouTube Studio Tab -->
+                    <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+                        <button onclick="switchYoutubeSubTab('chat')" id="yt-subbtn-chat" class="py-1.5 rounded-lg bg-red-600 text-white transition flex items-center justify-center gap-1">
+                            <span>💬 کامنت‌های زنده و نمایش</span>
+                        </button>
+                        <button onclick="switchYoutubeSubTab('settings')" id="yt-subbtn-settings" class="py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1">
+                            <span>⚙️ تنظیمات استریم یوتیوب</span>
+                        </button>
+                    </div>
+
+                    <!-- SUB-TAB A: LIVE CHAT READER & ON-SCREEN COMMENT OVERLAY -->
+                    <div id="yt-subview-chat" class="space-y-2.5 flex-1 flex flex-col justify-between">
+                        <!-- YouTube Live Video ID / API / Simulator Bar -->
+                        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-2.5 space-y-2">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-[11px] font-bold text-red-400 flex items-center gap-1">
+                                    <span>▶️ اتصال به چت لایو یوتیوب</span>
+                                </span>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="toggleYoutubeChatSimulator()" id="btn-yt-sim" class="text-[10px] bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold transition">
+                                        🤖 شبیه‌ساز زنده: روشن
+                                    </button>
+                                    <button onclick="toggleOfficialYoutubeChatEmbed()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 py-0.5 rounded font-bold transition">
+                                        🗗 چت رسمی یوتیوب
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-1.5">
+                                <input id="yt-video-id-input" type="text" placeholder="لینک لایو یوتیوب یا کد ویدیو (مثلاً youtube.com/live/...)" oninput="handleYoutubeUrlInput(this.value)" class="flex-1 bg-studio-900 border border-slate-700 focus:border-red-500 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none font-mono">
+                                <button onclick="connectYoutubeLiveChat()" id="btn-yt-connect-chat" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap transition">
+                                    اتصال چت
+                                </button>
+                            </div>
+
+                            <!-- Optional YouTube Data API v3 Key collapsible -->
+                            <details class="text-[11px] text-slate-400">
+                                <summary class="cursor-pointer hover:text-slate-200 select-none">🔑 اتصال خودکار با YouTube Data API Key (اختیاری)</summary>
+                                <div class="pt-1.5 flex gap-1.5">
+                                    <input id="yt-api-key-input" type="password" placeholder="AIzaSy... (کلید API گوگل جهت دریافت خودکار کامنت‌ها)" class="flex-1 bg-studio-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-200 font-mono outline-none">
+                                    <button onclick="saveYoutubeApiKey()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2.5 py-1 rounded-lg font-bold">ذخیره</button>
+                                </div>
+                            </details>
+
+                            <!-- Collapsible Official YouTube Live Chat Embed Iframe -->
+                            <div id="yt-official-embed-box" class="hidden pt-1 space-y-1">
+                                <div class="flex items-center justify-between text-[10px] text-slate-400">
+                                    <span>پنجره چت مستقیم یوتیوب:</span>
+                                    <button onclick="popoutYoutubeChatWindow()" class="text-blue-400 hover:underline">↗ باز کردن در پنجره جداگانه</button>
+                                </div>
+                                <iframe id="yt-chat-iframe" class="w-full h-44 rounded-lg border border-slate-800 bg-black" src="about:blank"></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Comment Overlay Style & Position Controls -->
+                        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-2 grid grid-cols-3 gap-1.5 text-[11px]">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">🎨 قالب نمایش روی صفحه:</label>
+                                <select id="yt-comment-theme" onchange="updateCommentOverlayStyle()" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-white outline-none text-[11px]">
+                                    <option value="dark-glass" selected>شیشه‌ای تیره (YouTube Dark)</option>
+                                    <option value="yt-red">قرمز نئونی یوتیوب</option>
+                                    <option value="gold-vip">طلایی ویژه (SuperChat)</option>
+                                    <option value="minimal-light">مینیمال روشن</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">📍 محل روی تصویر آنتن:</label>
+                                <select id="yt-comment-pos" onchange="updateCommentOverlayStyle()" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-white outline-none text-[11px]">
+                                    <option value="bottom-center" selected>پایین وسط (پیشنهادی)</option>
+                                    <option value="bottom-left">پایین چپ</option>
+                                    <option value="top-left">بالا چپ</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-0.5">⏱️ حذف خودکار از صفحه:</label>
+                                <select id="yt-comment-autohide" onchange="updateCommentOverlayStyle()" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-emerald-400 outline-none text-[11px]">
+                                    <option value="0" selected>دستی (تا زمان کلیک)</option>
+                                    <option value="10">بعد از ۱۰ ثانیه</option>
+                                    <option value="20">بعد از ۲۰ ثانیه</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Live Comments Stream List -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="font-bold text-slate-300">📥 لیست کامنت‌های دریافتی (کلیک = نمایش روی آنتن):</span>
+                                <button onclick="clearCommentFromScreen()" id="btn-clear-active-comment" class="hidden text-[10px] bg-red-600/20 text-red-300 border border-red-500/40 px-2 py-0.5 rounded font-bold">
+                                    ✕ پاک کردن کامنت از روی تصویر
+                                </button>
+                            </div>
+                            <div id="yt-comments-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Manual Comment Entry / Pin to Screen -->
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 space-y-1.5">
+                            <div class="flex gap-1.5">
+                                <input id="custom-comment-author" type="text" placeholder="نام مخاطب (مثلاً سارا احمدی)" class="w-1/3 bg-studio-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white outline-none">
+                                <select id="custom-comment-badge" class="bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-[11px] text-amber-300 outline-none">
+                                    <option value="normal">💬 مخاطب عادی</option>
+                                    <option value="member">⭐ عضو ویژه (Member)</option>
+                                    <option value="superchat">💎 سوپرچت ($10)</option>
+                                </select>
+                                <button onclick="addCustomComment(true)" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold text-[11px] px-2 py-1 rounded-lg transition">
+                                    📺 درج و نمایش روی آنتن
+                                </button>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <input id="custom-comment-text" type="text" placeholder="متن کامنت یا سوال مخاطب برای نمایش روی صفحه لایو..." onkeydown="if(event.key==='Enter') addCustomComment(true)" class="flex-1 bg-studio-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+                                <button onclick="addCustomComment(false)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-3 py-1.5 rounded-lg border border-slate-700">
+                                    + لیست
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB B: YOUTUBE LIVE STREAM CONFIGURATION & ENCODER -->
+                    <div id="yt-subview-settings" class="hidden space-y-2.5 flex-1 flex flex-col justify-between">
+                        <div class="bg-slate-950 border border-red-500/30 rounded-xl p-3 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                                        <span>پیکربندی استریم مستقیم یوتیوب (YouTube Live RTMP / Studio)</span>
+                                    </h4>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">تنظیمات کلید استریم، نشانگر زنده روی تصویر و خروجی تمیز</p>
+                                </div>
+                                <button onclick="toggleYoutubeLiveBug()" id="btn-yt-live-bug" class="text-[11px] bg-red-600/20 border border-red-500/40 text-red-300 px-2.5 py-1 rounded-lg font-bold">
+                                    نشان 🔴 LIVE روی تصویر: روشن
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-1">عنوان پخش زنده یوتیوب:</label>
+                                    <input id="yt-stream-title" type="text" value="پخش زنده اختصاصی | استودیو PRISM" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-1">حالت تأخیر استریم (Latency):</label>
+                                    <select id="yt-latency-mode" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 outline-none">
+                                        <option value="ultra" selected>⚡ Ultra-Low Latency (تعامل آنی با چت)</option>
+                                        <option value="low">🚀 Low Latency (تأخیر کم استاندارد)</option>
+                                        <option value="normal">🎬 Normal Latency (حداکثر کیفیت 1080p)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- RTMP URL & Stream Key -->
+                            <div class="space-y-1.5">
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-0.5">آدرس سرور یوتیوب (RTMP Ingest URL):</label>
+                                    <div class="flex gap-1">
+                                        <input id="yt-rtmp-url" type="text" value="rtmp://a.rtmp.youtube.com/live2" readonly class="flex-1 bg-studio-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-300 font-mono outline-none">
+                                        <button onclick="copyInputValue('yt-rtmp-url')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg">کپی</button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-0.5">کلید استریم یوتیوب (YouTube Stream Key):</label>
+                                    <div class="flex gap-1">
+                                        <input id="yt-stream-key" type="password" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" class="flex-1 bg-studio-900 border border-slate-700 focus:border-red-500 rounded-lg px-2.5 py-1 text-xs text-emerald-300 font-mono outline-none">
+                                        <button onclick="toggleStreamKeyVisibility()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] px-2 py-1 rounded-lg">👁️</button>
+                                        <button onclick="saveYoutubeStreamConfig()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] px-2.5 py-1 rounded-lg font-bold">ذخیره</button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-0.5">آدرس سرور رله WebSocket به RTMP (اختیاری - جهت ارسال مستقیم از مرورگر):</label>
+                                    <input id="yt-ws-relay" type="text" placeholder="ws://localhost:8080/rtmp (یا خالی بگذارید و از خروجی تمیز OBS/PRISM استفاده کنید)" class="w-full bg-studio-900 border border-slate-800 rounded-lg px-2.5 py-1 text-[11px] text-slate-300 font-mono outline-none">
+                                </div>
+                            </div>
+
+                            <!-- Viewer Counter & Live Telemetry -->
+                            <div class="bg-studio-900/90 border border-slate-800 rounded-lg p-2 grid grid-cols-3 gap-2 text-center">
+                                <div>
+                                    <div class="text-[10px] text-slate-400">وضعیت آنتن یوتیوب</div>
+                                    <div id="yt-status-text" class="text-xs font-bold text-amber-400 mt-0.5">آماده پخش (Standby)</div>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] text-slate-400">مدت زمان لایو</div>
+                                    <div id="yt-duration-text" class="text-xs font-mono font-bold text-white mt-0.5">00:00:00</div>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] text-slate-400">بینندگان آنلاین</div>
+                                    <div id="yt-viewers-text" class="text-xs font-mono font-bold text-red-400 mt-0.5">0 نفر</div>
+                                </div>
+                            </div>
+
+                            <!-- GO LIVE & Clean Feed Buttons -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                <button onclick="toggleYoutubeLiveBroadcast()" id="btn-yt-golive" class="py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+                                    <span id="btn-yt-golive-label">🔴 شروع پخش زنده یوتیوب (GO LIVE)</span>
+                                </button>
+                                <button onclick="toggleCleanProgramFullscreen()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <span>🖥️ نمایش تمام‌صفحه خروجی تمیز (Clean Feed)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
+
+    <!-- ================= CLEAN PROGRAM OUTPUT OVERLAY (FOR OBS / YOUTUBE CAPTURE) ================= -->
+    <div id="clean-pgm-modal" onclick="toggleCleanProgramFullscreen(false)" class="hidden fixed inset-0 z-50 bg-black flex items-center justify-center cursor-pointer">
+        <canvas id="canvas-clean-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+        <div id="clean-pgm-hint" class="absolute top-4 right-4 bg-black/70 border border-white/20 text-white text-xs px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-500">
+            🖥️ خروجی تمیز (Clean Feed) • برای خروج یک بار روی صفحه بزنید
+        </div>
+    </div>
 
     <!-- ================= QR CODE MODAL ================= -->
     <div id="qr-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -790,6 +1032,67 @@
             tickerVisible: false,
             tickerText: '🔴 ارتباط زنده برقرار است • سیستم ضد خاموشی صفحه و ضد لگ فعال شد...',
             tickerOffset: 0,
+
+            // YouTube Live & Live Chat Overlay State
+            ytLiveActive: false,
+            ytLiveStartTime: 0,
+            ytLiveTimerInterval: null,
+            ytLiveBugVisible: true,
+            ytViewerCount: 142,
+            ytVideoId: '',
+            ytApiKey: '',
+            ytLiveChatId: '',
+            ytPollInterval: null,
+            ytSimActive: true,
+            ytSimInterval: null,
+            ytWsRelaySocket: null,
+            ytWsRecorder: null,
+            cleanFeedActive: false,
+
+            // Comments List & Active On-Screen Comment
+            ytComments: [
+                {
+                    id: 'c1',
+                    author: 'امیرحسین محمدی',
+                    text: 'سلام وقت بخیر! کیفیت تصویر و نورپردازی استودیو فوق‌العاده شده 🔥👏',
+                    badge: 'member',
+                    amount: '',
+                    time: 'الان',
+                    avatarColor: '#10b981'
+                },
+                {
+                    id: 'c2',
+                    author: 'سارا کاظمی',
+                    text: 'آیا امکان سوییچ همزمان بین دو موبایل و نمایش اسلاید در این نسخه وجود داره؟',
+                    badge: 'superchat',
+                    amount: '$20.00',
+                    time: '۱ دقیقه پیش',
+                    avatarColor: '#f59e0b'
+                },
+                {
+                    id: 'c3',
+                    author: 'Reza Tech',
+                    text: 'مشکل خاموش شدن صفحه موبایل و لگ کاملاً حل شده، خیلی روان کار می‌کنه 👌',
+                    badge: 'normal',
+                    amount: '',
+                    time: '۲ دقیقه پیش',
+                    avatarColor: '#3b82f6'
+                },
+                {
+                    id: 'c4',
+                    author: 'مهدی کریمی',
+                    text: 'لطفاً قابلیت زوم اپتیکال و بوکه پرتره دوربین اول رو هم در لایو تست کنید 🙏',
+                    badge: 'normal',
+                    amount: '',
+                    time: '۳ دقیقه پیش',
+                    avatarColor: '#ec4899'
+                }
+            ],
+            activeScreenComment: null,
+            commentTheme: 'dark-glass',
+            commentPos: 'bottom-center',
+            commentAutoHideSec: 0,
+            commentAutoHideTimeout: null,
 
             // Audio & Recording
             audioCtx: null,
@@ -1596,6 +1899,9 @@
         async function initDirectorRole(enableLocalDemo) {
             switchRole('director');
             initWebAudioMixer();
+            loadSavedYoutubeConfig();
+            renderYoutubeCommentsList();
+            startYoutubeChatSimulator();
             startCanvasCompositorLoop();
 
             if (enableLocalDemo) {
@@ -1873,6 +2179,19 @@
                 }
                 ctxPgm.restore();
 
+                // Mirror PGM to Clean Fullscreen Output if open
+                if (state.cleanFeedActive) {
+                    const cClean = document.getElementById('canvas-clean-pgm');
+                    if (cClean) {
+                        if (cClean.width !== cPgm.width || cClean.height !== cPgm.height) {
+                            cClean.width = cPgm.width;
+                            cClean.height = cPgm.height;
+                        }
+                        const ctxClean = cClean.getContext('2d', { alpha: false });
+                        ctxClean.drawImage(cPgm, 0, 0);
+                    }
+                }
+
                 requestAnimationFrame(renderLoop);
             }
             requestAnimationFrame(renderLoop);
@@ -1983,8 +2302,79 @@
             ctx.fillText(state.ltTitle || 'پخش زنده به زودی آغاز می‌شود', w / 2, h / 2);
         }
 
+        function drawRoundedRectPath(ctx, x, y, w, h, r) {
+            const radius = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + w - radius, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+            ctx.lineTo(x + w, y + h - radius);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+            ctx.lineTo(x + radius, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function wrapCanvasLines(ctx, text, maxWidth) {
+            const words = (text || '').split(' ');
+            const lines = [];
+            let currentLine = words[0] || '';
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + ' ' + word).width;
+                if (width < maxWidth) {
+                    currentLine += ' ' + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
+            return lines.slice(0, 3);
+        }
+
         function drawBroadcastOverlays(ctx, w, h, ts) {
-            if (state.lowerThirdVisible && (state.ltTitle || state.ltSub)) {
+            // 1. YouTube LIVE Top Bug Badge
+            if (state.ytLiveBugVisible) {
+                ctx.save();
+                const bugX = w * 0.03;
+                const bugY = h * 0.04;
+                const bugH = Math.round(h * 0.048);
+                const liveW = Math.round(w * 0.075);
+                const viewW = Math.round(w * 0.085);
+
+                // Red LIVE pill
+                drawRoundedRectPath(ctx, bugX, bugY, liveW, bugH, 8);
+                ctx.fillStyle = state.ytLiveActive ? '#dc2626' : '#334155';
+                ctx.fill();
+
+                // Blinking dot
+                ctx.beginPath();
+                ctx.arc(bugX + liveW * 0.24, bugY + bugH / 2, bugH * 0.14, 0, Math.PI * 2);
+                ctx.fillStyle = (Math.floor(ts / 500) % 2 === 0) ? '#ffffff' : '#fecaca';
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `800 ${Math.round(h * 0.022)}px JetBrains Mono, monospace`;
+                ctx.textAlign = 'left';
+                ctx.fillText('LIVE', bugX + liveW * 0.40, bugY + bugH * 0.68);
+
+                // Viewer count pill
+                drawRoundedRectPath(ctx, bugX + liveW + 6, bugY, viewW, bugH, 8);
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                ctx.fill();
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = `bold ${Math.round(h * 0.02)}px Vazirmatn, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText(`👁 ${state.ytViewerCount}`, bugX + liveW + 6 + viewW / 2, bugY + bugH * 0.68);
+                ctx.restore();
+            }
+
+            // 2. Lower Third Graphic (shifted or hidden gracefully if a comment is occupying bottom-center)
+            const commentOccupyingBottom = state.activeScreenComment && state.commentPos !== 'top-left';
+            if (state.lowerThirdVisible && !commentOccupyingBottom && (state.ltTitle || state.ltSub)) {
                 const boxW = w * 0.48, boxH = h * 0.12, bx = w - boxW - (w*0.03), by = h - boxH - (state.tickerVisible ? h*0.09 : h*0.05);
                 ctx.save();
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
@@ -2001,6 +2391,12 @@
                 ctx.restore();
             }
 
+            // 3. Active YouTube Live Comment Overlay Card
+            if (state.activeScreenComment) {
+                drawYoutubeCommentCardOnCanvas(ctx, w, h, state.activeScreenComment);
+            }
+
+            // 4. Scrolling News Ticker
             if (state.tickerVisible && state.tickerText) {
                 const th = h * 0.055, ty = h - th;
                 ctx.save();
@@ -2013,6 +2409,108 @@
                 ctx.fillText(state.tickerText, w - state.tickerOffset, ty + th * 0.7);
                 ctx.restore();
             }
+        }
+
+        function drawYoutubeCommentCardOnCanvas(ctx, w, h, comment) {
+            ctx.save();
+            const cardW = Math.round(w * 0.62);
+            const fontSizeText = Math.round(h * 0.027);
+            const fontSizeAuthor = Math.round(h * 0.025);
+            ctx.font = `500 ${fontSizeText}px Vazirmatn, sans-serif`;
+
+            const textMaxW = cardW - Math.round(w * 0.11);
+            const lines = wrapCanvasLines(ctx, comment.text, textMaxW);
+            const lineHeight = Math.round(h * 0.038);
+            const cardH = Math.max(Math.round(h * 0.14), Math.round(h * 0.075) + lines.length * lineHeight);
+
+            let cx = Math.round((w - cardW) / 2);
+            let cy = h - cardH - (state.tickerVisible ? Math.round(h * 0.085) : Math.round(h * 0.045));
+
+            if (state.commentPos === 'bottom-left') {
+                cx = Math.round(w * 0.03);
+            } else if (state.commentPos === 'top-left') {
+                cx = Math.round(w * 0.03);
+                cy = Math.round(h * 0.11);
+            }
+
+            // Theme colors
+            let bgFill = 'rgba(10, 14, 23, 0.92)';
+            let borderStroke = '#ef4444';
+            let accentColor = '#ef4444';
+            let authorColor = '#ffffff';
+            let textColor = '#f1f5f9';
+
+            if (state.commentTheme === 'yt-red') {
+                bgFill = 'rgba(127, 29, 29, 0.94)';
+                borderStroke = '#f87171';
+                accentColor = '#ffffff';
+            } else if (state.commentTheme === 'gold-vip' || comment.badge === 'superchat') {
+                bgFill = 'rgba(30, 20, 5, 0.94)';
+                borderStroke = '#f59e0b';
+                accentColor = '#f59e0b';
+                authorColor = '#fde68a';
+            } else if (state.commentTheme === 'minimal-light') {
+                bgFill = 'rgba(248, 250, 252, 0.95)';
+                borderStroke = '#dc2626';
+                accentColor = '#dc2626';
+                authorColor = '#0f172a';
+                textColor = '#1e293b';
+            }
+
+            // Card Shadow & Body
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
+            ctx.shadowBlur = 20;
+            drawRoundedRectPath(ctx, cx, cy, cardW, cardH, 16);
+            ctx.fillStyle = bgFill;
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = borderStroke;
+            ctx.stroke();
+
+            // Right Accent Bar (RTL Layout)
+            drawRoundedRectPath(ctx, cx + cardW - 10, cy, 10, cardH, 6);
+            ctx.fillStyle = accentColor;
+            ctx.fill();
+
+            // Avatar Circle on the Right
+            const avRadius = Math.round(h * 0.032);
+            const avX = cx + cardW - avRadius - Math.round(w * 0.022);
+            const avY = cy + Math.round(cardH / 2);
+
+            ctx.beginPath();
+            ctx.arc(avX, avY, avRadius, 0, Math.PI * 2);
+            ctx.fillStyle = comment.avatarColor || '#ef4444';
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${Math.round(h * 0.026)}px Vazirmatn, sans-serif`;
+            ctx.textAlign = 'center';
+            const initial = (comment.author || 'U').trim().charAt(0).toUpperCase();
+            ctx.fillText(initial, avX, avY + Math.round(avRadius * 0.35));
+
+            // Author Name & YouTube Badge
+            const contentRightX = avX - avRadius - Math.round(w * 0.015);
+            const headerY = cy + Math.round(h * 0.042);
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = authorColor;
+            ctx.font = `800 ${fontSizeAuthor}px Vazirmatn, sans-serif`;
+            let badgeLabel = '🔴 YouTube Live';
+            if (comment.badge === 'superchat') badgeLabel = `💎 SuperChat ${comment.amount || '$10'}`;
+            else if (comment.badge === 'member') badgeLabel = '⭐ عضو کانال';
+
+            ctx.fillText(`${comment.author}  •  ${badgeLabel}`, contentRightX, headerY);
+
+            // Comment Lines
+            ctx.fillStyle = textColor;
+            ctx.font = `500 ${fontSizeText}px Vazirmatn, sans-serif`;
+            lines.forEach((line, idx) => {
+                ctx.fillText(line, contentRightX, headerY + Math.round(h * 0.042) + idx * lineHeight);
+            });
+
+            ctx.restore();
         }
 
         // ============================================================================
@@ -2066,11 +2564,21 @@
         }
 
         function switchDirectorTab(tab) {
-            ['ptz', 'media', 'gfx', 'audio'].forEach(t => {
-                document.getElementById(`tab-content-${t}`).classList.toggle('hidden', t !== tab);
-                document.getElementById(`tab-btn-${t}`).className = t === tab
-                    ? 'py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60'
-                    : 'py-2.5 text-slate-400 hover:text-white';
+            ['yt', 'ptz', 'media', 'gfx', 'audio'].forEach(t => {
+                const contentEl = document.getElementById(`tab-content-${t}`);
+                const btnEl = document.getElementById(`tab-btn-${t}`);
+                if (contentEl) contentEl.classList.toggle('hidden', t !== tab);
+                if (btnEl) {
+                    if (t === 'yt') {
+                        btnEl.className = (t === tab)
+                            ? 'py-2.5 text-red-400 border-b-2 border-red-500 bg-red-950/25 flex items-center justify-center gap-1'
+                            : 'py-2.5 text-red-300/70 hover:text-red-300 flex items-center justify-center gap-1';
+                    } else {
+                        btnEl.className = (t === tab)
+                            ? 'py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60'
+                            : 'py-2.5 text-slate-400 hover:text-white';
+                    }
+                }
             });
         }
 
@@ -2177,6 +2685,495 @@
 
         function toggleQrModal(show) {
             document.getElementById('qr-modal').classList.toggle('hidden', !show);
+        }
+
+        // ============================================================================
+        // 15. YOUTUBE LIVE STREAMING & INTERACTIVE LIVE CHAT OVERLAY ENGINE
+        // ============================================================================
+        function switchYoutubeSubTab(sub) {
+            const isChat = sub === 'chat';
+            document.getElementById('yt-subview-chat').classList.toggle('hidden', !isChat);
+            document.getElementById('yt-subview-settings').classList.toggle('hidden', isChat);
+
+            document.getElementById('yt-subbtn-chat').className = isChat
+                ? 'py-1.5 rounded-lg bg-red-600 text-white transition flex items-center justify-center gap-1'
+                : 'py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1';
+            document.getElementById('yt-subbtn-settings').className = !isChat
+                ? 'py-1.5 rounded-lg bg-red-600 text-white transition flex items-center justify-center gap-1'
+                : 'py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1';
+        }
+
+        function extractYoutubeVideoId(inputStr) {
+            const s = (inputStr || '').trim();
+            if (!s) return '';
+            if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+            const m1 = s.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+            if (m1) return m1[1];
+            const m2 = s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+            if (m2) return m2[1];
+            const m3 = s.match(/youtube\.com\/live\/([a-zA-Z0-9_-]{11})/);
+            if (m3) return m3[1];
+            return s;
+        }
+
+        function handleYoutubeUrlInput(val) {
+            const vid = extractYoutubeVideoId(val);
+            state.ytVideoId = vid;
+        }
+
+        function loadSavedYoutubeConfig() {
+            try {
+                const savedKey = localStorage.getItem('prism_yt_stream_key');
+                const savedApi = localStorage.getItem('prism_yt_api_key');
+                const savedVid = localStorage.getItem('prism_yt_video_id');
+                if (savedKey) document.getElementById('yt-stream-key').value = savedKey;
+                if (savedApi) {
+                    document.getElementById('yt-api-key-input').value = savedApi;
+                    state.ytApiKey = savedApi;
+                }
+                if (savedVid) {
+                    document.getElementById('yt-video-id-input').value = savedVid;
+                    state.ytVideoId = savedVid;
+                }
+            } catch (e) {}
+        }
+
+        function saveYoutubeStreamConfig() {
+            try {
+                const key = document.getElementById('yt-stream-key').value.trim();
+                localStorage.setItem('prism_yt_stream_key', key);
+            } catch (e) {}
+        }
+
+        function saveYoutubeApiKey() {
+            try {
+                const api = document.getElementById('yt-api-key-input').value.trim();
+                state.ytApiKey = api;
+                localStorage.setItem('prism_yt_api_key', api);
+                if (state.ytVideoId && api) {
+                    connectYoutubeLiveChat();
+                }
+            } catch (e) {}
+        }
+
+        function toggleStreamKeyVisibility() {
+            const inp = document.getElementById('yt-stream-key');
+            if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+
+        function copyInputValue(id) {
+            const inp = document.getElementById(id);
+            if (!inp) return;
+            inp.select();
+            try {
+                navigator.clipboard.writeText(inp.value);
+            } catch (e) {
+                document.execCommand('copy');
+            }
+        }
+
+        function toggleOfficialYoutubeChatEmbed() {
+            const box = document.getElementById('yt-official-embed-box');
+            const iframe = document.getElementById('yt-chat-iframe');
+            const isHidden = box.classList.contains('hidden');
+            box.classList.toggle('hidden', !isHidden);
+
+            if (isHidden) {
+                const vid = extractYoutubeVideoId(document.getElementById('yt-video-id-input').value);
+                if (vid) {
+                    const domain = window.location.hostname || 'localhost';
+                    iframe.src = `https://www.youtube.com/live_chat?v=${encodeURIComponent(vid)}&embed_domain=${encodeURIComponent(domain)}`;
+                }
+            }
+        }
+
+        function popoutYoutubeChatWindow() {
+            const vid = extractYoutubeVideoId(document.getElementById('yt-video-id-input').value);
+            const url = vid
+                ? `https://www.youtube.com/live_chat?is_popout=1&v=${encodeURIComponent(vid)}`
+                : 'https://studio.youtube.com/';
+            window.open(url, '_blank', 'width=420,height=640');
+        }
+
+        async function connectYoutubeLiveChat() {
+            const rawInput = document.getElementById('yt-video-id-input').value;
+            const vid = extractYoutubeVideoId(rawInput);
+            state.ytVideoId = vid;
+            try { localStorage.setItem('prism_yt_video_id', vid); } catch (e) {}
+
+            const btn = document.getElementById('btn-yt-connect-chat');
+            const apiKey = document.getElementById('yt-api-key-input').value.trim() || state.ytApiKey;
+
+            if (vid && apiKey) {
+                btn.innerText = 'در حال اتصال...';
+                try {
+                    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=${encodeURIComponent(vid)}&key=${encodeURIComponent(apiKey)}`);
+                    const data = await res.json();
+                    const item = data.items && data.items[0];
+                    const chatId = item && item.liveStreamingDetails && item.liveStreamingDetails.activeLiveChatId;
+                    if (chatId) {
+                        state.ytLiveChatId = chatId;
+                        btn.innerText = '✅ متصل به API';
+                        if (item.liveStreamingDetails.concurrentViewers) {
+                            state.ytViewerCount = Number(item.liveStreamingDetails.concurrentViewers);
+                        }
+                        startYoutubeApiPolling(chatId, apiKey);
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            if (vid) {
+                btn.innerText = '✅ لینک ثبت شد';
+                const domain = window.location.hostname || 'localhost';
+                const iframe = document.getElementById('yt-chat-iframe');
+                if (iframe) {
+                    iframe.src = `https://www.youtube.com/live_chat?v=${encodeURIComponent(vid)}&embed_domain=${encodeURIComponent(domain)}`;
+                }
+            }
+        }
+
+        function startYoutubeApiPolling(chatId, apiKey) {
+            if (state.ytPollInterval) clearInterval(state.ytPollInterval);
+            const seenIds = new Set();
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444'];
+
+            async function poll() {
+                try {
+                    const url = `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${encodeURIComponent(chatId)}&part=snippet,authorDetails&key=${encodeURIComponent(apiKey)}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data.items) {
+                        data.items.forEach(msg => {
+                            if (seenIds.has(msg.id)) return;
+                            seenIds.add(msg.id);
+                            const author = (msg.authorDetails && msg.authorDetails.displayName) || 'کاربر یوتیوب';
+                            const text = (msg.snippet && msg.snippet.displayMessage) || '';
+                            const isSuper = msg.snippet && msg.snippet.type === 'superChatEvent';
+                            const isMember = msg.authorDetails && msg.authorDetails.isChatSponsor;
+                            pushYoutubeCommentObject({
+                                id: msg.id,
+                                author,
+                                text,
+                                badge: isSuper ? 'superchat' : (isMember ? 'member' : 'normal'),
+                                amount: isSuper ? (msg.snippet.superChatDetails?.amountDisplayString || '$5') : '',
+                                time: 'زنده',
+                                avatarColor: colors[Math.floor(Math.random() * colors.length)]
+                            });
+                        });
+                    }
+                } catch (e) {}
+            }
+            poll();
+            state.ytPollInterval = setInterval(poll, 5000);
+        }
+
+        function renderYoutubeCommentsList() {
+            const listEl = document.getElementById('yt-comments-list');
+            const badgeEl = document.getElementById('yt-unread-badge');
+            if (!listEl) return;
+
+            if (badgeEl) badgeEl.innerText = state.ytComments.length;
+
+            const activeId = state.activeScreenComment ? state.activeScreenComment.id : null;
+
+            listEl.innerHTML = state.ytComments.map(c => {
+                const isShowing = c.id === activeId;
+                const badgeHtml = c.badge === 'superchat'
+                    ? `<span class="text-[9px] bg-amber-500 text-black font-black px-1.5 py-0.5 rounded">💎 ${c.amount || 'SuperChat'}</span>`
+                    : c.badge === 'member'
+                    ? `<span class="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold px-1.5 py-0.5 rounded">⭐ عضو ویژه</span>`
+                    : `<span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">${c.time || 'زنده'}</span>`;
+
+                return `
+                <div class="p-2 rounded-xl border transition ${isShowing ? 'bg-red-950/50 border-red-500 shadow-lg shadow-red-950/30' : 'bg-studio-900/95 border-slate-800 hover:border-slate-700'} flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <span class="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-[11px] shrink-0" style="background:${c.avatarColor || '#ef4444'}">
+                                ${(c.author || 'U').trim().charAt(0)}
+                            </span>
+                            <strong class="text-xs text-white truncate">${c.author}</strong>
+                            ${badgeHtml}
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="sendCommentToCam1Teleprompter('${c.id}')" class="text-[10px] bg-slate-800 hover:bg-amber-500 hover:text-black text-amber-300 border border-slate-700 px-2 py-1 rounded-lg font-bold transition" title="ارسال این کامنت به صفحه موبایل فیلمبردار/مجری">
+                                📲 ارسال به دوربین ۱
+                            </button>
+                            <button onclick="toggleCommentOnScreen('${c.id}')" class="text-[10px] ${isShowing ? 'bg-red-600 text-white animate-pulse' : 'bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40'} px-2.5 py-1 rounded-lg font-bold transition">
+                                ${isShowing ? '🟢 روی آنتن (حذف)' : '📺 نمایش روی صفحه'}
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-200 leading-relaxed pr-1">${c.text}</p>
+                </div>`;
+            }).join('');
+        }
+
+        function pushYoutubeCommentObject(commentObj, showImmediately = false) {
+            state.ytComments.unshift(commentObj);
+            if (state.ytComments.length > 30) state.ytComments.pop();
+            if (showImmediately) {
+                showCommentOnScreen(commentObj);
+            } else {
+                renderYoutubeCommentsList();
+            }
+        }
+
+        function addCustomComment(showOnAirImmediately) {
+            const authorInp = document.getElementById('custom-comment-author');
+            const textInp = document.getElementById('custom-comment-text');
+            const badgeSel = document.getElementById('custom-comment-badge');
+
+            const text = textInp.value.trim();
+            if (!text) return;
+            const author = authorInp.value.trim() || 'مخاطب یوتیوب';
+            const badge = badgeSel.value || 'normal';
+            const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+            const newComment = {
+                id: 'cust_' + Date.now(),
+                author,
+                text,
+                badge,
+                amount: badge === 'superchat' ? '$10.00' : '',
+                time: 'الان',
+                avatarColor: colors[Math.floor(Math.random() * colors.length)]
+            };
+
+            textInp.value = '';
+            pushYoutubeCommentObject(newComment, showOnAirImmediately);
+        }
+
+        function toggleCommentOnScreen(commentId) {
+            if (state.activeScreenComment && state.activeScreenComment.id === commentId) {
+                clearCommentFromScreen();
+                return;
+            }
+            const found = state.ytComments.find(c => c.id === commentId);
+            if (found) {
+                showCommentOnScreen(found);
+            }
+        }
+
+        function showCommentOnScreen(commentObj) {
+            state.activeScreenComment = commentObj;
+            updateCommentOverlayStyle();
+
+            const banner = document.getElementById('active-comment-banner');
+            const clearBtn = document.getElementById('btn-clear-active-comment');
+            if (banner) {
+                banner.classList.remove('hidden');
+                document.getElementById('active-comment-author').innerText = commentObj.author + ':';
+                document.getElementById('active-comment-text').innerText = commentObj.text;
+            }
+            if (clearBtn) clearBtn.classList.remove('hidden');
+
+            if (state.commentAutoHideTimeout) clearTimeout(state.commentAutoHideTimeout);
+            if (state.commentAutoHideSec > 0) {
+                state.commentAutoHideTimeout = setTimeout(() => {
+                    clearCommentFromScreen();
+                }, state.commentAutoHideSec * 1000);
+            }
+
+            renderYoutubeCommentsList();
+        }
+
+        function clearCommentFromScreen() {
+            state.activeScreenComment = null;
+            if (state.commentAutoHideTimeout) {
+                clearTimeout(state.commentAutoHideTimeout);
+                state.commentAutoHideTimeout = null;
+            }
+            const banner = document.getElementById('active-comment-banner');
+            const clearBtn = document.getElementById('btn-clear-active-comment');
+            if (banner) banner.classList.add('hidden');
+            if (clearBtn) clearBtn.classList.add('hidden');
+            renderYoutubeCommentsList();
+        }
+
+        function updateCommentOverlayStyle() {
+            const themeEl = document.getElementById('yt-comment-theme');
+            const posEl = document.getElementById('yt-comment-pos');
+            const autoEl = document.getElementById('yt-comment-autohide');
+            if (themeEl) state.commentTheme = themeEl.value;
+            if (posEl) state.commentPos = posEl.value;
+            if (autoEl) state.commentAutoHideSec = Number(autoEl.value) || 0;
+        }
+
+        function sendCommentToCam1Teleprompter(commentId) {
+            const found = state.ytComments.find(c => c.id === commentId);
+            if (!found) return;
+            sendRemoteCommand({
+                type: 'intercom',
+                text: `💬 ${found.author}: ${found.text}`
+            });
+        }
+
+        function toggleYoutubeChatSimulator() {
+            state.ytSimActive = !state.ytSimActive;
+            const btn = document.getElementById('btn-yt-sim');
+            if (btn) {
+                btn.innerText = state.ytSimActive ? '🤖 شبیه‌ساز زنده: روشن' : '🤖 شبیه‌ساز زنده: خاموش';
+                btn.className = state.ytSimActive
+                    ? 'text-[10px] bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold transition'
+                    : 'text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded font-bold transition';
+            }
+            if (state.ytSimActive) startYoutubeChatSimulator();
+            else if (state.ytSimInterval) clearInterval(state.ytSimInterval);
+        }
+
+        function startYoutubeChatSimulator() {
+            if (state.ytSimInterval) clearInterval(state.ytSimInterval);
+            const samplePool = [
+                { author: 'نیما علوی', text: 'صدا و تصویر هر دو عالی و بدون هیچ گونه تأخیری می‌رسه 🌟', badge: 'normal', color: '#3b82f6' },
+                { author: 'پریسا راد', text: 'چطور می‌تونم با گوشی دومم به این اتاق فرمان وصل بشم؟', badge: 'member', color: '#10b981' },
+                { author: 'Kaveh Studio', text: 'دمت گرم! قابلیت نمایش کامنت‌های یوتیوب روی تصویر خیلی حرفه‌ایه 👏🔥', badge: 'superchat', amount: '$15.00', color: '#f59e0b' },
+                { author: 'آرش کمانگیر', text: 'نمای تصویر در تصویر (PiP) رو هم نشون بدید لطفا!', badge: 'normal', color: '#ec4899' },
+                { author: 'عرفان حسینی', text: 'آیا خروجی 1080p همزمان ضبط هم میشه؟', badge: 'normal', color: '#8b5cf6' }
+            ];
+            let idx = 0;
+            state.ytSimInterval = setInterval(() => {
+                if (!state.ytSimActive || state.role !== 'director') return;
+                const item = samplePool[idx % samplePool.length];
+                idx++;
+                state.ytViewerCount += Math.floor(Math.random() * 5) - 1;
+                if (state.ytViewerCount < 50) state.ytViewerCount = 85;
+                const vText = document.getElementById('yt-viewers-text');
+                if (vText) vText.innerText = `${state.ytViewerCount} نفر`;
+
+                pushYoutubeCommentObject({
+                    id: 'sim_' + Date.now(),
+                    author: item.author,
+                    text: item.text,
+                    badge: item.badge,
+                    amount: item.amount || '',
+                    time: 'الان',
+                    avatarColor: item.color
+                }, false);
+            }, 14000);
+        }
+
+        function toggleYoutubeLiveBug() {
+            state.ytLiveBugVisible = !state.ytLiveBugVisible;
+            const btn = document.getElementById('btn-yt-live-bug');
+            if (btn) {
+                btn.innerText = state.ytLiveBugVisible ? 'نشان 🔴 LIVE روی تصویر: روشن' : 'نشان 🔴 LIVE روی تصویر: خاموش';
+            }
+        }
+
+        function toggleYoutubeLiveBroadcast() {
+            if (state.ytLiveActive) {
+                stopYoutubeLiveBroadcast();
+            } else {
+                startYoutubeLiveBroadcast();
+            }
+        }
+
+        function startYoutubeLiveBroadcast() {
+            state.ytLiveActive = true;
+            state.ytLiveStartTime = Date.now();
+            state.ytLiveBugVisible = true;
+            saveYoutubeStreamConfig();
+            requestScreenWakeLock();
+
+            // Optional WebSocket RTMP relay streaming if ws:// URL is provided
+            const wsUrl = (document.getElementById('yt-ws-relay').value || '').trim();
+            const streamKey = (document.getElementById('yt-stream-key').value || '').trim();
+            if (wsUrl.startsWith('ws://') || wsUrl.startsWith('wss://')) {
+                try {
+                    const targetUrl = streamKey ? `${wsUrl}?key=${encodeURIComponent(streamKey)}` : wsUrl;
+                    state.ytWsRelaySocket = new WebSocket(targetUrl);
+                    state.ytWsRelaySocket.onopen = () => {
+                        const cPgm = document.getElementById('canvas-pgm');
+                        const stream = cPgm.captureStream(30);
+                        if (state.destNode && state.destNode.stream.getAudioTracks().length > 0) {
+                            stream.addTrack(state.destNode.stream.getAudioTracks()[0]);
+                        }
+                        let mimeType = 'video/webm;codecs=vp8,opus';
+                        if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+                        state.ytWsRecorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 3500000 });
+                        state.ytWsRecorder.ondataavailable = (e) => {
+                            if (e.data && e.data.size > 0 && state.ytWsRelaySocket && state.ytWsRelaySocket.readyState === 1) {
+                                state.ytWsRelaySocket.send(e.data);
+                            }
+                        };
+                        state.ytWsRecorder.start(500);
+                    };
+                } catch (e) {}
+            }
+
+            // Update UI badges & timers
+            document.getElementById('btn-yt-golive-label').innerText = '⏹ پایان پخش زنده یوتیوب (END STREAM)';
+            document.getElementById('btn-yt-golive').className = 'py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-red-950 text-red-400 border-2 border-red-500 font-black text-xs flex items-center justify-center gap-2 transition';
+            document.getElementById('yt-status-text').innerText = '🔴 روی آنتن زنده (ON AIR)';
+            document.getElementById('yt-status-text').className = 'text-xs font-bold text-red-400 mt-0.5 animate-pulse';
+
+            const topTimer = document.getElementById('top-yt-timer');
+            const topLabel = document.getElementById('top-yt-label');
+            if (topTimer) topTimer.classList.remove('hidden');
+            if (topLabel) topLabel.innerText = '🔴 LIVE ON YOUTUBE';
+
+            if (state.ytLiveTimerInterval) clearInterval(state.ytLiveTimerInterval);
+            state.ytLiveTimerInterval = setInterval(() => {
+                const sec = Math.floor((Date.now() - state.ytLiveStartTime) / 1000);
+                const hrs = String(Math.floor(sec / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+                const secs = String(sec % 60).padStart(2, '0');
+                const formatted = `${hrs}:${mins}:${secs}`;
+                const durEl = document.getElementById('yt-duration-text');
+                if (durEl) durEl.innerText = formatted;
+                if (topTimer) topTimer.innerText = `${mins}:${secs}`;
+            }, 1000);
+
+            syncRemoteTallyState();
+        }
+
+        function stopYoutubeLiveBroadcast() {
+            state.ytLiveActive = false;
+            if (state.ytLiveTimerInterval) {
+                clearInterval(state.ytLiveTimerInterval);
+                state.ytLiveTimerInterval = null;
+            }
+            if (state.ytWsRecorder) {
+                try { state.ytWsRecorder.stop(); } catch (e) {}
+                state.ytWsRecorder = null;
+            }
+            if (state.ytWsRelaySocket) {
+                try { state.ytWsRelaySocket.close(); } catch (e) {}
+                state.ytWsRelaySocket = null;
+            }
+
+            document.getElementById('btn-yt-golive-label').innerText = '🔴 شروع پخش زنده یوتیوب (GO LIVE)';
+            document.getElementById('btn-yt-golive').className = 'py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition';
+            document.getElementById('yt-status-text').innerText = 'آماده پخش (Standby)';
+            document.getElementById('yt-status-text').className = 'text-xs font-bold text-amber-400 mt-0.5';
+
+            const topTimer = document.getElementById('top-yt-timer');
+            const topLabel = document.getElementById('top-yt-label');
+            if (topTimer) topTimer.classList.add('hidden');
+            if (topLabel) topLabel.innerText = '▶️ لایو یوتیوب و کامنت‌ها';
+        }
+
+        function toggleCleanProgramFullscreen(forceState) {
+            const modal = document.getElementById('clean-pgm-modal');
+            const show = typeof forceState === 'boolean' ? forceState : modal.classList.contains('hidden');
+            state.cleanFeedActive = show;
+            modal.classList.toggle('hidden', !show);
+
+            if (show) {
+                const hint = document.getElementById('clean-pgm-hint');
+                if (hint) {
+                    hint.style.opacity = '1';
+                    setTimeout(() => { hint.style.opacity = '0'; }, 3500);
+                }
+                if (modal.requestFullscreen) {
+                    modal.requestFullscreen().catch(() => {});
+                }
+            } else {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
         }
 
         // Auto-connect if opened via QR Code URL (?connect=XXXX)
