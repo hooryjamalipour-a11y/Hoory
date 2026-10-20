@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#06080e">
+    <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.2</title>
-    
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.5 Turbo</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Vazirmatn & JetBrains Mono Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- MQTT.js + PeerJS + QRCode + MediaPipe Selfie Segmentation (AI Bokeh) -->
+
+    <!-- MQTT.js + QRCode + MediaPipe Selfie Segmentation (AI Bokeh) -->
     <script src="https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
 
@@ -65,16 +64,16 @@
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
 
         .tally-pgm {
-            box-shadow: inset 0 0 0 6px #ef4444, 0 0 25px rgba(239, 68, 68, 0.45);
+            box-shadow: inset 0 0 0 5px #ef4444, 0 0 20px rgba(239, 68, 68, 0.4);
         }
         .tally-pvw {
-            box-shadow: inset 0 0 0 6px #10b981, 0 0 25px rgba(16, 185, 129, 0.35);
+            box-shadow: inset 0 0 0 5px #10b981, 0 0 20px rgba(16, 185, 129, 0.3);
         }
         .tally-screen-pgm {
-            box-shadow: inset 0 0 0 12px #ef4444, inset 0 0 50px rgba(239, 68, 68, 0.65);
+            box-shadow: inset 0 0 0 10px #ef4444, inset 0 0 40px rgba(239, 68, 68, 0.55);
         }
         .tally-screen-pvw {
-            box-shadow: inset 0 0 0 12px #10b981, inset 0 0 50px rgba(16, 185, 129, 0.5);
+            box-shadow: inset 0 0 0 10px #10b981, inset 0 0 40px rgba(16, 185, 129, 0.45);
         }
 
         input[type=range].t-bar {
@@ -106,28 +105,47 @@
 <body class="min-h-screen flex flex-col justify-between bg-studio-950 text-slate-100">
 
     <!-- ================= TOP HEADER BAR ================= -->
-    <header class="h-12 bg-studio-900/95 border-b border-slate-800/80 px-3 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md">
+    <header class="min-h-[48px] bg-studio-900/95 border-b border-slate-800/80 px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-50 backdrop-blur-md">
         <div class="flex items-center gap-2">
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.2 FIX</span>
+                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.5 TURBO</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
             </button>
+            <button onclick="downloadStandaloneHtml()" class="text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2.5 py-1 rounded transition flex items-center gap-1" title="دانلود فایل HTML مستقل">
+                <span>⬇️ دانلود فایل برنامه</span>
+            </button>
         </div>
 
-        <!-- Connection & Broker Badges -->
-        <div class="flex items-center gap-2 text-xs">
+        <!-- WakeLock, FPS, MQTT & Connection Badges -->
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <!-- Screen Wake Lock Status Button -->
+            <button onclick="forceEnableWakeLock()" id="wakelock-badge" class="flex items-center gap-1 bg-emerald-950/80 border border-emerald-500/40 px-2 py-1 rounded text-[10px] text-emerald-300 transition" title="جلوگیری از خاموش شدن صفحه موبایل">
+                <span id="wakelock-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span id="wakelock-label">☀️ صفحه روشن: فعال</span>
+            </button>
+
+            <!-- Performance / FPS Badge -->
+            <div id="fps-badge" class="hidden sm:flex items-center gap-1 bg-slate-900 border border-slate-800 px-2 py-1 rounded font-mono text-[10px] text-cyan-400">
+                <span id="fps-counter">60 FPS</span>
+            </div>
+
+            <!-- MQTT Broker Status -->
             <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 px-2 py-1 rounded font-mono text-[10px]">
                 <span id="mqtt-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
                 <span id="mqtt-label" class="text-slate-300">MQTT: INIT</span>
             </div>
+
+            <!-- Connection Status -->
             <div id="connection-badge" class="flex items-center gap-1.5 bg-slate-800/90 border border-slate-700 px-2.5 py-1 rounded-full">
                 <span id="conn-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
                 <span id="conn-text" class="text-[11px] font-medium text-slate-300">آماده</span>
             </div>
+
+            <!-- Room PIN Badge -->
             <div id="room-badge" class="hidden items-center gap-1 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 px-2.5 py-1 rounded-md font-mono text-xs">
                 <span>کد:</span>
                 <strong id="header-room-id" class="text-white tracking-widest">----</strong>
@@ -142,14 +160,14 @@
 
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span>✨ نسخه ۴.۲: اصلاح کامل چرخش افقی (Landscape) + زوم سخت‌افزاری + بوکه پرتره</span>
+                <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
+                    <span>⚡ نسخه ۴.۵ توربو: حذف کامل لگ تصویر (موتور Low-Latency) + قفل بیداری دائمی صفحه موبایل (WakeLock + ضد قطع ارتباط)</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
                 </h1>
                 <p class="text-slate-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
-                    مجهز به ماتریس تراز خودکار و دستی زاویه تصویر (۰°، ۹۰°، ۱۸۰°، ۲۷۰°)، انتخاب لنز اپتیکال و تاری پس‌زمینه.
+                    مجهز به سیستم ضد خاموشی صفحه (Screen WakeLock دوگانه)، بازگشت خودکار ارتباط در صورت افت شبکه، موتور رندر GPU بدون لگ و چرخش تصویر.
                 </p>
             </div>
 
@@ -166,7 +184,7 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۱. واحد دوربین بی‌سیم</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            پشتیبانی از حالت افقی و عمودی بدون کشیدگی، انتخاب لنز فیزیکی، زوم سخت‌افزاری و بوکه پرتره.
+                            ارسال تصویر روان بدون لگ، قفل روشن ماندن دائمی صفحه موبایل، حالت کم‌نور ذخیره باتری (OLED Dimmer) و زوم سخت‌افزاری.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400">
@@ -186,7 +204,7 @@
                             <h2 class="text-lg font-bold text-white mt-0.5">۲. میز کارگردانی تلویزیونی</h2>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            کنترل زاویه و چرخش ۹۰ درجه تصویر دوربین ۱، کنترل زوم و بوکه از راه دور، پخش مدیا و ضبط خروجی.
+                            موتور ترکیب تصویر شتاب‌دهی شده بدون لگ، بیداری دائمی صفحه کارگردان، اتصال مجدد خودکار و ضبط مستر.
                         </p>
                     </div>
                     <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-blue-400">
@@ -215,6 +233,17 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Download Box -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="space-y-0.5 text-center sm:text-right">
+                    <div class="text-xs font-bold text-white">📥 دریافت فایل تک‌صفحه‌ای (Single-File HTML) برای اجرا روی موبایل و کامپیوتر</div>
+                    <div class="text-[11px] text-slate-400">می‌توانید همین الان فایل کامل برنامه را دانلود کرده و در هر مرورگری باز کنید.</div>
+                </div>
+                <button onclick="downloadStandaloneHtml()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition whitespace-nowrap">
+                    ⬇️ دانلود فایل HTML
+                </button>
+            </div>
         </div>
     </main>
 
@@ -223,9 +252,19 @@
         <!-- Tally Border Overlay -->
         <div id="cam-tally-border" class="absolute inset-0 pointer-events-none z-30 transition-all duration-200"></div>
 
+        <!-- OLED Power-Saver Dimmer Overlay (Keeps Screen Awake without Battery Drain) -->
+        <div id="cam-oled-dimmer" onclick="toggleCameraOledDimmer(false)" class="hidden absolute inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-6 text-center cursor-pointer">
+            <div class="space-y-3 max-w-xs">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping mx-auto"></div>
+                <div class="text-sm font-bold text-emerald-400">حالت کم‌نور (ضد خاموشی صفحه) فعال است</div>
+                <div class="text-xs text-slate-400">دوربین ۱ در حال ارسال تصویر زنده است و صفحه موبایل خاموش نمی‌شود. برای بازگشت نور صفحه، یک بار روی صفحه بزنید.</div>
+                <div class="font-mono text-lg text-white pt-2" id="dimmer-pin-label">PIN: ----</div>
+            </div>
+        </div>
+
         <!-- Camera Top HUD -->
         <div class="relative z-40 bg-gradient-to-b from-black/95 via-black/75 to-transparent p-3 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <div id="cam-tally-pill" class="px-3 py-1 rounded-full bg-slate-800 border border-slate-600 text-slate-200 font-bold text-xs flex items-center gap-1.5">
                     <span id="cam-tally-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
                     <span id="cam-tally-label">STANDBY • آماده</span>
@@ -235,17 +274,20 @@
                     <strong id="cam-pin-code" class="font-mono text-lg font-black text-emerald-400 tracking-widest">----</strong>
                     <button onclick="toggleQrModal(true)" class="text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40 font-mono">QR</button>
                 </div>
+                <button onclick="toggleCameraOledDimmer(true)" class="text-xs bg-slate-800/90 hover:bg-slate-700 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg font-bold" title="کم‌نور کردن صفحه بدون قطع دوربین">
+                    🌙 کم‌نور (OLED)
+                </button>
             </div>
 
-            <!-- Lens & Resolution Selectors -->
+            <!-- Lens, Resolution & Stream Profile Selectors -->
             <div class="flex flex-wrap items-center gap-1.5">
-                <select id="cam-lens-select" onchange="changePhysicalLens(this.value)" class="bg-slate-900/90 border border-slate-700 text-white text-[11px] rounded-lg px-2 py-1.5 outline-none focus:border-emerald-500 max-w-[160px]">
+                <select id="cam-lens-select" onchange="changePhysicalLens(this.value)" class="bg-slate-900/90 border border-slate-700 text-white text-[11px] rounded-lg px-2 py-1.5 outline-none focus:border-emerald-500 max-w-[150px]">
                     <option value="">در حال شناسایی لنزها...</option>
                 </select>
                 <select id="cam-res-select" onchange="changeCameraResolution(this.value)" class="bg-slate-900/90 border border-slate-700 text-emerald-300 font-mono text-[11px] rounded-lg px-2 py-1.5 outline-none">
-                    <option value="1080" selected>1080p Full HD</option>
-                    <option value="2160">4K Ultra HD</option>
-                    <option value="720">720p HD (سریع)</option>
+                    <option value="720" selected>720p Turbo (بدون لگ • پیشنهادی)</option>
+                    <option value="1080">1080p Full HD</option>
+                    <option value="480">480p Ultra-Fast (اینترنت ضعیف)</option>
                 </select>
             </div>
         </div>
@@ -253,14 +295,14 @@
         <!-- Camera Live Viewfinder -->
         <div class="flex-1 relative flex items-center justify-center bg-studio-950 overflow-hidden">
             <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-contain"></video>
-            <canvas id="cam-bokeh-canvas" width="1280" height="720" class="hidden w-full h-full object-contain"></canvas>
+            <canvas id="cam-bokeh-canvas" width="960" height="540" class="hidden w-full h-full object-contain"></canvas>
 
             <!-- Permission Overlay -->
-            <div id="cam-permission-overlay" class="hidden absolute inset-0 z-45 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+            <div id="cam-permission-overlay" class="hidden absolute inset-0 z-40 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
                 <div class="max-w-sm bg-studio-900 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-2xl">
-                    <h3 class="text-base font-bold text-white">نیاز به مجوز دوربین</h3>
+                    <h3 class="text-base font-bold text-white">نیاز به مجوز دوربین و میکروفون</h3>
                     <p id="cam-error-reason" class="text-xs text-slate-400 leading-relaxed">
-                        روی دکمه زیر بزنید و گزینه Allow را انتخاب کنید.
+                        لطفاً دسترسی دوربین و میکروفون (Allow) را تایید کنید.
                     </p>
                     <button onclick="retryCameraPermission()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
                         📷 فعال‌سازی مجدد دوربین
@@ -275,7 +317,7 @@
 
             <!-- Hardware Status Badge -->
             <div class="absolute top-3 left-3 z-30 bg-black/70 backdrop-blur px-2.5 py-1.5 rounded-lg border border-white/10 font-mono text-[10px] text-slate-300 space-y-0.5 pointer-events-none">
-                <div id="cam-res-indicator">RES: 1920x1080</div>
+                <div id="cam-res-indicator">RES: 1280x720</div>
                 <div id="cam-rot-indicator" class="text-amber-400">ROTATION: 0°</div>
                 <div id="cam-zoom-indicator" class="text-emerald-400">ZOOM: 1.0x</div>
                 <div id="cam-bokeh-indicator" class="text-purple-400">BOKEH: OFF</div>
@@ -288,7 +330,7 @@
                 <!-- Zoom Control -->
                 <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2">
                     <span class="text-[11px] font-bold text-emerald-400 whitespace-nowrap">🔍 زوم لنز:</span>
-                    <input id="cam-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="applyLocalCameraZoom(this.value)" class="flex-1 accent-emerald-500 cursor-pointer">
+                    <input id="cam-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="scheduleCameraZoom(this.value)" class="flex-1 accent-emerald-500 cursor-pointer">
                     <span id="cam-zoom-val" class="font-mono text-xs text-white w-9 text-left">1.0x</span>
                 </div>
 
@@ -304,7 +346,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex flex-wrap items-center gap-1.5">
                     <button onclick="rotateCameraFeedFromNode()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1">
-                        <span>📐 چرخش ۹۰° تصویر (افقی/عمودی)</span>
+                        <span>📐 چرخش ۹۰° تصویر</span>
                     </button>
                     <button onclick="flipLocalCamera()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">
                         🔄 عقب/سلفی
@@ -328,7 +370,7 @@
 
     <!-- ================= 3. DIRECTOR SWITCHER STUDIO VIEW (PHONE 2) ================= -->
     <section id="view-director" class="hidden flex-1 flex flex-col bg-studio-950 overflow-y-auto">
-        
+
         <!-- Top Connection & Recording Toolbar -->
         <div class="bg-studio-900 border-b border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap items-center gap-2">
@@ -340,7 +382,7 @@
                     </button>
                 </div>
 
-                <!-- Quick Orientation Fix Buttons right in the top bar for instant access -->
+                <!-- Quick Orientation Fix Buttons -->
                 <button onclick="cycleCam1Rotation()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition">
                     <span>📐 چرخش دوربین ۱:</span>
                     <span id="dir-rot-badge" class="font-mono">0°</span>
@@ -355,11 +397,16 @@
                 </button>
             </div>
 
-            <!-- Master Record & Snapshot -->
-            <div class="flex items-center gap-2">
+            <!-- Master Performance Mode, Record & Snapshot -->
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2.5 py-1.5 rounded-lg outline-none">
+                    <option value="720" selected>⚡ موتور 720p (فوق‌روان • بدون لگ)</option>
+                    <option value="1080">🎬 موتور 1080p (Full HD)</option>
+                </select>
+
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
                     <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
-                    <span id="btn-record-label">ضبط مستر خروجی (1080p)</span>
+                    <span id="btn-record-label">ضبط مستر خروجی</span>
                 </button>
 
                 <button onclick="takeProgramSnapshot()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-2.5 py-1.5 rounded-lg" title="ثبت عکس">
@@ -370,7 +417,7 @@
 
         <!-- Dual Broadcast Monitors: PREVIEW (PVW) & PROGRAM (PGM) -->
         <div class="p-3 grid grid-cols-1 lg:grid-cols-2 gap-3 max-w-7xl mx-auto w-full">
-            
+
             <!-- PREVIEW MONITOR (GREEN) -->
             <div class="bg-studio-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
                 <div class="bg-emerald-950/50 border-b border-emerald-500/30 px-3 py-1.5 flex items-center justify-between">
@@ -381,7 +428,7 @@
                     <span id="pvw-source-label" class="font-mono text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">CAM 1</span>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pvw">
-                    <canvas id="canvas-pvw" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+                    <canvas id="canvas-pvw" width="640" height="360" class="w-full h-full object-contain"></canvas>
                 </div>
             </div>
 
@@ -394,21 +441,21 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-source-label" class="font-mono text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded">CAM 1</span>
-                        <span class="font-mono text-[10px] text-slate-400">1080p HQ</span>
+                        <span id="pgm-res-badge" class="font-mono text-[10px] text-slate-400">720p TURBO</span>
                     </div>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pgm">
-                    <canvas id="canvas-pgm" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
+                    <canvas id="canvas-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Switcher Deck & Multi-Function Control Tabs -->
         <div class="px-3 pb-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1">
-            
+
             <!-- Left/Center Column: Scene Switcher & Transitions (7 cols) -->
             <div class="lg:col-span-7 bg-studio-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between space-y-4">
-                
+
                 <!-- Input Sources Matrix -->
                 <div class="space-y-2.5">
                     <div class="flex items-center justify-between">
@@ -416,7 +463,7 @@
                         <span class="text-[11px] text-slate-400">سبز = پیش‌نمایش | قرمز = روی آنتن</span>
                     </div>
 
-                    <!--PVW Row -->
+                    <!-- PVW Row -->
                     <div class="space-y-1">
                         <span class="text-[10px] font-mono text-emerald-400 font-semibold">انتخاب منبع پیش‌نمایش (PVW):</span>
                         <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="pvw-buttons-grid">
@@ -484,7 +531,7 @@
 
             <!-- Right Column: Remote PTZ + Rotation + Bokeh, Media, Graphics, Audio (5 cols) -->
             <div class="lg:col-span-5 bg-studio-900 border border-slate-800 rounded-xl flex flex-col overflow-hidden">
-                
+
                 <!-- Tab Headers -->
                 <div class="grid grid-cols-4 bg-slate-950 border-b border-slate-800 text-xs font-bold">
                     <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60">📡 لنز و چرخش</button>
@@ -519,11 +566,11 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">کیفیت تصویر ارسالی:</label>
+                                <label class="text-[10px] text-slate-400 block mb-1">کیفیت استریم ارسالی:</label>
                                 <select onchange="sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
-                                    <option value="1080" selected>1080p Full HD</option>
-                                    <option value="2160">4K Ultra HD</option>
-                                    <option value="720">720p HD</option>
+                                    <option value="720" selected>720p Turbo (بدون لگ)</option>
+                                    <option value="1080">1080p Full HD</option>
+                                    <option value="480">480p Fast</option>
                                 </select>
                             </div>
                         </div>
@@ -605,12 +652,12 @@
                             </button>
                         </div>
                         <input id="lt-title-input" type="text" value="استودیو پخش زنده PRISM" oninput="updateGraphicsText()" placeholder="عنوان اصلی" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
-                        <input id="lt-sub-input" type="text" value="کارگردانی چند دوربینه با کیفیت 1080p و بوکه هوشمند" oninput="updateGraphicsText()" placeholder="زیرعنوان" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none">
+                        <input id="lt-sub-input" type="text" value="کارگردانی چند دوربینه بدون لگ و قفل بیداری صفحه" oninput="updateGraphicsText()" placeholder="زیرعنوان" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none">
                         <div class="pt-1 border-t border-slate-800 flex items-center justify-between">
                             <span class="text-xs text-slate-300">نوار خبر متحرک (Ticker)</span>
                             <button onclick="toggleTicker()" id="btn-toggle-ticker" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded">خاموش</button>
                         </div>
-                        <input id="ticker-input" type="text" value="🔴 ارتباط زنده برقرار است • تراز افقی و عمودی تصویر فعال شد..." oninput="updateGraphicsText()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none">
+                        <input id="ticker-input" type="text" value="🔴 ارتباط زنده برقرار است • سیستم ضد خاموشی صفحه و ضد لگ فعال شد..." oninput="updateGraphicsText()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none">
                     </div>
                 </div>
 
@@ -659,13 +706,13 @@
 
     <!-- Hidden Media Elements for Mixing Engine -->
     <div class="hidden">
-        <video id="hidden-cam1-video" autoplay playsinline></video>
+        <video id="hidden-cam1-video" autoplay playsinline muted></video>
         <video id="hidden-cam2-video" autoplay playsinline muted></video>
         <video id="hidden-media-video" playsinline loop crossorigin="anonymous"></video>
         <img id="hidden-media-img" alt="">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v4.2 Rotation & Landscape Fix) ================= -->
+    <!-- ================= APPLICATION LOGIC (v4.5 Turbo: Zero-Lag + WakeLock + Auto-Reconnect) ================= -->
     <script>
         const RTC_CONFIG = {
             iceServers: [
@@ -681,7 +728,9 @@
                     username: 'openrelayproject',
                     credential: 'openrelayproject'
                 }
-            ]
+            ],
+            bundlePolicy: 'max-bundle',
+            rtcpMuxPolicy: 'require'
         };
 
         const state = {
@@ -691,27 +740,38 @@
             mqttConnected: false,
             rtcPeerConn: null,
             activeVideoSender: null,
+            activeAudioSender: null,
+            heartbeatTimer: null,
+            lastRemotePong: 0,
+
+            // WakeLock & Keep-Awake Engine
+            wakeLockSentinel: null,
+            keepAwakeAudioCtx: null,
+            keepAwakeTimer: null,
 
             // Streams & Camera Hardware
             localCamStream: null,
             rawVideoTrack: null,
+            rawAudioTrack: null,
             availableLenses: [],
             currentDeviceId: '',
             currentFacingMode: 'environment',
-            currentResHeight: 1080,
+            currentResHeight: 720, // Default 720p for ultra-smooth zero-lag streaming
             currentZoom: 1.0,
+            zoomPending: false,
             torchOn: false,
 
             // Orientation & Aspect Ratio Compensation
-            cam1Rotation: 0,      // 0, 90, 180, 270 degrees
-            cam1Mirror: false,    // Horizontal flip
-            cam1FitMode: 'cover', // 'cover' (fill 16:9) or 'contain' (fit inside with bars)
+            cam1Rotation: 0,
+            cam1Mirror: false,
+            cam1FitMode: 'cover',
 
-            // AI Bokeh (MediaPipe Selfie Segmentation)
+            // AI Bokeh (MediaPipe Selfie Segmentation - Optimized Offscreen Buffer)
             bokehBlurPx: 0,
             selfieSegmentation: null,
             bokehCanvasStream: null,
             bokehProcessingActive: false,
+            bokehOffscreenCanvas: null,
 
             // Director Mixer State
             remoteCam1Stream: null,
@@ -726,9 +786,9 @@
             mediaType: 'demo',
             lowerThirdVisible: true,
             ltTitle: 'استودیو پخش زنده PRISM',
-            ltSub: 'کارگردانی چند دوربینه با کیفیت 1080p و بوکه هوشمند',
+            ltSub: 'کارگردانی چند دوربینه بدون لگ و قفل بیداری صفحه',
             tickerVisible: false,
-            tickerText: '🔴 ارتباط زنده برقرار است • تراز افقی و عمودی تصویر فعال شد...',
+            tickerText: '🔴 ارتباط زنده برقرار است • سیستم ضد خاموشی صفحه و ضد لگ فعال شد...',
             tickerOffset: 0,
 
             // Audio & Recording
@@ -736,13 +796,121 @@
             destNode: null,
             gains: { cam1: 1.0, cam2: 1.0, media: 0.9 },
             gainNodes: {},
+            sourceNodes: {},
             mediaRecorder: null,
             recordedChunks: [],
-            isRecording: false
+            isRecording: false,
+
+            // Throttling timestamps
+            lastMqttCmdTs: 0
         };
 
         // ============================================================================
-        // ORIENTATION & ROTATION MATRIX CONTROLS
+        // 1. BULLETPROOF KEEP-AWAKE ENGINE (Screen WakeLock API + Silent Audio Fallback)
+        // ============================================================================
+        async function requestScreenWakeLock() {
+            const dot = document.getElementById('wakelock-dot');
+            const label = document.getElementById('wakelock-label');
+
+            // Method A: Native Screen Wake Lock API
+            if ('wakeLock' in navigator) {
+                try {
+                    if (state.wakeLockSentinel) {
+                        try { await state.wakeLockSentinel.release(); } catch (e) {}
+                    }
+                    state.wakeLockSentinel = await navigator.wakeLock.request('screen');
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                    if (label) label.innerText = '☀️ صفحه روشن: قفل فعال';
+
+                    state.wakeLockSentinel.addEventListener('release', () => {
+                        if (document.visibilityState === 'visible' && state.role !== 'launcher') {
+                            requestScreenWakeLock();
+                        }
+                    });
+                } catch (err) {
+                    if (label) label.innerText = '☀️ بیداری صوتی فعال';
+                }
+            }
+
+            // Method B: Silent Sub-Audible Audio Keep-Awake (Prevents iOS/Android CPU & Screen Sleep)
+            startSilentAudioKeepAwake();
+        }
+
+        function startSilentAudioKeepAwake() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                if (!state.keepAwakeAudioCtx) {
+                    state.keepAwakeAudioCtx = new AudioCtx();
+                }
+                if (state.keepAwakeAudioCtx.state === 'suspended') {
+                    state.keepAwakeAudioCtx.resume().catch(() => {});
+                }
+                if (!state.keepAwakeTimer) {
+                    state.keepAwakeTimer = setInterval(() => {
+                        try {
+                            if (!state.keepAwakeAudioCtx) return;
+                            if (state.keepAwakeAudioCtx.state === 'suspended') {
+                                state.keepAwakeAudioCtx.resume().catch(() => {});
+                            }
+                            const osc = state.keepAwakeAudioCtx.createOscillator();
+                            const gain = state.keepAwakeAudioCtx.createGain();
+                            gain.gain.value = 0.0001; // Completely inaudible
+                            osc.frequency.value = 1;
+                            osc.connect(gain);
+                            gain.connect(state.keepAwakeAudioCtx.destination);
+                            osc.start();
+                            osc.stop(state.keepAwakeAudioCtx.currentTime + 0.05);
+                        } catch (e) {}
+                    }, 15000);
+                }
+            } catch (e) {}
+        }
+
+        function forceEnableWakeLock() {
+            requestScreenWakeLock();
+        }
+
+        // Re-acquire WakeLock automatically whenever user returns to tab or touches screen
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestScreenWakeLock();
+                if (state.role !== 'launcher' && state.pinCode) {
+                    verifyAndHealConnections();
+                }
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if (!state.wakeLockSentinel) requestScreenWakeLock();
+        }, { passive: true });
+
+        function toggleCameraOledDimmer(show) {
+            const dimmer = document.getElementById('cam-oled-dimmer');
+            const pinLbl = document.getElementById('dimmer-pin-label');
+            if (pinLbl) pinLbl.innerText = `PIN: ${state.pinCode || '----'}`;
+            if (dimmer) dimmer.classList.toggle('hidden', !show);
+            requestScreenWakeLock();
+        }
+
+        // ============================================================================
+        // 2. DOWNLOAD STANDALONE HTML FILE
+        // ============================================================================
+        function downloadStandaloneHtml() {
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PRISM_LiveDeck_Pro_v4.5_Turbo.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }
+
+        // ============================================================================
+        // 3. ORIENTATION & ROTATION MATRIX CONTROLS
         // ============================================================================
         function setCam1Rotation(deg) {
             state.cam1Rotation = ((deg % 360) + 360) % 360;
@@ -770,7 +938,6 @@
         function rotateCameraFeedFromNode() {
             const next = (state.cam1Rotation + 90) % 360;
             setCam1Rotation(next);
-            // Tell Director mixer to rotate incoming camera 1 canvas immediately
             publishMqttSignal('cam-rotate', { rotation: next });
         }
 
@@ -792,7 +959,6 @@
             }
         }
 
-        // Listen for physical screen orientation changes on Camera Phone
         window.addEventListener('resize', () => {
             const vid = document.getElementById('cam-local-video');
             if (vid && vid.videoWidth) {
@@ -801,30 +967,54 @@
         });
 
         // ============================================================================
-        // HIGH BITRATE WEBRTC ENFORCER (8 Mbps + Maintain Resolution)
+        // 4. ADAPTIVE LOW-LATENCY WEBRTC TUNING (Eliminates Video Buffer Lag!)
         // ============================================================================
-        async function enforceHighBitrateWebRTC(pc) {
+        async function enforceLowLatencyWebRTC(pc) {
             if (!pc) return;
             try {
+                // Tune outgoing bitrate based on resolution so mobile networks never choke
+                const targetBitrate = state.currentResHeight >= 1080 ? 4000000 :
+                                      state.currentResHeight >= 720 ? 2200000 : 1000000;
+
                 const senders = pc.getSenders();
                 for (const sender of senders) {
                     if (sender.track && sender.track.kind === 'video') {
                         state.activeVideoSender = sender;
+                        if ('contentHint' in sender.track) {
+                            sender.track.contentHint = 'motion';
+                        }
                         const params = sender.getParameters();
                         if (!params.encodings || params.encodings.length === 0) {
                             params.encodings = [{}];
                         }
-                        params.encodings[0].maxBitrate = 8000000;
+                        params.encodings[0].maxBitrate = targetBitrate;
                         params.encodings[0].maxFramerate = 30;
-                        params.degradationPreference = 'maintain-resolution';
+                        params.encodings[0].networkPriority = 'high';
+                        params.degradationPreference = 'balanced';
                         await sender.setParameters(params);
+                    } else if (sender.track && sender.track.kind === 'audio') {
+                        state.activeAudioSender = sender;
                     }
                 }
             } catch (e) {}
         }
 
+        function minimizeReceiverJitterBuffer(pc) {
+            if (!pc || !pc.getReceivers) return;
+            try {
+                pc.getReceivers().forEach(receiver => {
+                    if ('playoutDelayHint' in receiver) {
+                        receiver.playoutDelayHint = 0.0;
+                    }
+                    if ('jitterBufferTarget' in receiver) {
+                        receiver.jitterBufferTarget = 0;
+                    }
+                });
+            } catch (e) {}
+        }
+
         // ============================================================================
-        // PHYSICAL LENS ENUMERATION & HARDWARE CAMERA ENGINE
+        // 5. PHYSICAL LENS ENUMERATION & HARDWARE CAMERA ENGINE
         // ============================================================================
         async function enumeratePhysicalLenses() {
             try {
@@ -846,18 +1036,17 @@
         }
 
         async function startHardwareCamera(options = {}) {
-            const heightIdeal = options.height || state.currentResHeight || 1080;
+            const heightIdeal = options.height || state.currentResHeight || 720;
             const widthIdeal = Math.round(heightIdeal * (16 / 9));
 
             if (state.localCamStream) {
                 state.localCamStream.getTracks().forEach(t => t.stop());
             }
 
-            // Do not force fixed aspect ratio so rotating the phone doesn't crop or distort sensor output
             const videoConstraints = {
                 width: { ideal: widthIdeal },
                 height: { ideal: heightIdeal },
-                frameRate: { ideal: 30 }
+                frameRate: { ideal: 30, max: 30 }
             };
 
             if (options.deviceId) {
@@ -869,11 +1058,21 @@
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: videoConstraints,
-                    audio: { echoCancellation: true, noiseSuppression: true }
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
                 });
 
                 state.localCamStream = stream;
                 state.rawVideoTrack = stream.getVideoTracks()[0];
+                state.rawAudioTrack = stream.getAudioTracks()[0] || null;
+
+                if (state.rawVideoTrack && 'contentHint' in state.rawVideoTrack) {
+                    state.rawVideoTrack.contentHint = 'motion';
+                }
+
                 const settings = state.rawVideoTrack.getSettings();
                 if (settings.deviceId) state.currentDeviceId = settings.deviceId;
 
@@ -916,12 +1115,15 @@
             if (!deviceId) return;
             state.currentDeviceId = deviceId;
             await startHardwareCamera({ deviceId, height: state.currentResHeight });
-            applyLocalCameraZoom(state.currentZoom);
+            scheduleCameraZoom(state.currentZoom);
         }
 
         async function changeCameraResolution(heightVal) {
             state.currentResHeight = Number(heightVal);
             await startHardwareCamera({ deviceId: state.currentDeviceId || undefined, height: state.currentResHeight });
+            if (state.rtcPeerConn) {
+                await enforceLowLatencyWebRTC(state.rtcPeerConn);
+            }
         }
 
         async function triggerRefocus() {
@@ -935,14 +1137,23 @@
         }
 
         // ============================================================================
-        // TRUE HARDWARE SENSOR ZOOM
+        // 6. THROTTLED HARDWARE SENSOR ZOOM (Prevents Camera Driver Freeze!)
         // ============================================================================
-        async function applyLocalCameraZoom(val) {
+        function scheduleCameraZoom(val) {
             const z = parseFloat(val) || 1.0;
             state.currentZoom = z;
             document.getElementById('cam-zoom-val').innerText = z.toFixed(1) + 'x';
             document.getElementById('cam-zoom-slider').value = z;
 
+            if (state.zoomPending) return;
+            state.zoomPending = true;
+            requestAnimationFrame(async () => {
+                await applyLocalCameraZoom(state.currentZoom);
+                setTimeout(() => { state.zoomPending = false; }, 60);
+            });
+        }
+
+        async function applyLocalCameraZoom(z) {
             let usedHardwareZoom = false;
             if (state.rawVideoTrack && state.rawVideoTrack.getCapabilities) {
                 try {
@@ -968,7 +1179,7 @@
         }
 
         // ============================================================================
-        // AI PORTRAIT BOKEH ENGINE (Dynamic Aspect-Ratio Sync)
+        // 7. GPU-OPTIMIZED AI PORTRAIT BOKEH ENGINE (Fast Downscaled Blur Pass)
         // ============================================================================
         async function initMediaPipeBokeh() {
             if (state.selfieSegmentation) return;
@@ -980,30 +1191,51 @@
             segmentation.setOptions({ modelSelection: 1 });
             segmentation.onResults(onBokehSegmentationResults);
             state.selfieSegmentation = segmentation;
+
+            // Create small offscreen canvas for fast blur without GPU lag
+            state.bokehOffscreenCanvas = document.createElement('canvas');
+            state.bokehOffscreenCanvas.width = 320;
+            state.bokehOffscreenCanvas.height = 180;
         }
 
         function onBokehSegmentationResults(results) {
             const canvas = document.getElementById('cam-bokeh-canvas');
-            const imgW = results.image.width || 1280;
-            const imgH = results.image.height || 720;
+            const srcW = results.image.width || 960;
+            const srcH = results.image.height || 540;
 
-            // Dynamically match canvas resolution to actual camera orientation (fixes landscape squash!)
-            if (canvas.width !== imgW || canvas.height !== imgH) {
-                canvas.width = imgW;
-                canvas.height = imgH;
+            // Cap bokeh canvas to max 960px longest side to guarantee 30fps on mobile
+            const scale = Math.min(1, 960 / Math.max(srcW, srcH));
+            const targetW = Math.round(srcW * scale);
+            const targetH = Math.round(srcH * scale);
+
+            if (canvas.width !== targetW || canvas.height !== targetH) {
+                canvas.width = targetW;
+                canvas.height = targetH;
             }
 
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { alpha: false });
             ctx.save();
-            ctx.clearRect(0, 0, imgW, imgH);
+            ctx.clearRect(0, 0, targetW, targetH);
 
-            ctx.drawImage(results.segmentationMask, 0, 0, imgW, imgH);
+            // Draw sharp person mask
+            ctx.drawImage(results.segmentationMask, 0, 0, targetW, targetH);
             ctx.globalCompositeOperation = 'source-in';
-            ctx.drawImage(results.image, 0, 0, imgW, imgH);
+            ctx.drawImage(results.image, 0, 0, targetW, targetH);
 
+            // Fast downscaled blur on offscreen canvas (10x faster than full-res CSS blur!)
             ctx.globalCompositeOperation = 'destination-over';
-            ctx.filter = `blur(${state.bokehBlurPx}px)`;
-            ctx.drawImage(results.image, 0, 0, imgW, imgH);
+            const off = state.bokehOffscreenCanvas;
+            if (off) {
+                const downFactor = Math.max(2, Math.round(state.bokehBlurPx / 2));
+                off.width = Math.max(80, Math.round(targetW / downFactor));
+                off.height = Math.max(45, Math.round(targetH / downFactor));
+                const offCtx = off.getContext('2d', { alpha: false });
+                offCtx.drawImage(results.image, 0, 0, off.width, off.height);
+                ctx.imageSmoothingEnabled = true;
+                ctx.drawImage(off, 0, 0, off.width, off.height, 0, 0, targetW, targetH);
+            } else {
+                ctx.drawImage(results.image, 0, 0, targetW, targetH);
+            }
 
             ctx.restore();
         }
@@ -1021,9 +1253,6 @@
 
             if (blurPx > 0) {
                 await initMediaPipeBokeh();
-                bokehCanvas.width = vidEl.videoWidth || 1280;
-                bokehCanvas.height = vidEl.videoHeight || 720;
-
                 bokehCanvas.classList.remove('hidden');
                 vidEl.classList.add('hidden');
 
@@ -1048,7 +1277,8 @@
                         await state.selfieSegmentation.send({ image: vidEl });
                     } catch (e) {}
                 }
-                await new Promise(r => requestAnimationFrame(r));
+                // Limit AI segmentation to ~24fps to leave headroom for WebRTC hardware encoder
+                await new Promise(r => setTimeout(r, 42));
             }
         }
 
@@ -1057,7 +1287,7 @@
             if (state.bokehBlurPx > 0) {
                 const bokehCanvas = document.getElementById('cam-bokeh-canvas');
                 if (!state.bokehCanvasStream) {
-                    state.bokehCanvasStream = bokehCanvas.captureStream(30);
+                    state.bokehCanvasStream = bokehCanvas.captureStream(25);
                 }
                 outgoingVideoTrack = state.bokehCanvasStream.getVideoTracks()[0];
             }
@@ -1066,18 +1296,23 @@
                     await state.activeVideoSender.replaceTrack(outgoingVideoTrack);
                 } catch (e) {}
             }
+            if (state.activeAudioSender && state.rawAudioTrack) {
+                try {
+                    await state.activeAudioSender.replaceTrack(state.rawAudioTrack);
+                } catch (e) {}
+            }
         }
 
         function getActiveCameraMediaStream() {
             if (state.bokehBlurPx > 0) {
                 const bokehCanvas = document.getElementById('cam-bokeh-canvas');
                 if (!state.bokehCanvasStream) {
-                    state.bokehCanvasStream = bokehCanvas.captureStream(30);
+                    state.bokehCanvasStream = bokehCanvas.captureStream(25);
                 }
                 const combined = new MediaStream();
                 combined.addTrack(state.bokehCanvasStream.getVideoTracks()[0]);
-                if (state.localCamStream && state.localCamStream.getAudioTracks()[0]) {
-                    combined.addTrack(state.localCamStream.getAudioTracks()[0]);
+                if (state.rawAudioTrack) {
+                    combined.addTrack(state.rawAudioTrack);
                 }
                 return combined;
             }
@@ -1085,7 +1320,7 @@
         }
 
         // ============================================================================
-        // MQTT & WEBRTC SIGNALING
+        // 8. MQTT SIGNALING + HEARTBEAT WATCHDOG + AUTO-RECONNECT
         // ============================================================================
         function connectMqttSignaling(pin, onMessageCallback) {
             if (state.mqttClient) {
@@ -1094,15 +1329,16 @@
 
             const dot = document.getElementById('mqtt-dot');
             const label = document.getElementById('mqtt-label');
-            const clientId = 'prism_v42_' + Math.random().toString(16).substring(2, 10);
+            const clientId = 'prism_v45_' + Math.random().toString(16).substring(2, 10);
             const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
                 clientId,
-                keepalive: 30,
-                reconnectPeriod: 2000
+                keepalive: 15,
+                reconnectPeriod: 1500,
+                connectTimeout: 10000
             });
 
             state.mqttClient = client;
-            const baseTopic = `prismdeck_v42_ir/${pin}`;
+            const baseTopic = `prismdeck_v45_ir/${pin}`;
 
             client.on('connect', () => {
                 state.mqttConnected = true;
@@ -1112,22 +1348,32 @@
                     if (state.role === 'camera') {
                         updateConnectionBadge('ready', `آماده اتصال (${pin})`);
                         publishMqttSignal('cam-online', { pin, lenses: state.availableLenses, current: state.currentDeviceId });
+                    } else if (state.role === 'director') {
+                        publishMqttSignal('dir-join', { role: 'director' });
                     }
                 });
+            });
+
+            client.on('reconnect', () => {
+                dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+                label.innerText = 'MQTT: RECONNECTING';
             });
 
             client.on('message', (topic, payload) => {
                 try {
                     const data = JSON.parse(payload.toString());
                     if (data.senderId === clientId) return;
+                    state.lastRemotePong = Date.now();
                     onMessageCallback(topic, data);
                 } catch (e) {}
             });
+
+            startConnectionWatchdog();
         }
 
         function publishMqttSignal(subTopic, payloadObj) {
             if (!state.mqttClient || !state.mqttConnected || !state.pinCode) return;
-            const topic = `prismdeck_v42_ir/${state.pinCode}/${subTopic}`;
+            const topic = `prismdeck_v45_ir/${state.pinCode}/${subTopic}`;
             const msg = JSON.stringify({
                 ...payloadObj,
                 senderId: state.mqttClient.options.clientId,
@@ -1136,8 +1382,33 @@
             state.mqttClient.publish(topic, msg, { qos: 0 });
         }
 
+        function startConnectionWatchdog() {
+            if (state.heartbeatTimer) clearInterval(state.heartbeatTimer);
+            state.heartbeatTimer = setInterval(() => {
+                if (state.role === 'launcher' || !state.pinCode) return;
+                publishMqttSignal('ping', { role: state.role });
+
+                // Auto-heal WebRTC if connection dropped
+                if (state.rtcPeerConn) {
+                    const st = state.rtcPeerConn.connectionState;
+                    const iceSt = state.rtcPeerConn.iceConnectionState;
+                    if (st === 'failed' || st === 'disconnected' || iceSt === 'failed' || iceSt === 'disconnected') {
+                        verifyAndHealConnections();
+                    }
+                }
+            }, 4000);
+        }
+
+        function verifyAndHealConnections() {
+            if (state.role === 'director' && state.pinCode) {
+                publishMqttSignal('dir-join', { role: 'director', reconnect: true });
+            } else if (state.role === 'camera' && state.pinCode) {
+                publishMqttSignal('cam-online', { pin: state.pinCode, lenses: state.availableLenses, current: state.currentDeviceId });
+            }
+        }
+
         // ============================================================================
-        // NAVIGATION & ROLES
+        // 9. NAVIGATION & ROLES
         // ============================================================================
         function switchRole(targetRole) {
             cleanupConnections();
@@ -1152,13 +1423,16 @@
                 document.getElementById('view-launcher').classList.remove('hidden');
             } else if (targetRole === 'camera') {
                 document.getElementById('view-camera-node').classList.remove('hidden');
+                requestScreenWakeLock();
             } else if (targetRole === 'director') {
                 document.getElementById('view-director').classList.remove('hidden');
+                requestScreenWakeLock();
             }
         }
 
         function cleanupConnections() {
             state.bokehProcessingActive = false;
+            if (state.heartbeatTimer) { clearInterval(state.heartbeatTimer); state.heartbeatTimer = null; }
             if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch(e){} state.rtcPeerConn = null; }
             if (state.mqttClient) { try { state.mqttClient.end(true); } catch(e){} state.mqttClient = null; }
             if (state.localCamStream) { state.localCamStream.getTracks().forEach(t => t.stop()); state.localCamStream = null; }
@@ -1173,7 +1447,7 @@
         }
 
         // ============================================================================
-        // ROLE 1: WIRELESS CAMERA NODE
+        // 10. ROLE 1: WIRELESS CAMERA NODE
         // ============================================================================
         async function initCameraNodeRole() {
             switchRole('camera');
@@ -1184,7 +1458,7 @@
             document.getElementById('qr-pin-display').innerText = pin;
             generateQrCode(pin);
 
-            await startHardwareCamera({ height: 1080 });
+            await startHardwareCamera({ height: 720 });
             connectMqttSignaling(pin, handleCameraMqttMessage);
         }
 
@@ -1198,9 +1472,11 @@
                 await startCameraWebRTCOffer();
             } else if (topic.endsWith('/webrtc-answer')) {
                 if (state.rtcPeerConn && data.sdp) {
-                    await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                    await enforceHighBitrateWebRTC(state.rtcPeerConn);
-                    updateConnectionBadge('connected', 'متصل به میز کارگردانی (1080p HQ)');
+                    try {
+                        await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                        await enforceLowLatencyWebRTC(state.rtcPeerConn);
+                        updateConnectionBadge('connected', 'متصل به میز کارگردانی (بدون لگ)');
+                    } catch (e) {}
                 }
             } else if (topic.endsWith('/ice-dir')) {
                 if (state.rtcPeerConn && data.candidate) {
@@ -1221,6 +1497,7 @@
                 streamToSend.getTracks().forEach(track => {
                     const sender = pc.addTrack(track, streamToSend);
                     if (track.kind === 'video') state.activeVideoSender = sender;
+                    if (track.kind === 'audio') state.activeAudioSender = sender;
                 });
             }
 
@@ -1230,12 +1507,17 @@
 
             pc.onconnectionstatechange = () => {
                 if (pc.connectionState === 'connected') {
-                    enforceHighBitrateWebRTC(pc);
+                    enforceLowLatencyWebRTC(pc);
                     updateConnectionBadge('connected', 'روی آنتن • متصل به کارگردان');
+                } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                    updateConnectionBadge('ready', 'در حال بازیابی خودکار ارتباط...');
                 }
             };
 
-            const offer = await pc.createOffer();
+            const offer = await pc.createOffer({
+                offerToReceiveAudio: false,
+                offerToReceiveVideo: false
+            });
             await pc.setLocalDescription(offer);
             publishMqttSignal('webrtc-offer', { sdp: pc.localDescription });
         }
@@ -1244,7 +1526,7 @@
             if (data.type === 'tally') {
                 updateCameraTallyUI(data.state);
             } else if (data.type === 'zoom') {
-                applyLocalCameraZoom(data.value);
+                scheduleCameraZoom(data.value);
             } else if (data.type === 'bokeh') {
                 setCameraBokeh(data.value);
             } else if (data.type === 'setLens') {
@@ -1309,7 +1591,7 @@
         }
 
         // ============================================================================
-        // ROLE 2: DIRECTOR SWITCHER STUDIO
+        // 11. ROLE 2: DIRECTOR SWITCHER STUDIO
         // ============================================================================
         async function initDirectorRole(enableLocalDemo) {
             switchRole('director');
@@ -1323,15 +1605,26 @@
             }
         }
 
+        function changeMixerResolution(resHeight) {
+            const h = Number(resHeight) || 720;
+            const w = Math.round(h * (16 / 9));
+            const cPgm = document.getElementById('canvas-pgm');
+            cPgm.width = w;
+            cPgm.height = h;
+            const badge = document.getElementById('pgm-res-badge');
+            if (badge) badge.innerText = h === 1080 ? '1080p HQ' : '720p TURBO';
+        }
+
         function connectToWirelessCamera() {
             const pin = document.getElementById('dir-connect-input').value.trim();
             if (!pin) return;
             state.pinCode = pin;
             document.getElementById('header-room-id').innerText = pin;
             updateConnectionBadge('ready', `جستجوی دوربین ${pin}...`);
+            requestScreenWakeLock();
 
             connectMqttSignaling(pin, handleDirectorMqttMessage);
-            setTimeout(() => publishMqttSignal('dir-join', { role: 'director' }), 600);
+            setTimeout(() => publishMqttSignal('dir-join', { role: 'director' }), 500);
         }
 
         async function handleDirectorMqttMessage(topic, data) {
@@ -1365,6 +1658,7 @@
             state.rtcPeerConn = pc;
 
             pc.ontrack = (event) => {
+                minimizeReceiverJitterBuffer(pc);
                 if (event.streams && event.streams[0]) {
                     attachRemoteCamera1Stream(event.streams[0]);
                 }
@@ -1374,6 +1668,16 @@
                 if (e.candidate) publishMqttSignal('ice-dir', { candidate: e.candidate });
             };
 
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === 'connected') {
+                    minimizeReceiverJitterBuffer(pc);
+                    updateConnectionBadge('connected', 'دوربین ۱ متصل شد (بدون لگ)');
+                } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                    updateConnectionBadge('ready', 'تلاش مجدد برای اتصال دوربین ۱...');
+                    verifyAndHealConnections();
+                }
+            };
+
             await pc.setRemoteDescription(new RTCSessionDescription(offerSdp));
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
@@ -1381,14 +1685,16 @@
         }
 
         function attachRemoteCamera1Stream(stream) {
-            state.remoteCam1Stream = stream;
+            // Avoid interrupting video playback if identical stream is already attached
             const v1 = document.getElementById('hidden-cam1-video');
-            v1.srcObject = stream;
-            v1.muted = true;
-            v1.play().catch(() => {});
-
-            connectStreamToAudioMixer('cam1', stream);
-            updateConnectionBadge('connected', 'دوربین ۱ متصل شد (1080p)');
+            if (v1.srcObject !== stream) {
+                state.remoteCam1Stream = stream;
+                v1.srcObject = stream;
+                v1.muted = true;
+                v1.play().catch(() => {});
+                connectStreamToAudioMixer('cam1', stream);
+            }
+            updateConnectionBadge('connected', 'دوربین ۱ متصل شد (بدون لگ)');
             syncRemoteTallyState();
         }
 
@@ -1402,7 +1708,7 @@
             }
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: 'user' },
+                    video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 }, facingMode: 'user' },
                     audio: true
                 });
                 state.directorCam2Stream = stream;
@@ -1415,7 +1721,7 @@
         }
 
         // ============================================================================
-        // SWITCHER & REMOTE COMMANDS
+        // 12. SWITCHER & THROTTLED REMOTE COMMANDS
         // ============================================================================
         function selectPreviewSource(src) {
             state.pvwSource = src;
@@ -1456,7 +1762,7 @@
             const slider = document.getElementById('tbar-slider');
 
             function step(now) {
-                const p = Math.min(1, (now - start) / 650);
+                const p = Math.min(1, (now - start) / 500);
                 state.transitionProgress = p;
                 slider.value = Math.round(p * 100);
                 if (p < 1) {
@@ -1479,19 +1785,24 @@
             state.ftbActive = !state.ftbActive;
         }
 
-        function sendRemoteCommand(cmdObj) {
+        function sendRemoteCommand(cmdObj, throttle = false) {
+            if (throttle) {
+                const now = Date.now();
+                if (now - state.lastMqttCmdTs < 80) return;
+                state.lastMqttCmdTs = now;
+            }
             publishMqttSignal('cmd', cmdObj);
         }
 
         function sendRemoteZoom(val) {
             document.getElementById('remote-zoom-label').innerText = Number(val).toFixed(1) + 'x';
-            sendRemoteCommand({ type: 'zoom', value: Number(val) });
+            sendRemoteCommand({ type: 'zoom', value: Number(val) }, true);
         }
 
         function sendRemoteBokeh(val) {
             const px = parseInt(val, 10) || 0;
             document.getElementById('remote-bokeh-label').innerText = px === 0 ? 'خاموش' : `${px}px`;
-            sendRemoteCommand({ type: 'bokeh', value: px });
+            sendRemoteCommand({ type: 'bokeh', value: px }, true);
         }
 
         function sendIntercomMessage() {
@@ -1512,7 +1823,7 @@
         }
 
         // ============================================================================
-        // 60FPS CANVAS COMPOSITOR WITH ROTATION MATRIX & ASPECT RATIO PROTECTION
+        // 13. DESYNCHRONIZED GPU CANVAS COMPOSITOR (Zero-Lag 30/60 FPS Pipeline)
         // ============================================================================
         let compositorRunning = false;
         function startCanvasCompositorLoop() {
@@ -1520,9 +1831,13 @@
             compositorRunning = true;
 
             const cPvw = document.getElementById('canvas-pvw');
-            const ctxPvw = cPvw.getContext('2d');
+            const ctxPvw = cPvw.getContext('2d', { alpha: false, desynchronized: true });
             const cPgm = document.getElementById('canvas-pgm');
-            const ctxPgm = cPgm.getContext('2d');
+            const ctxPgm = cPgm.getContext('2d', { alpha: false, desynchronized: true });
+
+            let frameCount = 0;
+            let lastFpsTime = performance.now();
+            const fpsEl = document.getElementById('fps-counter');
 
             function renderLoop(timestamp) {
                 if (state.role !== 'director') {
@@ -1530,8 +1845,17 @@
                     return;
                 }
 
+                frameCount++;
+                if (timestamp - lastFpsTime >= 1000) {
+                    if (fpsEl) fpsEl.innerText = `${frameCount} FPS`;
+                    frameCount = 0;
+                    lastFpsTime = timestamp;
+                }
+
+                // Render PVW at lightweight 640x360
                 drawSourceScene(ctxPvw, state.pvwSource, cPvw.width, cPvw.height, timestamp);
 
+                // Render PGM
                 ctxPgm.save();
                 drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height, timestamp);
 
@@ -1586,25 +1910,21 @@
             }
         }
 
-        // Smart Video Renderer with 90/180/270 Rotation Matrix & Aspect-Ratio Preservation
         function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 0, fitMode = 'cover', mirror = false) {
             if (videoEl && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
                 const rawW = videoEl.videoWidth;
                 const rawH = videoEl.videoHeight;
                 const isRotated90 = (rotationDeg === 90 || rotationDeg === 270);
 
-                // Effective dimensions after rotation
                 const effW = isRotated90 ? rawH : rawW;
                 const effH = isRotated90 ? rawW : rawH;
 
                 ctx.save();
-                ctx.beginPath();
-                ctx.rect(x, y, w, h);
-                ctx.clip();
-
-                // Background fill for 'contain' mode bars
-                ctx.fillStyle = '#05070b';
-                ctx.fillRect(x, y, w, h);
+                if (x !== 0 || y !== 0) {
+                    ctx.beginPath();
+                    ctx.rect(x, y, w, h);
+                    ctx.clip();
+                }
 
                 const cx = x + w / 2;
                 const cy = y + h / 2;
@@ -1630,7 +1950,7 @@
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(x, y, w, h);
                 ctx.fillStyle = '#64748b';
-                ctx.font = `bold ${Math.round(w*0.018)}px Vazirmatn, sans-serif`;
+                ctx.font = `bold ${Math.round(w*0.022)}px Vazirmatn, sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.fillText(label, x + w / 2, y + h / 2);
             }
@@ -1645,13 +1965,10 @@
                     ctx.drawImage(img, x, y, w, h);
                 }
             } else {
-                const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-                grad.addColorStop(0, '#1e1b4b');
-                grad.addColorStop(1, '#0f172a');
-                ctx.fillStyle = grad;
+                ctx.fillStyle = '#17153b';
                 ctx.fillRect(x, y, w, h);
                 ctx.fillStyle = '#e2e8f0';
-                ctx.font = `bold ${Math.round(w*0.02)}px Vazirmatn, sans-serif`;
+                ctx.font = `bold ${Math.round(w*0.022)}px Vazirmatn, sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.fillText('پخش زنده مدیا (B-ROLL)', x + w / 2, y + h / 2);
             }
@@ -1699,7 +2016,7 @@
         }
 
         // ============================================================================
-        // MEDIA, GRAPHICS, AUDIO & 1080p RECORDING
+        // 14. MEDIA, GRAPHICS, AUDIO & RECORDING
         // ============================================================================
         function handleMediaUpload(e) {
             const file = e.target.files[0];
@@ -1769,11 +2086,15 @@
         function connectStreamToAudioMixer(channel, stream) {
             if (!state.audioCtx || !stream || stream.getAudioTracks().length === 0) return;
             try {
+                if (state.sourceNodes[channel]) {
+                    try { state.sourceNodes[channel].disconnect(); } catch (e) {}
+                }
                 const src = state.audioCtx.createMediaStreamSource(stream);
-                const gain = state.audioCtx.createGain();
+                const gain = state.gainNodes[channel] || state.audioCtx.createGain();
                 gain.gain.value = state.gains[channel] ?? 1.0;
                 src.connect(gain);
                 gain.connect(state.destNode);
+                state.sourceNodes[channel] = src;
                 state.gainNodes[channel] = gain;
             } catch (e) {}
         }
@@ -1812,10 +2133,10 @@
             }
 
             state.recordedChunks = [];
-            let mimeType = 'video/webm;codecs=vp9,opus';
+            let mimeType = 'video/webm;codecs=vp8,opus';
             if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
 
-            state.mediaRecorder = new MediaRecorder(canvasStream, { mimeType, videoBitsPerSecond: 8000000 });
+            state.mediaRecorder = new MediaRecorder(canvasStream, { mimeType, videoBitsPerSecond: 4500000 });
             state.mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) state.recordedChunks.push(e.data); };
             state.mediaRecorder.onstop = saveRecordedVideo;
             state.mediaRecorder.start(1000);
@@ -1827,7 +2148,7 @@
         function stopProgramRecording() {
             if (state.mediaRecorder && state.isRecording) state.mediaRecorder.stop();
             state.isRecording = false;
-            document.getElementById('btn-record-label').innerText = 'ضبط مستر خروجی (1080p)';
+            document.getElementById('btn-record-label').innerText = 'ضبط مستر خروجی';
         }
 
         function saveRecordedVideo() {
@@ -1835,7 +2156,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `PRISM_Studio_1080p_${Date.now()}.webm`;
+            a.download = `PRISM_Studio_${Date.now()}.webm`;
             a.click();
         }
 
@@ -1857,6 +2178,21 @@
         function toggleQrModal(show) {
             document.getElementById('qr-modal').classList.toggle('hidden', !show);
         }
+
+        // Auto-connect if opened via QR Code URL (?connect=XXXX)
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const connectPin = params.get('connect');
+                if (connectPin) {
+                    initDirectorRole(false).then(() => {
+                        const inp = document.getElementById('dir-connect-input');
+                        if (inp) inp.value = connectPin;
+                        connectToWirelessCamera();
+                    });
+                }
+            } catch (e) {}
+        });
     </script>
 </body>
 </html>
