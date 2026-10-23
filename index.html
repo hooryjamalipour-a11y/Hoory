@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.7 Ultra</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.8 Full-HD</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -110,7 +110,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.7 ULTRA</span>
+                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.8 FULL-HD</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -161,7 +161,7 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span id="launcher-version-banner">⚡ نسخه ۴.۷ اولترا (v4.7): رفع کامل مشکل تصویر در فایرفاکس و کروم + تعمیر دکمه ضبط مستر + حذف لگ صدا و تصویر</span>
+                    <span id="launcher-version-banner">⚡ نسخه ۴.۸ فول‌اچ‌دی (v4.8): شفافیت واقعی 1080p بدون افت پیکسل (حذف محدودیت 160x90 فایرفاکس) + ضبط MP4 با بیت‌ریت بالا</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
@@ -285,9 +285,9 @@
                     <option value="">در حال شناسایی لنزها...</option>
                 </select>
                 <select id="cam-res-select" onchange="changeCameraResolution(this.value)" class="bg-slate-900/90 border border-slate-700 text-emerald-300 font-mono text-[11px] rounded-lg px-2 py-1.5 outline-none">
-                    <option value="720" selected>720p Turbo (بدون لگ • پیشنهادی)</option>
-                    <option value="1080">1080p Full HD</option>
-                    <option value="480">480p Ultra-Fast (اینترنت ضعیف)</option>
+                    <option value="1080" selected>1080p Full HD (شفافیت کامل • پیش‌فرض)</option>
+                    <option value="720">720p HD Turbo</option>
+                    <option value="480">480p Fast (اینترنت ضعیف)</option>
                 </select>
             </div>
         </div>
@@ -419,14 +419,14 @@
                 </button>
 
                 <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none">
-                    <option value="720" selected>⚡ موتور 720p (بدون لگ)</option>
+                    <option value="1080" selected>🎬 موتور 1080p (Full HD واقعی)</option>
+                    <option value="720">⚡ موتور 720p (HD سبک)</option>
                     <option value="540">🚀 موتور 540p (فوق‌سبک موبایل)</option>
-                    <option value="1080">🎬 موتور 1080p (Full HD)</option>
                 </select>
 
                 <select id="rec-format-select" onchange="updateRecFormatPreference(this.value)" class="bg-slate-950 border border-emerald-500/40 text-emerald-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none" title="فرمت ذخیره ویدیو">
-                    <option value="webm" selected>📼 فرمت ضبط: WebM (VP8/Opus • بدون لگ فایرفاکس/کروم)</option>
-                    <option value="mp4">📼 فرمت ضبط: MP4 (H.264 سخت‌افزاری)</option>
+                    <option value="mp4" selected>📼 فرمت ضبط: MP4 (Full-HD 12Mbps)</option>
+                    <option value="webm">📼 فرمت ضبط: WebM (VP8/Opus)</option>
                 </select>
 
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
@@ -440,7 +440,7 @@
             </div>
             <div class="mt-2 w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2">
                 <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
-                    آماده ضبط مستر (نسخه v4.7)؛ برای شروع ضبط، دکمه قرمز «ضبط مستر خروجی» را بزنید.
+                    آماده ضبط مستر (نسخه v4.8 Full-HD)؛ کیفیت تصویر روی 1080p واقعی و فرمت MP4 تنظیم شد.
                 </div>
                 <div id="recorded-download-slot" class="hidden shrink-0"></div>
             </div>
@@ -467,7 +467,7 @@
                     <span id="pvw-source-label" class="font-mono text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">CAM 1</span>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pvw">
-                    <canvas id="canvas-pvw" width="640" height="360" class="w-full h-full object-contain"></canvas>
+                    <canvas id="canvas-pvw" width="960" height="540" class="w-full h-full object-contain"></canvas>
                 </div>
             </div>
 
@@ -480,11 +480,11 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-source-label" class="font-mono text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded">CAM 1</span>
-                        <span id="pgm-res-badge" class="font-mono text-[10px] text-slate-400">720p TURBO</span>
+                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">1080p FULL-HD</span>
                     </div>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pgm">
-                    <canvas id="canvas-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+                    <canvas id="canvas-pgm" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
                 </div>
             </div>
         </div>
@@ -606,9 +606,9 @@
                             </div>
                             <div>
                                 <label class="text-[10px] text-slate-400 block mb-1">کیفیت استریم ارسالی:</label>
-                                <select onchange="sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
-                                    <option value="720" selected>720p Turbo (بدون لگ)</option>
-                                    <option value="1080">1080p Full HD</option>
+                                <select id="remote-res-select" onchange="changeMixerResolution(this.value); sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
+                                    <option value="1080" selected>1080p Full HD (شفاف)</option>
+                                    <option value="720">720p HD Turbo</option>
                                     <option value="480">480p Fast</option>
                                 </select>
                             </div>
@@ -781,7 +781,7 @@
 
     <!-- ================= CLEAN PROGRAM OUTPUT OVERLAY ================= -->
     <div id="clean-pgm-modal" onclick="toggleCleanProgramFullscreen(false)" class="hidden fixed inset-0 z-50 bg-black flex items-center justify-center cursor-pointer">
-        <canvas id="canvas-clean-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+        <canvas id="canvas-clean-pgm" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
         <div id="clean-pgm-hint" class="absolute top-4 right-4 bg-black/70 border border-white/20 text-white text-xs px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-500">
             🖥️ خروجی تمیز (Clean Feed) • برای خروج یک بار روی صفحه بزنید
         </div>
@@ -801,11 +801,11 @@
 
     <!-- Hidden Media Elements for Mixing Engine -->
     <!-- Keep source videos composited (tiny + transparent) so requestVideoFrameCallback can report remote-frame capture timing. -->
-    <div aria-hidden="true" style="position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;overflow:hidden;pointer-events:none;z-index:2147483647">
-        <video id="hidden-cam1-video" autoplay playsinline muted style="position:fixed;left:0;top:0;width:160px;height:90px;opacity:0.01;pointer-events:none"></video>
-        <video id="hidden-cam2-video" autoplay playsinline muted style="width:2px;height:2px"></video>
-        <video id="hidden-media-video" playsinline preload="metadata" crossorigin="anonymous" style="width:2px;height:2px"></video>
-        <img id="hidden-media-img" alt="" style="width:1px;height:1px">
+    <div aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1920px;height:1080px;opacity:0.001;overflow:hidden;pointer-events:none;z-index:-1">
+        <video id="hidden-cam1-video" width="1920" height="1080" autoplay playsinline muted style="width:1920px;height:1080px;object-fit:contain;pointer-events:none"></video>
+        <video id="hidden-cam2-video" width="1920" height="1080" autoplay playsinline muted style="width:1920px;height:1080px;object-fit:contain;pointer-events:none"></video>
+        <video id="hidden-media-video" width="1920" height="1080" playsinline preload="metadata" crossorigin="anonymous" style="width:1920px;height:1080px"></video>
+        <img id="hidden-media-img" alt="" style="width:auto;height:auto">
     </div>
 
     <!-- ================= APPLICATION LOGIC (v4.7 Ultra: Firefox/Chrome Video + Zero-Lag Recorder + Auto-Version) ================= -->
@@ -830,7 +830,7 @@
         };
 
         const state = {
-            appVersion: 4.7,
+            appVersion: 4.8,
             role: 'launcher',
             pinCode: '',
             mqttClient: null,
@@ -878,7 +878,7 @@
             availableLenses: [],
             currentDeviceId: '',
             currentFacingMode: 'environment',
-            currentResHeight: 720, // Default 720p for ultra-smooth zero-lag streaming
+            currentResHeight: 1080, // Default 1080p Full HD for crystal-clear quality
             currentZoom: 1.0,
             zoomPending: false,
             torchOn: false,
@@ -929,7 +929,7 @@
             mediaRecorder: null,
             recordedChunks: [],
             isRecording: false,
-            recFormat: 'webm',
+            recFormat: 'mp4',
             activeRecMime: '',
             pvwFrameSkip: 0,
 
@@ -1041,7 +1041,7 @@
         }
 
         function downloadStandaloneHtml() {
-            const currentVer = Number(state.appVersion || 4.7).toFixed(1);
+            const currentVer = Number(state.appVersion || 4.8).toFixed(1);
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -1116,23 +1116,33 @@
         // ============================================================================
         async function enforceLowLatencyWebRTC(pc) {
             if (!pc) return;
-            const targetVideoBitrate = state.currentResHeight >= 1080 ? 4000000 :
-                                       state.currentResHeight >= 720 ? 2200000 : 1000000;
+            const targetVideoBitrate = state.currentResHeight >= 1080 ? 8500000 :
+                                       state.currentResHeight >= 720 ? 4500000 : 2000000;
             for (const sender of pc.getSenders()) {
                 if (!sender.track) continue;
                 if (sender.track.kind === 'video') {
                     state.activeVideoSender = sender;
                     try {
-                        if ('contentHint' in sender.track) sender.track.contentHint = 'motion';
-                        const params = sender.getParameters();
+                        if ('contentHint' in sender.track) sender.track.contentHint = 'detail';
+                        const params = sender.getParameters() || {};
                         if (!params.encodings || !params.encodings.length) params.encodings = [{}];
                         params.encodings[0].maxBitrate = targetVideoBitrate;
                         params.encodings[0].maxFramerate = 30;
+                        params.encodings[0].scaleResolutionDownBy = 1.0;
                         params.encodings[0].priority = 'high';
                         params.encodings[0].networkPriority = 'high';
-                        params.degradationPreference = 'maintain-framerate';
+                        params.degradationPreference = 'maintain-resolution';
                         await sender.setParameters(params);
-                    } catch (e) { /* The browser may not support all optional sender parameters. */ }
+                    } catch (e) {
+                        try {
+                            const fallbackParams = sender.getParameters() || {};
+                            if (fallbackParams.encodings && fallbackParams.encodings[0]) {
+                                fallbackParams.encodings[0].maxBitrate = targetVideoBitrate;
+                                fallbackParams.encodings[0].scaleResolutionDownBy = 1.0;
+                                await sender.setParameters(fallbackParams);
+                            }
+                        } catch (e2) {}
+                    }
                 } else if (sender.track.kind === 'audio') {
                     state.activeAudioSender = sender;
                     try {
@@ -1658,7 +1668,7 @@
                 }
 
                 if (state.rawVideoTrack && 'contentHint' in state.rawVideoTrack) {
-                    state.rawVideoTrack.contentHint = 'motion';
+                    state.rawVideoTrack.contentHint = 'detail';
                 }
 
                 const settings = state.rawVideoTrack.getSettings();
@@ -2076,7 +2086,7 @@
             document.getElementById('qr-pin-display').innerText = pin;
             generateQrCode(pin);
 
-            await startHardwareCamera({ height: 720 });
+            await startHardwareCamera({ height: state.currentResHeight || 1080 });
             connectMqttSignaling(pin, handleCameraMqttMessage);
         }
 
@@ -2296,13 +2306,24 @@
         }
 
         function changeMixerResolution(resHeight) {
-            const h = Number(resHeight) || 720;
+            const h = Number(resHeight) || 1080;
             const w = Math.round(h * (16 / 9));
+            state.currentResHeight = h;
             const cPgm = document.getElementById('canvas-pgm');
-            cPgm.width = w;
-            cPgm.height = h;
+            if (cPgm) {
+                cPgm.width = w;
+                cPgm.height = h;
+            }
             const badge = document.getElementById('pgm-res-badge');
-            if (badge) badge.innerText = h === 1080 ? '1080p HQ' : (h === 540 ? '540p ULTRA-FAST' : '720p TURBO');
+            if (badge) badge.innerText = h >= 1080 ? '1080p FULL-HD' : (h <= 540 ? '540p FAST' : '720p HD');
+            const pgmSel = document.getElementById('pgm-quality-select');
+            if (pgmSel && Number(pgmSel.value) !== h) pgmSel.value = String(h);
+            const remSel = document.getElementById('remote-res-select');
+            if (remSel && Number(remSel.value) !== h) remSel.value = String(h);
+            // Also instruct remote camera 1 to switch capture & WebRTC encoder to the chosen resolution!
+            if (state.pinCode) {
+                sendRemoteCommand({ type: 'setRes', height: h });
+            }
         }
 
         function connectToWirelessCamera() {
@@ -2489,8 +2510,10 @@
             }
             let stream = null;
             try {
+                const targetH = state.currentResHeight || 1080;
+                const targetW = Math.round(targetH * (16 / 9));
                 stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 }, facingMode: 'user' },
+                    video: { width: { ideal: targetW }, height: { ideal: targetH }, frameRate: { ideal: 30 }, facingMode: 'user' },
                     audio: true
                 });
             } catch (err1) {
@@ -2855,6 +2878,8 @@
                 const drawW = rawW * scale;
                 const drawH = rawH * scale;
 
+                ctx.imageSmoothingEnabled = true;
+                if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
                 ctx.restore();
             } else {
@@ -3218,30 +3243,36 @@
         }
 
         function getCandidateMimeTypes(preferredFormat, hasAudio = true) {
-            const isFirefox = /firefox/i.test(navigator.userAgent || '');
             const mp4Candidates = hasAudio ? [
+                'video/mp4;codecs="avc1.640028, mp4a.40.2"',
+                'video/mp4;codecs="avc1.4d401f, mp4a.40.2"',
+                'video/mp4;codecs="avc1.42E01E, mp4a.40.2"',
                 'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
                 'video/mp4;codecs=avc1,mp4a.40.2',
                 'video/mp4;codecs=h264,aac',
+                'video/mp4;codecs=h264,opus',
                 'video/mp4'
             ] : [
+                'video/mp4;codecs=avc1.640028',
                 'video/mp4;codecs=avc1.42E01E',
                 'video/mp4;codecs=avc1',
                 'video/mp4;codecs=h264',
                 'video/mp4'
             ];
             const webmCandidates = hasAudio ? [
-                'video/webm;codecs=vp8,opus',
+                'video/webm;codecs=h264,opus',
                 'video/webm;codecs=vp9,opus',
+                'video/webm;codecs=vp8,opus',
                 'video/webm;codecs=vp8',
                 'video/webm'
             ] : [
-                'video/webm;codecs=vp8',
+                'video/webm;codecs=h264',
                 'video/webm;codecs=vp9',
+                'video/webm;codecs=vp8',
                 'video/webm'
             ];
-            // Firefox handles VP8+Opus WebM with hardware-like smoothness and zero lag, whereas MP4 MediaRecorder in Firefox often fails at start()
-            const ordered = (isFirefox || preferredFormat === 'webm')
+            // Strictly honor the user's selected format first (MP4 first when MP4 is selected)
+            const ordered = (preferredFormat === 'webm')
                 ? [...webmCandidates, ...mp4Candidates]
                 : [...mp4Candidates, ...webmCandidates];
 
@@ -3366,14 +3397,14 @@
 
                 state.recordedChunks = [];
                 const candidates = getCandidateMimeTypes(state.recFormat, !!mixedAudioTrack);
-                const targetVideoBps = cPgm.height >= 1080 ? 3500000 : 2000000;
+                const targetVideoBps = cPgm.height >= 1080 ? 12000000 : (cPgm.height >= 720 ? 6500000 : 3500000);
 
                 let recorder = null;
                 let chosenMime = '';
 
                 // Try each candidate MIME type AND verify recorder.start() succeeds!
                 const tryConfigs = [
-                    ...candidates.map(m => ({ mimeType: m, videoBitsPerSecond: targetVideoBps, audioBitsPerSecond: 128000 })),
+                    ...candidates.map(m => ({ mimeType: m, videoBitsPerSecond: targetVideoBps, audioBitsPerSecond: 192000 })),
                     ...candidates.map(m => ({ mimeType: m })),
                     {}
                 ];
@@ -3436,7 +3467,7 @@
                 if (btn) {
                     btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-black text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 transition animate-pulse';
                 }
-                const extLabel = (recorder.mimeType || chosenMime).toLowerCase().includes('mp4') ? 'MP4' : 'WebM';
+                const extLabel = state.recFormat === 'mp4' ? 'MP4' : ((recorder.mimeType || chosenMime).toLowerCase().includes('mp4') ? 'MP4' : 'WebM');
                 document.getElementById('btn-record-label').innerText = `⏹ توقف و ذخیره (00:00 • ${extLabel})`;
 
                 if (state.recordingTimer) clearInterval(state.recordingTimer);
@@ -3513,10 +3544,11 @@
                 if (visible) visible.textContent = msg;
                 return;
             }
-            const actualMime = state.mediaRecorder?.mimeType || chunks[0]?.type || state.activeRecMime || 'video/webm';
-            const isActuallyMp4 = actualMime.toLowerCase().includes('mp4');
-            const ext = isActuallyMp4 ? 'mp4' : 'webm';
-            const blob = new Blob(chunks, { type: actualMime });
+            const actualMime = state.mediaRecorder?.mimeType || chunks[0]?.type || state.activeRecMime || (state.recFormat === 'mp4' ? 'video/mp4' : 'video/webm');
+            const wantMp4 = state.recFormat === 'mp4' || actualMime.toLowerCase().includes('mp4');
+            const ext = wantMp4 ? 'mp4' : 'webm';
+            const blobMime = wantMp4 ? 'video/mp4' : actualMime;
+            const blob = new Blob(chunks, { type: blobMime });
             if (!blob.size) {
                 const msg = 'فایل خروجی خالی است؛ یک ضبط کوتاه دیگر آزمایش کنید.';
                 if (status) status.textContent = msg;
@@ -3528,7 +3560,7 @@
             }
             const url = URL.createObjectURL(blob);
             state.lastRecordedBlobUrl = url;
-            const fileName = `PRISM_Studio_v${Number(state.appVersion || 4.7).toFixed(1)}_${Date.now()}.${ext}`;
+            const fileName = `PRISM_Studio_v${Number(state.appVersion || 4.8).toFixed(1)}_${Date.now()}.${ext}`;
 
             const a = document.createElement('a');
             a.href = url;
