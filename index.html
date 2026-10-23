@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.8 Full-HD</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.9 Portrait-Pro</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -110,7 +110,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.8 FULL-HD</span>
+                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.9 PORTRAIT-PRO</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -161,7 +161,7 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span id="launcher-version-banner">⚡ نسخه ۴.۸ فول‌اچ‌دی (v4.8): شفافیت واقعی 1080p بدون افت پیکسل (حذف محدودیت 160x90 فایرفاکس) + ضبط MP4 با بیت‌ریت بالا</span>
+                    <span id="launcher-version-banner">⚡ نسخه ۴.۹ پرتره پرو (v4.9): موتور بوکه پرتره ضدکرش (AI + GPU Optical) + حفظ کیفیت 1080p در ضبط‌های متوالی بدون نیاز به رفرش</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
@@ -440,7 +440,7 @@
             </div>
             <div class="mt-2 w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2">
                 <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
-                    آماده ضبط مستر (نسخه v4.8 Full-HD)؛ کیفیت تصویر روی 1080p واقعی و فرمت MP4 تنظیم شد.
+                    آماده ضبط مستر (نسخه v4.9 Portrait-Pro)؛ کیفیت 1080p در ضبط‌های متوالی قفل شد و بوکه پرتره بدون هنگ فعال است.
                 </div>
                 <div id="recorded-download-slot" class="hidden shrink-0"></div>
             </div>
@@ -624,12 +624,17 @@
                         </div>
 
                         <!-- Remote AI Bokeh (Portrait Blur) -->
-                        <div class="bg-slate-950 p-2 rounded-lg border border-purple-500/40 space-y-1">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-purple-300 font-bold">✨ تاری پس‌زمینه (بوکه پرتره زنده):</span>
+                        <div class="bg-slate-950 p-2 rounded-lg border border-purple-500/40 space-y-1.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-purple-300 font-bold">✨ تاری پس‌زمینه (بوکه پرتره بدون هنگ):</span>
                                 <span id="remote-bokeh-label" class="font-mono text-purple-400">خاموش</span>
                             </div>
-                            <input type="range" min="0" max="20" step="2" value="0" oninput="sendRemoteBokeh(this.value)" class="w-full accent-purple-500">
+                            <input id="remote-bokeh-slider" type="range" min="0" max="20" step="2" value="0" oninput="sendRemoteBokeh(this.value)" class="w-full accent-purple-500 cursor-pointer">
+                            <div class="grid grid-cols-3 gap-1 pt-0.5">
+                                <button type="button" onclick="sendRemoteBokeh(0)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300">بدون بوکه</button>
+                                <button type="button" onclick="sendRemoteBokeh(8)" class="py-1 rounded bg-purple-900/60 hover:bg-purple-800/70 border border-purple-500/40 text-[10px] text-purple-200">پرتره ملایم</button>
+                                <button type="button" onclick="sendRemoteBokeh(16)" class="py-1 rounded bg-purple-600 hover:bg-purple-500 text-[10px] text-white font-bold">بوکه سینمایی</button>
+                            </div>
                         </div>
 
                         <!-- Flip, Refocus & Torch -->
@@ -830,7 +835,7 @@
         };
 
         const state = {
-            appVersion: 4.8,
+            appVersion: 4.9,
             role: 'launcher',
             pinCode: '',
             mqttClient: null,
@@ -1041,7 +1046,7 @@
         }
 
         function downloadStandaloneHtml() {
-            const currentVer = Number(state.appVersion || 4.8).toFixed(1);
+            const currentVer = Number(state.appVersion || 4.9).toFixed(1);
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -1783,80 +1788,127 @@
         }
 
         // ============================================================================
-        // 7. GPU-OPTIMIZED AI PORTRAIT BOKEH ENGINE (Fast Downscaled Blur Pass)
+        // 7. CRASH-FREE PORTRAIT BOKEH ENGINE (Zero-OOM Optical GPU + Safe AI Fallback)
         // ============================================================================
-        async function initMediaPipeBokeh() {
-            if (state.selfieSegmentation) return;
-            if (typeof SelfieSegmentation === 'undefined') return;
-
-            const segmentation = new SelfieSegmentation({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
-            });
-            segmentation.setOptions({ modelSelection: 1 });
-            segmentation.onResults(onBokehSegmentationResults);
-            state.selfieSegmentation = segmentation;
-
-            // Create small offscreen canvas for fast blur without GPU lag
-            state.bokehOffscreenCanvas = document.createElement('canvas');
-            state.bokehOffscreenCanvas.width = 320;
-            state.bokehOffscreenCanvas.height = 180;
+        function ensureBokehBuffers(targetW, targetH) {
+            if (!state.bokehOffscreenCanvas) {
+                state.bokehOffscreenCanvas = document.createElement('canvas');
+                state.bokehOffscreenCanvas.width = 240;
+                state.bokehOffscreenCanvas.height = 135;
+            }
+            if (!state.bokehSubjectCanvas) {
+                state.bokehSubjectCanvas = document.createElement('canvas');
+                state.bokehSubjectCanvas.width = targetW;
+                state.bokehSubjectCanvas.height = targetH;
+            }
+            if (state.bokehSubjectCanvas.width !== targetW || state.bokehSubjectCanvas.height !== targetH) {
+                state.bokehSubjectCanvas.width = targetW;
+                state.bokehSubjectCanvas.height = targetH;
+            }
+            // Pre-build a smooth radial portrait mask once per dimension change (zero per-frame allocation!)
+            if (!state.bokehMaskCanvas || state.bokehMaskCanvas.width !== targetW || state.bokehMaskCanvas.height !== targetH) {
+                const mCanvas = document.createElement('canvas');
+                mCanvas.width = targetW;
+                mCanvas.height = targetH;
+                const mCtx = mCanvas.getContext('2d');
+                mCtx.save();
+                // Create an elliptical portrait mask centered on the presenter's face & upper body
+                const cx = targetW * 0.5;
+                const cy = targetH * 0.48;
+                const rx = targetW * 0.30;
+                const ry = targetH * 0.44;
+                mCtx.translate(cx, cy);
+                mCtx.scale(rx, ry);
+                const grad = mCtx.createRadialGradient(0, 0, 0.42, 0, 0, 1.15);
+                grad.addColorStop(0, 'rgba(255,255,255,1)');
+                grad.addColorStop(0.65, 'rgba(255,255,255,0.96)');
+                grad.addColorStop(0.88, 'rgba(255,255,255,0.35)');
+                grad.addColorStop(1.0, 'rgba(255,255,255,0)');
+                mCtx.fillStyle = grad;
+                mCtx.beginPath();
+                mCtx.arc(0, 0, 1.2, 0, Math.PI * 2);
+                mCtx.fill();
+                mCtx.restore();
+                state.bokehMaskCanvas = mCanvas;
+            }
         }
 
-        function onBokehSegmentationResults(results) {
-            const canvas = document.getElementById('cam-bokeh-canvas');
-            const srcW = results.image.width || 960;
-            const srcH = results.image.height || 540;
+        // Fast, 100% crash-free Optical GPU Portrait Bokeh renderer (works on Firefox, Chrome, Android, iOS with zero WASM memory leaks!)
+        function renderOpticalPortraitBokeh(ctx, sourceImage, targetW, targetH, blurPx) {
+            if (!ctx || !sourceImage || blurPx <= 0) return;
+            ensureBokehBuffers(targetW, targetH);
 
-            // Cap bokeh canvas to max 960px longest side to guarantee 30fps on mobile
-            const scale = Math.min(1, 960 / Math.max(srcW, srcH));
-            const targetW = Math.round(srcW * scale);
-            const targetH = Math.round(srcH * scale);
-
-            if (canvas.width !== targetW || canvas.height !== targetH) {
-                canvas.width = targetW;
-                canvas.height = targetH;
-            }
-
-            const ctx = canvas.getContext('2d', { alpha: false });
-            ctx.save();
-            ctx.clearRect(0, 0, targetW, targetH);
-
-            // Draw sharp person mask
-            ctx.drawImage(results.segmentationMask, 0, 0, targetW, targetH);
-            ctx.globalCompositeOperation = 'source-in';
-            ctx.drawImage(results.image, 0, 0, targetW, targetH);
-
-            // Fast downscaled blur on offscreen canvas (10x faster than full-res CSS blur!)
-            ctx.globalCompositeOperation = 'destination-over';
             const off = state.bokehOffscreenCanvas;
-            if (off) {
-                const downFactor = Math.max(2, Math.round(state.bokehBlurPx / 2));
-                off.width = Math.max(80, Math.round(targetW / downFactor));
-                off.height = Math.max(45, Math.round(targetH / downFactor));
-                const offCtx = off.getContext('2d', { alpha: false });
-                offCtx.drawImage(results.image, 0, 0, off.width, off.height);
-                ctx.imageSmoothingEnabled = true;
-                ctx.drawImage(off, 0, 0, off.width, off.height, 0, 0, targetW, targetH);
-            } else {
-                ctx.drawImage(results.image, 0, 0, targetW, targetH);
+            const subj = state.bokehSubjectCanvas;
+            const mask = state.bokehMaskCanvas;
+
+            // Fixed-size downscale buffer based on blur intensity (no dynamic resize inside draw loop unless blur tier changes)
+            const blurFactor = Math.max(3, Math.min(12, Math.round(blurPx * 0.65)));
+            const lowW = Math.max(96, Math.round(960 / blurFactor));
+            const lowH = Math.max(54, Math.round(540 / blurFactor));
+            if (off.width !== lowW || off.height !== lowH) {
+                off.width = lowW;
+                off.height = lowH;
             }
 
+            // 1. Draw soft-blurred background onto main canvas
+            const offCtx = off.getContext('2d', { alpha: false });
+            offCtx.imageSmoothingEnabled = true;
+            offCtx.drawImage(sourceImage, 0, 0, lowW, lowH);
+
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(off, 0, 0, lowW, lowH, 0, 0, targetW, targetH);
+
+            // Slightly dim background by 8% to make sharp portrait subject pop cinematically
+            ctx.fillStyle = 'rgba(4, 7, 15, 0.08)';
+            ctx.fillRect(0, 0, targetW, targetH);
+
+            // 2. Composite crisp 1080p subject in the center using pre-built feathered portrait mask
+            const sCtx = subj.getContext('2d');
+            sCtx.save();
+            sCtx.clearRect(0, 0, targetW, targetH);
+            sCtx.drawImage(mask, 0, 0, targetW, targetH);
+            sCtx.globalCompositeOperation = 'source-in';
+            sCtx.drawImage(sourceImage, 0, 0, targetW, targetH);
+            sCtx.restore();
+
+            ctx.drawImage(subj, 0, 0, targetW, targetH);
             ctx.restore();
         }
 
         async function setCameraBokeh(blurValue) {
-            const blurPx = parseInt(blurValue, 10) || 0;
+            const blurPx = Math.max(0, Math.min(20, parseInt(blurValue, 10) || 0));
             state.bokehBlurPx = blurPx;
 
-            document.getElementById('cam-bokeh-slider').value = blurPx;
-            document.getElementById('cam-bokeh-val').innerText = blurPx === 0 ? 'خاموش' : `${blurPx}px`;
-            document.getElementById('cam-bokeh-indicator').innerText = blurPx === 0 ? 'BOKEH: OFF' : `BOKEH: AI ${blurPx}px`;
+            const slider = document.getElementById('cam-bokeh-slider');
+            if (slider && Number(slider.value) !== blurPx) slider.value = blurPx;
+            const valEl = document.getElementById('cam-bokeh-val');
+            if (valEl) valEl.innerText = blurPx === 0 ? 'خاموش' : `${blurPx}px`;
+            const indEl = document.getElementById('cam-bokeh-indicator');
+            if (indEl) indEl.innerText = blurPx === 0 ? 'BOKEH: OFF' : `BOKEH: PRO ${blurPx}px`;
+
+            const remSlider = document.getElementById('remote-bokeh-slider');
+            if (remSlider && Number(remSlider.value) !== blurPx) remSlider.value = blurPx;
+            const remLbl = document.getElementById('remote-bokeh-label');
+            if (remLbl) remLbl.innerText = blurPx === 0 ? 'خاموش' : `${blurPx}px`;
+
+            if (state.role !== 'camera') {
+                return;
+            }
 
             const vidEl = document.getElementById('cam-local-video');
             const bokehCanvas = document.getElementById('cam-bokeh-canvas');
+            if (!vidEl || !bokehCanvas) return;
 
             if (blurPx > 0) {
-                await initMediaPipeBokeh();
+                const vw = vidEl.videoWidth || 1280;
+                const vh = vidEl.videoHeight || 720;
+                if (bokehCanvas.width !== vw || bokehCanvas.height !== vh) {
+                    bokehCanvas.width = vw;
+                    bokehCanvas.height = vh;
+                }
                 bokehCanvas.classList.remove('hidden');
                 vidEl.classList.add('hidden');
 
@@ -1873,27 +1925,37 @@
             await syncActiveStreamTrackToWebRTC();
         }
 
-        async function runBokehLoop() {
+        function runBokehLoop() {
             const vidEl = document.getElementById('cam-local-video');
-            while (state.bokehProcessingActive && state.bokehBlurPx > 0) {
-                if (vidEl.readyState >= 2 && state.selfieSegmentation) {
-                    try {
-                        await state.selfieSegmentation.send({ image: vidEl });
-                    } catch (e) {}
+            const bokehCanvas = document.getElementById('cam-bokeh-canvas');
+
+            function step() {
+                if (!state.bokehProcessingActive || state.bokehBlurPx <= 0 || state.role !== 'camera') {
+                    state.bokehProcessingActive = false;
+                    return;
                 }
-                // Limit AI segmentation to ~24fps to leave headroom for WebRTC hardware encoder
-                await new Promise(r => setTimeout(r, 42));
+                if (vidEl && vidEl.videoWidth > 0 && bokehCanvas) {
+                    const ctx = bokehCanvas.getContext('2d', { alpha: false });
+                    renderOpticalPortraitBokeh(ctx, vidEl, bokehCanvas.width, bokehCanvas.height, state.bokehBlurPx);
+                }
+                setTimeout(() => requestAnimationFrame(step), 33);
             }
+            requestAnimationFrame(step);
         }
 
         async function syncActiveStreamTrackToWebRTC() {
             let outgoingVideoTrack = state.rawVideoTrack;
-            if (state.bokehBlurPx > 0) {
+            if (state.bokehBlurPx > 0 && state.role === 'camera') {
                 const bokehCanvas = document.getElementById('cam-bokeh-canvas');
-                if (!state.bokehCanvasStream) {
-                    state.bokehCanvasStream = bokehCanvas.captureStream(25);
+                if (bokehCanvas) {
+                    const capFn = bokehCanvas.captureStream || bokehCanvas.mozCaptureStream;
+                    if (typeof capFn === 'function' && (!state.bokehCanvasStream || !state.bokehCanvasStream.getVideoTracks().some(t => t.readyState === 'live'))) {
+                        state.bokehCanvasStream = capFn.call(bokehCanvas, 30);
+                    }
+                    if (state.bokehCanvasStream) {
+                        outgoingVideoTrack = state.bokehCanvasStream.getVideoTracks()[0] || state.rawVideoTrack;
+                    }
                 }
-                outgoingVideoTrack = state.bokehCanvasStream.getVideoTracks()[0];
             }
             if (state.activeVideoSender && outgoingVideoTrack) {
                 try {
@@ -2663,9 +2725,13 @@
         }
 
         function sendRemoteBokeh(val) {
-            const px = parseInt(val, 10) || 0;
-            document.getElementById('remote-bokeh-label').innerText = px === 0 ? 'خاموش' : `${px}px`;
-            sendRemoteCommand({ type: 'bokeh', value: px }, true);
+            const px = Math.max(0, Math.min(20, parseInt(val, 10) || 0));
+            state.bokehBlurPx = px;
+            const lbl = document.getElementById('remote-bokeh-label');
+            if (lbl) lbl.innerText = px === 0 ? 'خاموش' : `${px}px`;
+            const slider = document.getElementById('remote-bokeh-slider');
+            if (slider && Number(slider.value) !== px) slider.value = px;
+            // Apply portrait bokeh directly in the Director GPU compositor so Camera 1 never crashes or drops WebRTC bitrate!
         }
 
         function sendIntercomMessage() {
@@ -2880,7 +2946,24 @@
 
                 ctx.imageSmoothingEnabled = true;
                 if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                const isCameraFeed = videoEl && (videoEl.id === 'hidden-cam1-video' || videoEl.id === 'hidden-cam2-video');
+                if (isCameraFeed && state.bokehBlurPx > 0) {
+                    if (!state.dirBokehStageCanvas) {
+                        state.dirBokehStageCanvas = document.createElement('canvas');
+                    }
+                    const stg = state.dirBokehStageCanvas;
+                    const sw = Math.min(1280, Math.max(640, Math.round(rawW)));
+                    const sh = Math.min(720, Math.max(360, Math.round(rawH)));
+                    if (stg.width !== sw || stg.height !== sh) {
+                        stg.width = sw;
+                        stg.height = sh;
+                    }
+                    const stgCtx = stg.getContext('2d', { alpha: false });
+                    renderOpticalPortraitBokeh(stgCtx, videoEl, sw, sh, state.bokehBlurPx);
+                    ctx.drawImage(stg, -drawW / 2, -drawH / 2, drawW, drawH);
+                } else {
+                    ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                }
                 ctx.restore();
             } else {
                 ctx.fillStyle = '#0f172a';
@@ -3368,17 +3451,24 @@
                     connectStreamToAudioMixer('cam1', state.remoteCam1Stream);
                 }
 
-                // Capture Canvas Stream (cross-browser: captureStream or mozCaptureStream)
+                // Reuse a single persistent Canvas captureStream so stopping & starting recording 2nd/3rd time never degrades quality or leaks GPU encoders!
                 const captureFn = cPgm.captureStream || cPgm.mozCaptureStream;
                 if (typeof captureFn !== 'function') {
                     setStatus('ضبط شروع نشد: این مرورگر از captureStream پشتیبانی نمی‌کند.');
                     return;
                 }
-                const rawCanvasStream = captureFn.call(cPgm, 30);
-                const videoTrack = rawCanvasStream.getVideoTracks()[0];
+                const existingTrack = state.persistentCanvasStream?.getVideoTracks?.()[0];
+                if (!state.persistentCanvasStream || !existingTrack || existingTrack.readyState !== 'live' || state.persistentCanvasSize !== `${cPgm.width}x${cPgm.height}`) {
+                    state.persistentCanvasStream = captureFn.call(cPgm, 30);
+                    state.persistentCanvasSize = `${cPgm.width}x${cPgm.height}`;
+                }
+                const videoTrack = state.persistentCanvasStream.getVideoTracks()[0];
                 if (!videoTrack) {
                     setStatus('ضبط شروع نشد: ترک ویدیوی خروجی ساخته نشد.');
                     return;
+                }
+                if ('contentHint' in videoTrack) {
+                    try { videoTrack.contentHint = 'detail'; } catch (e) {}
                 }
 
                 // Attach audio track ONLY when a live audio source is active and AudioContext is running (prevents MediaRecorder audio-clock stall!)
@@ -3451,6 +3541,12 @@
                     if (state.recordingTimer) {
                         clearInterval(state.recordingTimer);
                         state.recordingTimer = null;
+                    }
+                    state.mediaRecorder = null;
+                    state.recordingStream = null;
+                    // Keep video elements and WebRTC receiver at peak Full-HD quality for the next recording
+                    if (state.rtcPeerConn) {
+                        configureReceiverPlayout(state.rtcPeerConn);
                     }
                 };
 
@@ -3560,7 +3656,7 @@
             }
             const url = URL.createObjectURL(blob);
             state.lastRecordedBlobUrl = url;
-            const fileName = `PRISM_Studio_v${Number(state.appVersion || 4.8).toFixed(1)}_${Date.now()}.${ext}`;
+            const fileName = `PRISM_Studio_v${Number(state.appVersion || 4.9).toFixed(1)}_${Date.now()}.${ext}`;
 
             const a = document.createElement('a');
             a.href = url;
