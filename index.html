@@ -326,6 +326,16 @@
 
         <!-- Camera Bottom Pro Controls -->
         <div class="relative z-40 bg-studio-900/95 border-t border-slate-800 p-3 flex flex-col gap-2.5">
+            <div class="rounded-xl border border-emerald-700/50 bg-slate-950/90 px-3 py-2 space-y-1.5">
+                <div class="flex items-center justify-between gap-2">
+                    <label for="cam-audio-input-select" class="text-[11px] font-bold text-emerald-300">🎙️ ورودی میکروفون همین گوشی</label>
+                    <button type="button" onclick="refreshAudioInputs()" class="text-[10px] px-2 py-1 rounded bg-slate-800 text-slate-200">🔄 تازه‌سازی</button>
+                </div>
+                <select id="cam-audio-input-select" onchange="changeAudioInput(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white">
+                    <option value="">میکروفون پیش‌فرض گوشی</option>
+                </select>
+                <div id="audio-input-status" class="text-[10px] leading-relaxed text-slate-400">این انتخاب فقط در حالت «گوشی دوربین» استفاده می‌شود؛ در حالت پیشنهادی، میکروفون به گوشی کارگردان وصل شود.</div>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <!-- Zoom Control -->
                 <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2">
@@ -374,6 +384,11 @@
         <!-- Top Connection & Recording Toolbar -->
         <div class="bg-studio-900 border-b border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-slate-950 p-1">
+                    <button type="button" onclick="document.getElementById('media-file-input')?.click()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-md">＋ افزودن مدیا</button>
+                    <button type="button" onclick="playPlaylist()" class="bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-md">▶ پخش</button>
+                    <button type="button" onclick="stopPlaylist()" class="bg-red-700 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-md">■ توقف</button>
+                </div>
                 <div class="flex items-center bg-slate-950 border border-slate-700 rounded-lg overflow-hidden focus-within:border-emerald-500">
                     <span class="px-2 text-xs text-slate-400">🔗 کد دوربین ۱:</span>
                     <input id="dir-connect-input" type="text" maxlength="6" placeholder="مثلاً 4821" class="bg-transparent text-white font-mono font-bold text-sm w-24 px-1.5 py-1 outline-none text-center tracking-widest">
@@ -397,15 +412,9 @@
                 </button>
             </div>
 
-            <!-- Master Performance Mode, YouTube Live, Record & Snapshot -->
+            <!-- Master Performance Mode, Record & Snapshot -->
             <div class="flex flex-wrap items-center gap-1.5">
-                <button onclick="switchDirectorTab('yt')" id="btn-top-yt-status" class="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 text-red-200 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                    <span id="top-yt-dot" class="w-2 h-2 rounded-full bg-red-500"></span>
-                    <span id="top-yt-label">▶️ لایو یوتیوب و کامنت‌ها</span>
-                    <span id="top-yt-timer" class="hidden font-mono text-[11px] bg-red-600 text-white px-1.5 rounded">00:00</span>
-                </button>
-
-                <button onclick="toggleCleanProgramFullscreen()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs px-2.5 py-1.5 rounded-lg font-bold transition" title="خروجی تمیز تمام‌صفحه برای استریم یوتیوب / OBS">
+<button onclick="toggleCleanProgramFullscreen()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs px-2.5 py-1.5 rounded-lg font-bold transition" title="خروجی تمیز تمام‌صفحه برای استریم یوتیوب / OBS">
                     🖥️ خروجی تمیز (OBS/Live)
                 </button>
 
@@ -543,19 +552,6 @@
                         FTB (سیاه)
                     </button>
                 </div>
-
-                <!-- Active On-Screen YouTube Comment Quick Bar -->
-                <div id="active-comment-banner" class="hidden bg-gradient-to-r from-red-950/80 via-slate-900 to-slate-950 border border-red-500/40 rounded-xl p-2.5 flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <span class="px-2 py-0.5 rounded bg-red-600 text-white font-bold text-[10px] whitespace-nowrap animate-pulse">💬 کامنت روی آنتن</span>
-                        <div class="truncate text-xs">
-                            <strong id="active-comment-author" class="text-amber-300 ml-1">کاربر:</strong>
-                            <span id="active-comment-text" class="text-slate-200">متن کامنت...</span>
-                        </div>
-                    </div>
-                    <button onclick="clearCommentFromScreen()" class="bg-red-600 hover:bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap transition">
-                        ✕ برداشتن از صفحه
-                    </button>
                 </div>
             </div>
 
@@ -563,12 +559,8 @@
             <div class="lg:col-span-5 bg-studio-900 border border-slate-800 rounded-xl flex flex-col overflow-hidden">
 
                 <!-- Tab Headers -->
-                <div class="grid grid-cols-5 bg-slate-950 border-b border-slate-800 text-[11px] sm:text-xs font-bold">
-                    <button onclick="switchDirectorTab('yt')" id="tab-btn-yt" class="py-2.5 text-red-400 border-b-2 border-red-500 bg-red-950/25 flex items-center justify-center gap-1">
-                        <span>🔴 یوتیوب و چت</span>
-                        <span id="yt-unread-badge" class="bg-red-600 text-white text-[9px] px-1.5 rounded-full font-mono">4</span>
-                    </button>
-                    <button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-slate-400 hover:text-white">📡 لنز و چرخش</button>
+                <div class="grid grid-cols-4 bg-slate-950 border-b border-slate-800 text-[11px] sm:text-xs font-bold">
+<button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-slate-400 hover:text-white">📡 لنز و چرخش</button>
                     <button onclick="switchDirectorTab('media')" id="tab-btn-media" class="py-2.5 text-slate-400 hover:text-white">🎬 پخش فیلم</button>
                     <button onclick="switchDirectorTab('gfx')" id="tab-btn-gfx" class="py-2.5 text-slate-400 hover:text-white">📝 زیرنویس</button>
                     <button onclick="switchDirectorTab('audio')" id="tab-btn-audio" class="py-2.5 text-slate-400 hover:text-white">🎚️ صدا</button>
@@ -657,18 +649,31 @@
                             <label class="text-xs font-semibold text-slate-300">بارگذاری ویدیو یا عکس از گالری گوشی:</label>
                             <label class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition">
                                 <span>+ انتخاب فایل مدیا</span>
-                                <input type="file" id="media-file-input" accept="video/*,image/*" class="hidden" onchange="handleMediaUpload(event)">
+                                <input type="file" id="media-file-input" accept="video/*,image/*" multiple class="hidden" onchange="handleMediaUpload(event)">
                             </label>
                         </div>
-                        <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between">
-                            <div class="truncate pr-1">
-                                <div id="media-filename" class="text-xs font-bold text-slate-200 truncate">دموی گرافیکی آماده پخش</div>
-                                <div id="media-status" class="text-[10px] text-slate-400">برای پخش ویدیوی شخصی، فایل را انتخاب کنید</div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="truncate pr-1 min-w-0">
+                                    <div id="media-filename" class="text-xs font-bold text-slate-200 truncate">فهرست پخش خالی است</div>
+                                    <div id="media-status" class="text-[10px] text-slate-400">چند ویدیو یا عکس انتخاب کنید</div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button onclick="toggleMediaPlayback()" id="btn-media-play" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1.5 rounded font-bold">▶ پخش</button>
+                                    <button onclick="restartMedia()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2 py-1.5 rounded">⏮</button>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-1">
-                                <button onclick="toggleMediaPlayback()" id="btn-media-play" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1.5 rounded font-bold">▶ پخش</button>
-                                <button onclick="restartMedia()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2 py-1.5 rounded">⏮</button>
+                            <div class="flex flex-wrap gap-1.5 items-center">
+                                <label class="text-[10px] text-slate-400">حالت پخش:</label>
+                                <select id="playlist-mode" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-white">
+                                    <option value="sequence">پشت‌سرهم</option><option value="single">فقط مورد انتخابی</option>
+                                </select>
+                                <button onclick="playPlaylist()" class="bg-blue-700 hover:bg-blue-600 text-white text-[11px] px-2 py-1 rounded font-bold">▶ پخش فهرست</button>
+                                <button onclick="stopPlaylist()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2 py-1 rounded">■ توقف</button>
+                                <button onclick="playPlaylistStep(-1)" class="bg-slate-800 text-slate-200 text-[11px] px-2 py-1 rounded">قبلی</button>
+                                <button onclick="playPlaylistStep(1)" class="bg-slate-800 text-slate-200 text-[11px] px-2 py-1 rounded">بعدی</button>
                             </div>
+                            <ol id="media-playlist" class="space-y-1 max-h-36 overflow-y-auto text-[11px]"><li class="text-slate-500">هنوز فایلی اضافه نشده است.</li></ol>
                         </div>
                     </div>
                     <button onclick="directCutToProgram('media')" class="w-full py-2 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 rounded-lg text-xs font-bold transition">
@@ -697,6 +702,40 @@
 
                 <!-- TAB 4: Audio Mixer -->
                 <div id="tab-content-audio" class="hidden p-3 space-y-3 flex-1 flex flex-col justify-between">
+                    <div class="rounded-xl border border-emerald-700/50 bg-slate-950/90 p-3 space-y-2">
+                        <div class="text-xs font-bold text-emerald-300">🎙️ مسیر صدای ضبط</div>
+                        <label for="audio-source-mode" class="block text-[11px] text-slate-300">میکروفون به کدام گوشی وصل است؟</label>
+                        <select id="audio-source-mode" onchange="changeAudioSourceMode(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white">
+                            <option value="director" selected>گوشی کارگردان — صدا محلی (پیشنهادی)</option>
+                            <option value="camera">گوشی دوربین — صدا از WebRTC</option>
+                        </select>
+                        <div id="audio-route-status" class="text-[11px] leading-relaxed text-slate-300">حالت پیشنهادی: صدای میکروفون از همین گوشی ضبط می‌شود؛ تصویر از گوشی دوربین می‌آید.</div>
+                        <div id="webrtc-stats-status" class="text-[10px] leading-relaxed text-slate-400">آمار WebRTC پس از اتصال نمایش داده می‌شود.</div>
+                    </div>
+                    <div class="rounded-xl border border-blue-700/50 bg-slate-950/70 p-3 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <label for="director-audio-input-select" class="text-xs font-bold text-blue-300">🎤 ورودی میکروفون همین گوشی</label>
+                            <button type="button" onclick="refreshDirectorAudioInputs()" class="text-[10px] px-2 py-1 rounded bg-slate-800 text-slate-200">🔄 تازه‌سازی</button>
+                        </div>
+                        <select id="director-audio-input-select" onchange="changeDirectorAudioInput(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white">
+                            <option value="">میکروفون پیش‌فرض همین گوشی</option>
+                        </select>
+                        <button type="button" onclick="startDirectorAudioInput()" class="w-full rounded-lg bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold py-2">فعال‌سازی میکروفون کارگردان</button>
+                        <div id="director-audio-input-status" class="text-[11px] leading-relaxed text-slate-400">اگر میکروفون به گوشی کارگردان وصل است، اینجا فعالش کن.</div>
+                    </div>
+                    <div class="rounded-xl border border-amber-700/50 bg-slate-950/70 p-3 space-y-2">
+                        <div class="flex justify-between gap-2 items-center">
+                            <label for="director-audio-delay" class="text-xs font-bold text-amber-300">⏱️ سینک خودکار صدا و تصویر</label>
+                            <button id="av-sync-mode-button" type="button" onclick="toggleAVSyncMode()" class="text-[10px] font-bold px-2 py-1 rounded bg-emerald-700 text-white">Auto Sync: روشن</button>
+                        </div>
+                        <div id="av-sync-status" aria-live="polite" class="text-[11px] leading-relaxed text-slate-300">در انتظار فریم دوربین برای اندازه‌گیری تأخیر واقعی…</div>
+                        <div class="flex justify-between gap-2 items-center">
+                            <label for="director-audio-delay" class="text-[11px] text-slate-300">تأخیر اعمال‌شده</label>
+                            <span id="director-audio-delay-label" class="font-mono text-xs text-amber-200">1000 ms</span>
+                        </div>
+                        <input id="director-audio-delay" type="range" min="0" max="2500" step="25" value="1000" oninput="setDirectorAudioDelay(this.value, true)" class="w-full accent-amber-400">
+                        <div class="text-[10px] text-slate-400">در حالت خودکار، تأخیر از metadata زمان ثبت فریم دریافت‌شده تخمین زده می‌شود. اگر مرورگر این اطلاعات را ندهد، حالت دستی لازم است؛ تضمین سینک بی‌نقص فقط با تست فایل نهایی ممکن است.</div>
+                    </div>
                     <div class="space-y-3">
                         <div class="space-y-1">
                             <div class="flex justify-between text-xs">
@@ -722,217 +761,12 @@
                     </div>
                 </div>
 
-                <!-- TAB 5: YOUTUBE LIVE BROADCAST & INTERACTIVE LIVE CHAT OVERLAY -->
-                <div id="tab-content-yt" class="p-3 space-y-3 flex-1 flex flex-col justify-between overflow-y-auto max-h-[540px]">
-                    <!-- Sub-navigation inside YouTube Studio Tab -->
-                    <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-                        <button onclick="switchYoutubeSubTab('chat')" id="yt-subbtn-chat" class="py-1.5 rounded-lg bg-red-600 text-white transition flex items-center justify-center gap-1">
-                            <span>💬 کامنت‌های زنده و نمایش</span>
-                        </button>
-                        <button onclick="switchYoutubeSubTab('settings')" id="yt-subbtn-settings" class="py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1">
-                            <span>⚙️ تنظیمات استریم یوتیوب</span>
-                        </button>
-                    </div>
-
-                    <!-- SUB-TAB A: LIVE CHAT READER & ON-SCREEN COMMENT OVERLAY -->
-                    <div id="yt-subview-chat" class="space-y-2.5 flex-1 flex flex-col justify-between">
-                        <!-- YouTube Live Video ID / API / Simulator Bar -->
-                        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-2.5 space-y-2">
-                            <div class="flex items-center justify-between gap-1">
-                                <span class="text-[11px] font-bold text-red-400 flex items-center gap-1">
-                                    <span>▶️ اتصال به چت لایو یوتیوب</span>
-                                </span>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="toggleYoutubeChatSimulator()" id="btn-yt-sim" class="text-[10px] bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold transition">
-                                        🤖 شبیه‌ساز زنده: روشن
-                                    </button>
-                                    <button onclick="toggleOfficialYoutubeChatEmbed()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 py-0.5 rounded font-bold transition">
-                                        🗗 چت رسمی یوتیوب
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-1.5">
-                                <input id="yt-video-id-input" type="text" placeholder="لینک لایو یوتیوب یا کد ویدیو (مثلاً youtube.com/live/...)" oninput="handleYoutubeUrlInput(this.value)" class="flex-1 bg-studio-900 border border-slate-700 focus:border-red-500 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none font-mono">
-                                <button onclick="connectYoutubeLiveChat()" id="btn-yt-connect-chat" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap transition">
-                                    اتصال چت
-                                </button>
-                            </div>
-
-                            <!-- Optional YouTube Data API v3 Key collapsible -->
-                            <details class="text-[11px] text-slate-400">
-                                <summary class="cursor-pointer hover:text-slate-200 select-none">🔑 اتصال خودکار با YouTube Data API Key (اختیاری)</summary>
-                                <div class="pt-1.5 flex gap-1.5">
-                                    <input id="yt-api-key-input" type="password" placeholder="AIzaSy... (کلید API گوگل جهت دریافت خودکار کامنت‌ها)" class="flex-1 bg-studio-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-200 font-mono outline-none">
-                                    <button onclick="saveYoutubeApiKey()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2.5 py-1 rounded-lg font-bold">ذخیره</button>
-                                </div>
-                            </details>
-
-                            <!-- Collapsible Official YouTube Live Chat Embed Iframe -->
-                            <div id="yt-official-embed-box" class="hidden pt-1 space-y-1">
-                                <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                    <span>پنجره چت مستقیم یوتیوب:</span>
-                                    <button onclick="popoutYoutubeChatWindow()" class="text-blue-400 hover:underline">↗ باز کردن در پنجره جداگانه</button>
-                                </div>
-                                <iframe id="yt-chat-iframe" class="w-full h-44 rounded-lg border border-slate-800 bg-black" src="about:blank"></iframe>
-                            </div>
-                        </div>
-
-                        <!-- Comment Overlay Style & Position Controls -->
-                        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-2 grid grid-cols-3 gap-1.5 text-[11px]">
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-0.5">🎨 قالب نمایش روی صفحه:</label>
-                                <select id="yt-comment-theme" onchange="updateCommentOverlayStyle()" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-white outline-none text-[11px]">
-                                    <option value="dark-glass" selected>شیشه‌ای تیره (YouTube Dark)</option>
-                                    <option value="yt-red">قرمز نئونی یوتیوب</option>
-                                    <option value="gold-vip">طلایی ویژه (SuperChat)</option>
-                                    <option value="minimal-light">مینیمال روشن</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-0.5">📍 محل روی تصویر آنتن:</label>
-                                <select id="yt-comment-pos" onchange="updateCommentOverlayStyle()" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-white outline-none text-[11px]">
-                                    <option value="bottom-center" selected>پایین وسط (پیشنهادی)</option>
-                                    <option value="bottom-left">پایین چپ</option>
-                                    <option value="top-left">بالا چپ</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-0.5">⏱️ حذف خودکار از صفحه:</label>
-                                <select id="yt-comment-autohide" onchange="updateCommentOverlayStyle()" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-emerald-400 outline-none text-[11px]">
-                                    <option value="0" selected>دستی (تا زمان کلیک)</option>
-                                    <option value="10">بعد از ۱۰ ثانیه</option>
-                                    <option value="20">بعد از ۲۰ ثانیه</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Live Comments Stream List -->
-                        <div class="space-y-1.5">
-                            <div class="flex items-center justify-between text-[11px]">
-                                <span class="font-bold text-slate-300">📥 لیست کامنت‌های دریافتی (کلیک = نمایش روی آنتن):</span>
-                                <button onclick="clearCommentFromScreen()" id="btn-clear-active-comment" class="hidden text-[10px] bg-red-600/20 text-red-300 border border-red-500/40 px-2 py-0.5 rounded font-bold">
-                                    ✕ پاک کردن کامنت از روی تصویر
-                                </button>
-                            </div>
-                            <div id="yt-comments-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
-                                <!-- Populated dynamically -->
-                            </div>
-                        </div>
-
-                        <!-- Quick Manual Comment Entry / Pin to Screen -->
-                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 space-y-1.5">
-                            <div class="flex gap-1.5">
-                                <input id="custom-comment-author" type="text" placeholder="نام مخاطب (مثلاً سارا احمدی)" class="w-1/3 bg-studio-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white outline-none">
-                                <select id="custom-comment-badge" class="bg-studio-900 border border-slate-700 rounded-lg px-1.5 py-1 text-[11px] text-amber-300 outline-none">
-                                    <option value="normal">💬 مخاطب عادی</option>
-                                    <option value="member">⭐ عضو ویژه (Member)</option>
-                                    <option value="superchat">💎 سوپرچت ($10)</option>
-                                </select>
-                                <button onclick="addCustomComment(true)" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold text-[11px] px-2 py-1 rounded-lg transition">
-                                    📺 درج و نمایش روی آنتن
-                                </button>
-                            </div>
-                            <div class="flex gap-1.5">
-                                <input id="custom-comment-text" type="text" placeholder="متن کامنت یا سوال مخاطب برای نمایش روی صفحه لایو..." onkeydown="if(event.key==='Enter') addCustomComment(true)" class="flex-1 bg-studio-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
-                                <button onclick="addCustomComment(false)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-3 py-1.5 rounded-lg border border-slate-700">
-                                    + لیست
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SUB-TAB B: YOUTUBE LIVE STREAM CONFIGURATION & ENCODER -->
-                    <div id="yt-subview-settings" class="hidden space-y-2.5 flex-1 flex flex-col justify-between">
-                        <div class="bg-slate-950 border border-red-500/30 rounded-xl p-3 space-y-2.5">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                                        <span>پیکربندی استریم مستقیم یوتیوب (YouTube Live RTMP / Studio)</span>
-                                    </h4>
-                                    <p class="text-[10px] text-slate-400 mt-0.5">تنظیمات کلید استریم، نشانگر زنده روی تصویر و خروجی تمیز</p>
-                                </div>
-                                <button onclick="toggleYoutubeLiveBug()" id="btn-yt-live-bug" class="text-[11px] bg-red-600/20 border border-red-500/40 text-red-300 px-2.5 py-1 rounded-lg font-bold">
-                                    نشان 🔴 LIVE روی تصویر: روشن
-                                </button>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div>
-                                    <label class="text-[10px] text-slate-400 block mb-1">عنوان پخش زنده یوتیوب:</label>
-                                    <input id="yt-stream-title" type="text" value="پخش زنده اختصاصی | استودیو PRISM" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] text-slate-400 block mb-1">حالت تأخیر استریم (Latency):</label>
-                                    <select id="yt-latency-mode" class="w-full bg-studio-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 outline-none">
-                                        <option value="ultra" selected>⚡ Ultra-Low Latency (تعامل آنی با چت)</option>
-                                        <option value="low">🚀 Low Latency (تأخیر کم استاندارد)</option>
-                                        <option value="normal">🎬 Normal Latency (حداکثر کیفیت 1080p)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- RTMP URL & Stream Key -->
-                            <div class="space-y-1.5">
-                                <div>
-                                    <label class="text-[10px] text-slate-400 block mb-0.5">آدرس سرور یوتیوب (RTMP Ingest URL):</label>
-                                    <div class="flex gap-1">
-                                        <input id="yt-rtmp-url" type="text" value="rtmp://a.rtmp.youtube.com/live2" readonly class="flex-1 bg-studio-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-300 font-mono outline-none">
-                                        <button onclick="copyInputValue('yt-rtmp-url')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg">کپی</button>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="text-[10px] text-slate-400 block mb-0.5">کلید استریم یوتیوب (YouTube Stream Key):</label>
-                                    <div class="flex gap-1">
-                                        <input id="yt-stream-key" type="password" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" class="flex-1 bg-studio-900 border border-slate-700 focus:border-red-500 rounded-lg px-2.5 py-1 text-xs text-emerald-300 font-mono outline-none">
-                                        <button onclick="toggleStreamKeyVisibility()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] px-2 py-1 rounded-lg">👁️</button>
-                                        <button onclick="saveYoutubeStreamConfig()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] px-2.5 py-1 rounded-lg font-bold">ذخیره</button>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="text-[10px] text-slate-400 block mb-0.5">آدرس سرور رله WebSocket به RTMP (اختیاری - جهت ارسال مستقیم از مرورگر):</label>
-                                    <input id="yt-ws-relay" type="text" placeholder="ws://localhost:8080/rtmp (یا خالی بگذارید و از خروجی تمیز OBS/PRISM استفاده کنید)" class="w-full bg-studio-900 border border-slate-800 rounded-lg px-2.5 py-1 text-[11px] text-slate-300 font-mono outline-none">
-                                </div>
-                            </div>
-
-                            <!-- Viewer Counter & Live Telemetry -->
-                            <div class="bg-studio-900/90 border border-slate-800 rounded-lg p-2 grid grid-cols-3 gap-2 text-center">
-                                <div>
-                                    <div class="text-[10px] text-slate-400">وضعیت آنتن یوتیوب</div>
-                                    <div id="yt-status-text" class="text-xs font-bold text-amber-400 mt-0.5">آماده پخش (Standby)</div>
-                                </div>
-                                <div>
-                                    <div class="text-[10px] text-slate-400">مدت زمان لایو</div>
-                                    <div id="yt-duration-text" class="text-xs font-mono font-bold text-white mt-0.5">00:00:00</div>
-                                </div>
-                                <div>
-                                    <div class="text-[10px] text-slate-400">بینندگان آنلاین</div>
-                                    <div id="yt-viewers-text" class="text-xs font-mono font-bold text-red-400 mt-0.5">0 نفر</div>
-                                </div>
-                            </div>
-
-                            <!-- GO LIVE & Clean Feed Buttons -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                                <button onclick="toggleYoutubeLiveBroadcast()" id="btn-yt-golive" class="py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
-                                    <span id="btn-yt-golive-label">🔴 شروع پخش زنده یوتیوب (GO LIVE)</span>
-                                </button>
-                                <button onclick="toggleCleanProgramFullscreen()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                                    <span>🖥️ نمایش تمام‌صفحه خروجی تمیز (Clean Feed)</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
         </div>
     </section>
 
-    <!-- ================= CLEAN PROGRAM OUTPUT OVERLAY (FOR OBS / YOUTUBE CAPTURE) ================= -->
+    <!-- ================= CLEAN PROGRAM OUTPUT OVERLAY ================= -->
     <div id="clean-pgm-modal" onclick="toggleCleanProgramFullscreen(false)" class="hidden fixed inset-0 z-50 bg-black flex items-center justify-center cursor-pointer">
         <canvas id="canvas-clean-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
         <div id="clean-pgm-hint" class="absolute top-4 right-4 bg-black/70 border border-white/20 text-white text-xs px-3 py-1.5 rounded-full pointer-events-none transition-opacity duration-500">
@@ -953,11 +787,12 @@
     </div>
 
     <!-- Hidden Media Elements for Mixing Engine -->
-    <div class="hidden">
-        <video id="hidden-cam1-video" autoplay playsinline muted></video>
-        <video id="hidden-cam2-video" autoplay playsinline muted></video>
-        <video id="hidden-media-video" playsinline loop crossorigin="anonymous"></video>
-        <img id="hidden-media-img" alt="">
+    <!-- Keep source videos composited (tiny + transparent) so requestVideoFrameCallback can report remote-frame capture timing. -->
+    <div aria-hidden="true" style="position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;overflow:hidden;pointer-events:none;z-index:2147483647">
+        <video id="hidden-cam1-video" autoplay playsinline muted style="position:fixed;left:0;top:0;width:16px;height:16px;opacity:0.01;pointer-events:none"></video>
+        <video id="hidden-cam2-video" autoplay playsinline muted style="width:2px;height:2px"></video>
+        <video id="hidden-media-video" playsinline preload="metadata" crossorigin="anonymous" style="width:2px;height:2px"></video>
+        <img id="hidden-media-img" alt="" style="width:1px;height:1px">
     </div>
 
     <!-- ================= APPLICATION LOGIC (v4.5 Turbo: Zero-Lag + WakeLock + Auto-Reconnect) ================= -->
@@ -1001,6 +836,29 @@
             localCamStream: null,
             rawVideoTrack: null,
             rawAudioTrack: null,
+            currentAudioDeviceId: '',
+            availableAudioInputs: [],
+            audioSourceMode: 'director',
+            remoteAudioMode: 'director',
+            directorMicStream: null,
+            directorAudioDeviceId: '',
+            directorAudioDelayMs: 1000,
+            directorAudioDelayNode: null,
+            avSyncMode: 'auto',
+            avSyncVideoElement: null,
+            avSyncCallbackId: null,
+            avSyncSamples: [],
+            avSyncLastApplyAt: 0,
+            avSyncLastStatusAt: 0,
+            avSyncCaptureTimeSupported: null,
+            avSyncInitialCalibrationComplete: false,
+            avSyncFrameCount: 0,
+            avSyncLastCaptureAgeMs: null,
+            webrtcStatsTimer: null,
+            lastAudioStatSnapshot: {},
+            webrtcDisconnectedSince: 0,
+            lastRecoveryAt: 0,
+            lastOfferAt: 0,
             availableLenses: [],
             currentDeviceId: '',
             currentFacingMode: 'environment',
@@ -1032,6 +890,12 @@
 
             // Media & Graphics
             mediaType: 'demo',
+            mediaPlaylist: [],
+            mediaPlaylistIndex: -1,
+            mediaPlaylistMode: 'sequence',
+            mediaPlaylistRunning: false,
+            mediaObjectUrls: [],
+            reactionOverlay: { x: 0.025, y: 0.66, size: 0.20 },
             lowerThirdVisible: true,
             ltTitle: 'استودیو پخش زنده PRISM',
             ltSub: 'کارگردانی چند دوربینه بدون لگ و قفل بیداری صفحه',
@@ -1039,71 +903,11 @@
             tickerText: '🔴 ارتباط زنده برقرار است • سیستم ضد خاموشی صفحه و ضد لگ فعال شد...',
             tickerOffset: 0,
 
-            // YouTube Live & Live Chat Overlay State
-            ytLiveActive: false,
-            ytLiveStartTime: 0,
-            ytLiveTimerInterval: null,
-            ytLiveBugVisible: true,
-            ytViewerCount: 142,
-            ytVideoId: '',
-            ytApiKey: '',
-            ytLiveChatId: '',
-            ytPollInterval: null,
-            ytSimActive: true,
-            ytSimInterval: null,
-            ytWsRelaySocket: null,
-            ytWsRecorder: null,
-            cleanFeedActive: false,
-
-            // Comments List & Active On-Screen Comment
-            ytComments: [
-                {
-                    id: 'c1',
-                    author: 'امیرحسین محمدی',
-                    text: 'سلام وقت بخیر! کیفیت تصویر و نورپردازی استودیو فوق‌العاده شده 🔥👏',
-                    badge: 'member',
-                    amount: '',
-                    time: 'الان',
-                    avatarColor: '#10b981'
-                },
-                {
-                    id: 'c2',
-                    author: 'سارا کاظمی',
-                    text: 'آیا امکان سوییچ همزمان بین دو موبایل و نمایش اسلاید در این نسخه وجود داره؟',
-                    badge: 'superchat',
-                    amount: '$20.00',
-                    time: '۱ دقیقه پیش',
-                    avatarColor: '#f59e0b'
-                },
-                {
-                    id: 'c3',
-                    author: 'Reza Tech',
-                    text: 'مشکل خاموش شدن صفحه موبایل و لگ کاملاً حل شده، خیلی روان کار می‌کنه 👌',
-                    badge: 'normal',
-                    amount: '',
-                    time: '۲ دقیقه پیش',
-                    avatarColor: '#3b82f6'
-                },
-                {
-                    id: 'c4',
-                    author: 'مهدی کریمی',
-                    text: 'لطفاً قابلیت زوم اپتیکال و بوکه پرتره دوربین اول رو هم در لایو تست کنید 🙏',
-                    badge: 'normal',
-                    amount: '',
-                    time: '۳ دقیقه پیش',
-                    avatarColor: '#ec4899'
-                }
-            ],
-            activeScreenComment: null,
-            commentTheme: 'dark-glass',
-            commentPos: 'bottom-center',
-            commentAutoHideSec: 0,
-            commentAutoHideTimeout: null,
 
             // Audio & Recording
             audioCtx: null,
             destNode: null,
-            gains: { cam1: 1.0, cam2: 1.0, media: 0.9 },
+            gains: { cam1: 1.0, cam2: 1.0, media: 0.9, directorMic: 1.0 },
             gainNodes: {},
             sourceNodes: {},
             mediaRecorder: null,
@@ -1283,46 +1087,464 @@
         // ============================================================================
         async function enforceLowLatencyWebRTC(pc) {
             if (!pc) return;
-            try {
-                // Tune outgoing bitrate based on resolution so mobile networks never choke
-                const targetBitrate = state.currentResHeight >= 1080 ? 4000000 :
-                                      state.currentResHeight >= 720 ? 2200000 : 1000000;
-
-                const senders = pc.getSenders();
-                for (const sender of senders) {
-                    if (sender.track && sender.track.kind === 'video') {
-                        state.activeVideoSender = sender;
-                        if ('contentHint' in sender.track) {
-                            sender.track.contentHint = 'motion';
-                        }
+            const targetVideoBitrate = state.currentResHeight >= 1080 ? 4000000 :
+                                       state.currentResHeight >= 720 ? 2200000 : 1000000;
+            for (const sender of pc.getSenders()) {
+                if (!sender.track) continue;
+                if (sender.track.kind === 'video') {
+                    state.activeVideoSender = sender;
+                    try {
+                        if ('contentHint' in sender.track) sender.track.contentHint = 'motion';
                         const params = sender.getParameters();
-                        if (!params.encodings || params.encodings.length === 0) {
-                            params.encodings = [{}];
-                        }
-                        params.encodings[0].maxBitrate = targetBitrate;
+                        if (!params.encodings || !params.encodings.length) params.encodings = [{}];
+                        params.encodings[0].maxBitrate = targetVideoBitrate;
                         params.encodings[0].maxFramerate = 30;
-                        params.encodings[0].networkPriority = 'high';
+                        // Reserve the higher RTP/network priority for audio under congestion.
+                        params.encodings[0].priority = 'low';
+                        params.encodings[0].networkPriority = 'low';
                         params.degradationPreference = 'balanced';
                         await sender.setParameters(params);
-                    } else if (sender.track && sender.track.kind === 'audio') {
-                        state.activeAudioSender = sender;
-                    }
+                    } catch (e) { /* The browser may not support all optional sender parameters. */ }
+                } else if (sender.track.kind === 'audio') {
+                    state.activeAudioSender = sender;
+                    try {
+                        const params = sender.getParameters();
+                        if (!params.encodings || !params.encodings.length) params.encodings = [{}];
+                        params.encodings[0].maxBitrate = 96000;
+                        params.encodings[0].priority = 'high';
+                        params.encodings[0].networkPriority = 'high';
+                        await sender.setParameters(params);
+                    } catch (e) { /* Keep browser defaults if the audio parameters are unsupported. */ }
                 }
-            } catch (e) {}
+            }
         }
 
-        function minimizeReceiverJitterBuffer(pc) {
+        // A modest playout buffer is safer than forcing zero and risking audio dropouts.
+        function configureReceiverPlayout(pc) {
             if (!pc || !pc.getReceivers) return;
             try {
                 pc.getReceivers().forEach(receiver => {
-                    if ('playoutDelayHint' in receiver) {
-                        receiver.playoutDelayHint = 0.0;
-                    }
-                    if ('jitterBufferTarget' in receiver) {
-                        receiver.jitterBufferTarget = 0;
+                    if (receiver.track && (receiver.track.kind === 'audio' || receiver.track.kind === 'video')) {
+                        if ('playoutDelayHint' in receiver) receiver.playoutDelayHint = 0.04;
+                        if ('jitterBufferTarget' in receiver) receiver.jitterBufferTarget = 40;
                     }
                 });
             } catch (e) {}
+        }
+
+        async function refreshAudioInputs() {
+            const status = document.getElementById('audio-input-status');
+            const select = document.getElementById('cam-audio-input-select');
+            if (!navigator.mediaDevices?.enumerateDevices || !select) return;
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                state.availableAudioInputs = devices.filter(d => d.kind === 'audioinput');
+                const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                select.innerHTML = '<option value="">میکروفون پیش‌فرض سیستم</option>' + state.availableAudioInputs.map((d, i) =>
+                    `<option value="${esc(d.deviceId)}">${esc(d.label || `ورودی صدا ${i + 1}`)}</option>`
+                ).join('');
+                const activeId = state.rawAudioTrack?.getSettings?.().deviceId || state.currentAudioDeviceId;
+                select.value = activeId && state.availableAudioInputs.some(d => d.deviceId === activeId) ? activeId : '';
+                if (status) status.textContent = state.availableAudioInputs.length
+                    ? `ورودی‌های قابل انتخاب: ${state.availableAudioInputs.length}. ورودی فعال را انتخاب کن؛ بعد از انتخاب، نام و وضعیت واقعی ترک نمایش داده می‌شود.`
+                    : 'ورودی صوتی گزارش نشده؛ مجوز میکروفون و اتصال فیزیکی را بررسی کن.';
+            } catch (err) {
+                if (status) status.textContent = `فهرست ورودی‌ها قابل خواندن نیست: ${err.message}`;
+            }
+        }
+
+        async function changeAudioInput(deviceId) {
+            const status = document.getElementById('audio-input-status');
+            const select = document.getElementById('cam-audio-input-select');
+            if (state.role !== 'camera') {
+                if (status) status.textContent = 'برای تغییر میکروفون گوشی دوربین، این تنظیم را روی گوشی‌ای انجام بده که به آن میکروفون وصل است.';
+                return;
+            }
+            if (status) status.textContent = 'در حال بازکردن ورودی صوتی انتخاب‌شده…';
+            let candidateStream = null;
+            try {
+                const audio = {
+                    echoCancellation: { ideal: false },
+                    noiseSuppression: { ideal: false },
+                    autoGainControl: { ideal: false }
+                };
+                if (deviceId) audio.deviceId = { exact: deviceId };
+                candidateStream = await navigator.mediaDevices.getUserMedia({ audio, video: false });
+                const newTrack = candidateStream.getAudioTracks()[0];
+                if (!newTrack) throw new Error('مرورگر ترک صوتی نساخت.');
+                const oldTrack = state.rawAudioTrack;
+                const pc = state.rtcPeerConn;
+                if (state.activeAudioSender && pc && pc.signalingState !== 'closed') {
+                    await state.activeAudioSender.replaceTrack(newTrack);
+                }
+                // Keep the same camera/video capture alive; replace only the audio track.
+                if (state.localCamStream) {
+                    if (oldTrack) state.localCamStream.removeTrack(oldTrack);
+                    state.localCamStream.addTrack(newTrack);
+                }
+                state.rawAudioTrack = newTrack;
+                const settings = newTrack.getSettings ? newTrack.getSettings() : {};
+                state.currentAudioDeviceId = settings.deviceId || deviceId || '';
+                if (oldTrack && oldTrack !== newTrack) oldTrack.stop();
+                const selected = state.availableAudioInputs.find(d => d.deviceId === settings.deviceId);
+                if (select) select.value = state.currentAudioDeviceId;
+                const flags = [];
+                if (settings.echoCancellation === true) flags.push('AEC روشن');
+                if (settings.noiseSuppression === true) flags.push('کاهش نویز روشن');
+                if (settings.autoGainControl === true) flags.push('گین خودکار روشن');
+                if (status) status.textContent = `ورودی فعال: ${selected?.label || newTrack.label || (deviceId ? 'ورودی انتخاب‌شده' : 'پیش‌فرض سیستم')} | ${settings.sampleRate || 'نرخ نمونه نامشخص'} Hz | ${settings.channelCount || '?'} کانال | ${flags.length ? flags.join('، ') : 'پردازش خودکار صدا طبق گزارش مرورگر خاموش/نامشخص'}`;
+                candidateStream = null; // Track now belongs to the active camera stream; do not stop it here.
+                newTrack.onended = () => {
+                    const el = document.getElementById('audio-input-status');
+                    if (el) el.textContent = 'هشدار: ورودی میکروفون متوقف یا جدا شد. میکروفون را وصل و ورودی را دوباره انتخاب کن.';
+                };
+            } catch (err) {
+                if (candidateStream) candidateStream.getTracks().forEach(t => t.stop());
+                if (status) status.textContent = `انتخاب میکروفون انجام نشد؛ ورودی قبلی حفظ شد. خطا: ${err.message}`;
+                if (select) select.value = state.currentAudioDeviceId || '';
+            }
+        }
+
+        async function refreshDirectorAudioInputs() {
+            const status = document.getElementById('director-audio-input-status');
+            const select = document.getElementById('director-audio-input-select');
+            if (!navigator.mediaDevices?.enumerateDevices || !select) return;
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const inputs = devices.filter(d => d.kind === 'audioinput');
+                const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                select.innerHTML = '<option value="">میکروفون پیش‌فرض همین گوشی</option>' + inputs.map((d, i) =>
+                    `<option value="${esc(d.deviceId)}">${esc(d.label || `ورودی صدا ${i + 1}`)}</option>`
+                ).join('');
+                if (state.directorAudioDeviceId && inputs.some(d => d.deviceId === state.directorAudioDeviceId)) select.value = state.directorAudioDeviceId;
+                if (status && !state.directorMicStream) status.textContent = inputs.length
+                    ? `ورودی‌های صوتی پیدا شد: ${inputs.length}. ورودی خارجی را انتخاب و «فعال‌سازی» را بزن.`
+                    : 'ورودی‌ها هنوز دیده نمی‌شوند؛ ابتدا میکروفون را وصل کن و مجوز میکروفون را بده.';
+            } catch (err) {
+                if (status) status.textContent = `خواندن ورودی‌های صوتی ناموفق بود: ${err.message}`;
+            }
+        }
+
+        async function changeDirectorAudioInput(deviceId) {
+            state.directorAudioDeviceId = deviceId || '';
+            if (state.directorMicStream) await startDirectorAudioInput();
+            else {
+                const status = document.getElementById('director-audio-input-status');
+                if (status) status.textContent = 'ورودی انتخاب شد؛ برای فعال‌کردن میکروفون دکمه آبی را بزن.';
+            }
+        }
+
+        async function startDirectorAudioInput() {
+            const status = document.getElementById('director-audio-input-status');
+            if (state.role !== 'director') {
+                if (status) status.textContent = 'این ورودی فقط روی گوشی کارگردان فعال می‌شود.';
+                return;
+            }
+            let candidate = null;
+            try {
+                const audio = {
+                    echoCancellation: { ideal: false },
+                    noiseSuppression: { ideal: false },
+                    autoGainControl: { ideal: false }
+                };
+                if (state.directorAudioDeviceId) audio.deviceId = { exact: state.directorAudioDeviceId };
+                candidate = await navigator.mediaDevices.getUserMedia({ audio, video: false });
+                const track = candidate.getAudioTracks()[0];
+                if (!track) throw new Error('مرورگر ترک صوتی نساخت.');
+                const previous = state.directorMicStream;
+                state.directorMicStream = new MediaStream([track]);
+                const settings = track.getSettings ? track.getSettings() : {};
+                if (settings.deviceId) state.directorAudioDeviceId = settings.deviceId;
+                track.onended = () => {
+                    const el = document.getElementById('director-audio-input-status');
+                    if (el) el.textContent = 'میکروفون قطع شد؛ دوباره فعال‌سازی را بزن.';
+                };
+                if (state.audioSourceMode === 'director') {
+                    initWebAudioMixer();
+                    if (state.audioCtx?.state === 'suspended') await state.audioCtx.resume();
+                    disconnectMixerChannel('cam1');
+                    connectStreamToAudioMixer('directorMic', state.directorMicStream);
+                    if (status) status.textContent = `میکروفون محلی فعال: ${track.label || 'ورودی انتخاب‌شده'} | نرخ نمونه ${settings.sampleRate || '—'} Hz | کانال ${settings.channelCount || '—'} | AEC ${settings.echoCancellation ?? '—'} / NS ${settings.noiseSuppression ?? '—'} / AGC ${settings.autoGainControl ?? '—'}`;
+                } else if (status) {
+                    status.textContent = `ورودی فعال است (${track.label || 'نامشخص'})، اما حالت منبع صدا روی گوشی دوربین است؛ این میکروفون تا تغییر حالت وارد خروجی نمی‌شود.`;
+                }
+                if (previous) previous.getTracks().forEach(t => { if (t !== track) t.stop(); });
+                candidate = null;
+                updateRecordingAudioSourceStatus();
+                await refreshDirectorAudioInputs();
+            } catch (err) {
+                if (candidate) candidate.getTracks().forEach(t => t.stop());
+                if (status) status.textContent = `فعال‌سازی میکروفون ناموفق بود: ${err.message}`;
+            }
+        }
+
+        function updateAVSyncModeUi() {
+            const button = document.getElementById('av-sync-mode-button');
+            const status = document.getElementById('av-sync-status');
+            if (button) {
+                const automatic = state.avSyncMode === 'auto';
+                button.textContent = automatic ? 'Auto Sync: روشن' : 'حالت دستی';
+                button.className = automatic
+                    ? 'text-[10px] font-bold px-2 py-1 rounded bg-emerald-700 text-white'
+                    : 'text-[10px] font-bold px-2 py-1 rounded bg-amber-700 text-white';
+            }
+            if (status && state.avSyncMode === 'manual') {
+                status.textContent = state.avSyncCaptureTimeSupported === false
+                    ? 'مرورگر زمان ثبت فریم دوربین را ارائه نمی‌کند؛ تأخیر را دستی تنظیم کن.'
+                    : `حالت دستی فعال است. تأخیر آخرین اندازه‌گیری: ${state.avSyncLastCaptureAgeMs == null ? 'نامشخص' : Math.round(state.avSyncLastCaptureAgeMs) + 'ms'}.`;
+            }
+        }
+
+        function setDirectorAudioDelay(value, userChanged = false, autoUpdate = false) {
+            const ms = Math.max(0, Math.min(2500, Number(value) || 0));
+            if (userChanged && !autoUpdate) state.avSyncMode = 'manual';
+            state.directorAudioDelayMs = ms;
+            const slider = document.getElementById('director-audio-delay');
+            const label = document.getElementById('director-audio-delay-label');
+            if (slider && Number(slider.value) !== ms) slider.value = String(ms);
+            if (label) label.textContent = `${Math.round(ms)} ms`;
+            if (state.directorAudioDelayNode && state.audioCtx) {
+                // Smooth parameter changes to avoid clicks / abrupt time jumps.
+                state.directorAudioDelayNode.delayTime.setTargetAtTime(ms / 1000, state.audioCtx.currentTime, 0.12);
+            }
+            updateAVSyncModeUi();
+        }
+
+        function toggleAVSyncMode() {
+            if (state.avSyncMode === 'auto') {
+                state.avSyncMode = 'manual';
+                updateAVSyncModeUi();
+                const status = document.getElementById('av-sync-status');
+                if (status) status.textContent = `حالت دستی؛ تأخیر روی ${Math.round(state.directorAudioDelayMs)}ms نگه داشته شد.`;
+                return;
+            }
+            state.avSyncMode = 'auto';
+            state.avSyncSamples = [];
+            state.avSyncLastApplyAt = 0;
+            updateAVSyncModeUi();
+            const video = document.getElementById('hidden-cam1-video');
+            if (video && video.srcObject) startAVSyncEngine(video);
+            else {
+                const status = document.getElementById('av-sync-status');
+                if (status) status.textContent = 'برای اندازه‌گیری خودکار، ابتدا دوربین بی‌سیم را متصل کن.';
+            }
+        }
+
+        function medianNumber(values) {
+            if (!values.length) return null;
+            const sorted = [...values].sort((a, b) => a - b);
+            const middle = Math.floor(sorted.length / 2);
+            return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+        }
+
+        function stopAVSyncEngine() {
+            const video = state.avSyncVideoElement;
+            if (video && state.avSyncCallbackId != null && typeof video.cancelVideoFrameCallback === 'function') {
+                try { video.cancelVideoFrameCallback(state.avSyncCallbackId); } catch (e) {}
+            }
+            state.avSyncVideoElement = null;
+            state.avSyncCallbackId = null;
+            state.avSyncSamples = [];
+        }
+
+        function startAVSyncEngine(videoEl) {
+            if (!videoEl || typeof videoEl.requestVideoFrameCallback !== 'function') {
+                state.avSyncCaptureTimeSupported = false;
+                const status = document.getElementById('av-sync-status');
+                if (status) status.textContent = 'این مرورگر requestVideoFrameCallback را پشتیبانی نمی‌کند؛ تأخیر دستی را استفاده کن.';
+                updateAVSyncModeUi();
+                return;
+            }
+            if (state.avSyncVideoElement === videoEl && state.avSyncCallbackId != null) return;
+            stopAVSyncEngine();
+            state.avSyncVideoElement = videoEl;
+            state.avSyncCaptureTimeSupported = null;
+            state.avSyncLastCaptureAgeMs = null;
+            state.avSyncSamples = [];
+            state.avSyncInitialCalibrationComplete = false;
+            state.avSyncFrameCount = 0;
+            const status = document.getElementById('av-sync-status');
+            if (status) status.textContent = 'در حال نمونه‌برداری از timestamp فریم‌های دوربین…';
+
+            const onFrame = (now, metadata) => {
+                if (state.avSyncVideoElement !== videoEl || !videoEl.srcObject) return;
+                state.avSyncFrameCount += 1;
+                const captureTime = metadata && metadata.captureTime;
+                if (Number.isFinite(captureTime)) {
+                    // MDN documents remote WebRTC captureTime as a receiver-clock timestamp
+                    // mapped via RTCP sender reports; comparing with rVFC `now` estimates frame age.
+                    const ageMs = now - captureTime;
+                    if (Number.isFinite(ageMs) && ageMs >= -100 && ageMs <= 8000) {
+                        state.avSyncCaptureTimeSupported = true;
+                        state.avSyncLastCaptureAgeMs = Math.max(0, ageMs);
+                        state.avSyncSamples.push(Math.max(0, ageMs));
+                        if (state.avSyncSamples.length > 31) state.avSyncSamples.shift();
+                        const estimate = medianNumber(state.avSyncSamples.slice(-21));
+                        const enoughSamples = state.avSyncSamples.length >= 7;
+                        const updateInterval = state.isRecording ? 1000 : 300;
+                        const timeToUpdate = now - state.avSyncLastApplyAt >= updateInterval;
+                        if (state.avSyncMode === 'auto' && state.audioSourceMode === 'director' && enoughSamples && timeToUpdate && estimate != null) {
+                            const current = state.directorAudioDelayMs;
+                            let target;
+                            if (!state.avSyncInitialCalibrationComplete) {
+                                // Calibrate before recording when possible; an abrupt first correction
+                                // is avoided during recording to reduce audible delay modulation.
+                                target = Math.max(0, Math.min(2500, estimate));
+                                state.avSyncInitialCalibrationComplete = true;
+                            } else {
+                                const maxStep = state.isRecording ? 20 : 100;
+                                const delta = Math.max(-maxStep, Math.min(maxStep, estimate - current));
+                                target = Math.max(0, Math.min(2500, current + delta));
+                            }
+                            setDirectorAudioDelay(target, false, true);
+                            state.avSyncLastApplyAt = now;
+                        }
+                        if (status && now - state.avSyncLastStatusAt >= 500) {
+                            const method = enoughSamples ? 'در حال اندازه‌گیری خودکار' : 'در حال کالیبراسیون';
+                            const suffix = state.audioSourceMode !== 'director' ? '؛ برای اعمال سینک، منبع صدا را روی گوشی کارگردان بگذار.' : '';
+                            status.textContent = `${method} | سن تصویر ≈ ${Math.round(estimate ?? ageMs)}ms | تأخیر صدا ${Math.round(state.directorAudioDelayMs)}ms${suffix}`;
+                            state.avSyncLastStatusAt = now;
+                        }
+                    }
+                }
+                if (state.avSyncCaptureTimeSupported !== true && state.avSyncFrameCount >= 15 && state.avSyncSamples.length === 0) {
+                    state.avSyncCaptureTimeSupported = false;
+                    if (status && now - state.avSyncLastStatusAt >= 1000) {
+                        status.textContent = 'مرورگر timestamp معتبر captureTime نمی‌دهد؛ سینک خودکار دقیق قابل محاسبه نیست. حالت دستی را استفاده کن.';
+                        state.avSyncLastStatusAt = now;
+                    }
+                }
+                if (typeof videoEl.requestVideoFrameCallback === 'function' && videoEl.srcObject) {
+                    state.avSyncCallbackId = videoEl.requestVideoFrameCallback(onFrame);
+                }
+            };
+            state.avSyncCallbackId = videoEl.requestVideoFrameCallback(onFrame);
+        }
+
+        async function changeAudioSourceMode(mode) {
+            if (mode !== 'director' && mode !== 'camera') return;
+            state.audioSourceMode = mode;
+            const selector = document.getElementById('audio-source-mode');
+            if (selector) selector.value = mode;
+            const status = document.getElementById('audio-route-status');
+
+            if (mode === 'director') {
+                // Hard rule: camera-side WebRTC audio must never remain connected to the recorder in this mode.
+                if (state.remoteCam1Stream) {
+                    state.remoteCam1Stream.getAudioTracks().forEach(track => { track.enabled = false; });
+                }
+                disconnectMixerChannel('cam1');
+                if (state.directorMicStream && state.directorMicStream.getAudioTracks().some(t => t.readyState === 'live')) {
+                    initWebAudioMixer();
+                    if (state.audioCtx?.state === 'suspended') await state.audioCtx.resume();
+                    connectStreamToAudioMixer('directorMic', state.directorMicStream);
+                    if (status) status.textContent = 'منبع ضبط قفل شد روی میکروفون گوشی کارگردان؛ صدای دوربین از میکس حذف است.';
+                } else if (state.role === 'director') {
+                    if (status) status.textContent = 'در انتظار فعال‌سازی میکروفون همین گوشی؛ تا فعال‌شدن آن، صدای دوربین جایگزین نمی‌شود.';
+                    await startDirectorAudioInput();
+                }
+            } else {
+                // Camera mic mode is explicit opt-in only. The director mic is detached and stopped.
+                disconnectMixerChannel('directorMic');
+                if (state.directorMicStream) {
+                    state.directorMicStream.getTracks().forEach(t => t.stop());
+                    state.directorMicStream = null;
+                }
+                if (state.remoteCam1Stream) {
+                    state.remoteCam1Stream.getAudioTracks().forEach(track => { track.enabled = true; });
+                    connectStreamToAudioMixer('cam1', state.remoteCam1Stream);
+                    if (status) status.textContent = 'منبع ضبط روی میکروفون گوشی دوربین است؛ صدای دریافتی از WebRTC وارد میکس می‌شود.';
+                } else if (status) {
+                    status.textContent = 'حالت گوشی دوربین انتخاب شد؛ منتظر اتصال دوربین و ترک صوتی آن هستیم.';
+                }
+            }
+            if (state.role === 'director' && state.pinCode) {
+                publishMqttSignal('dir-join', { role: 'director', audioSourceMode: mode, reconnect: true });
+            }
+            updateRecordingAudioSourceStatus();
+        }
+
+        function updateRecordingAudioSourceStatus() {
+            const status = document.getElementById('audio-route-status');
+            if (!status) return;
+            if (state.audioSourceMode === 'director') {
+                const track = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                status.textContent = track
+                    ? `منبع ضبط: گوشی کارگردان ✓ (${track.label || 'میکروفون محلی'})؛ صدای دوربین از میکس حذف شده است.`
+                    : 'هشدار: میکروفون گوشی کارگردان فعال نیست. صدای دوربین جایگزین نخواهد شد؛ ابتدا میکروفون محلی را فعال کن.';
+            } else {
+                status.textContent = state.remoteCam1Stream?.getAudioTracks?.().some(t => t.readyState === 'live')
+                    ? 'منبع ضبط: میکروفون گوشی دوربین (از WebRTC).'
+                    : 'حالت صدای دوربین انتخاب شده، اما ترک صوتی دوربین در دسترس نیست.';
+            }
+        }
+        function startWebRTCStatsMonitor(pc) {
+            if (state.webrtcStatsTimer) clearInterval(state.webrtcStatsTimer);
+            if (!pc?.getStats) return;
+            state.webrtcStatsTimer = setInterval(async () => {
+                if (state.rtcPeerConn !== pc || pc.connectionState === 'closed') {
+                    clearInterval(state.webrtcStatsTimer);
+                    state.webrtcStatsTimer = null;
+                    return;
+                }
+                try {
+                    const report = await pc.getStats();
+                    let audioIn = null, audioOut = null, remoteAudio = null;
+                    let selectedPair = null, selectedTransport = null;
+                    report.forEach(s => {
+                        const kind = s.kind || s.mediaType;
+                        if (s.type === 'inbound-rtp' && kind === 'audio' && !s.isRemote) audioIn = s;
+                        if (s.type === 'outbound-rtp' && kind === 'audio' && !s.isRemote) audioOut = s;
+                        if (s.type === 'remote-inbound-rtp' && kind === 'audio') remoteAudio = s;
+                        if (s.type === 'transport' && s.selectedCandidatePairId) selectedTransport = s;
+                    });
+                    if (selectedTransport) selectedPair = report.get(selectedTransport.selectedCandidatePairId);
+                    if (!selectedPair) report.forEach(s => {
+                        if (s.type === 'candidate-pair' && s.state === 'succeeded' && s.nominated) selectedPair = s;
+                    });
+                    const localCandidate = selectedPair?.localCandidateId ? report.get(selectedPair.localCandidateId) : null;
+                    const remoteCandidate = selectedPair?.remoteCandidateId ? report.get(selectedPair.remoteCandidateId) : null;
+                    const rtt = typeof selectedPair?.currentRoundTripTime === 'number' ? Math.round(selectedPair.currentRoundTripTime * 1000) : null;
+                    const inJitter = typeof audioIn?.jitter === 'number' ? Math.round(audioIn.jitter * 1000) : null;
+                    const inLost = typeof audioIn?.packetsLost === 'number' ? audioIn.packetsLost : null;
+                    const avgBuffer = audioIn && audioIn.jitterBufferEmittedCount > 0 && typeof audioIn.jitterBufferDelay === 'number'
+                        ? Math.round(1000 * audioIn.jitterBufferDelay / audioIn.jitterBufferEmittedCount) : null;
+                    const concealments = typeof audioIn?.concealmentEvents === 'number' ? audioIn.concealmentEvents : null;
+                    const remoteLoss = typeof remoteAudio?.fractionLost === 'number' ? `${(remoteAudio.fractionLost * 100).toFixed(1)}%` : null;
+                    const route = localCandidate && remoteCandidate ? `${localCandidate.candidateType || '?'}→${remoteCandidate.candidateType || '?'}` : 'نامشخص';
+                    const audioStat = audioIn || audioOut;
+                    let kbps = null;
+                    if (audioStat && typeof audioStat.bytesReceived === 'number') {
+                        const key = audioStat.id;
+                        const now = performance.now();
+                        const old = state.lastAudioStatSnapshot[key];
+                        if (old && now > old.t) kbps = Math.max(0, Math.round((audioStat.bytesReceived - old.bytes) * 8 / (now - old.t)));
+                        state.lastAudioStatSnapshot = { [key]: { bytes: audioStat.bytesReceived, t: now } };
+                    } else if (audioOut && typeof audioOut.bytesSent === 'number') {
+                        const key = audioOut.id;
+                        const now = performance.now();
+                        const old = state.lastAudioStatSnapshot[key];
+                        if (old && now > old.t) kbps = Math.max(0, Math.round((audioOut.bytesSent - old.bytes) * 8 / (now - old.t)));
+                        state.lastAudioStatSnapshot = { [key]: { bytes: audioOut.bytesSent, t: now } };
+                    }
+                    const el = document.getElementById('webrtc-stats-status');
+                    if (el) {
+                        const parts = [
+                            `نرخ صوت ${kbps == null ? '—' : kbps + ' kbps'}`,
+                            `مسیر ${route}`,
+                            `RTT ${rtt == null ? '—' : rtt + 'ms'}`,
+                            `Jitter صوتی ${inJitter == null ? '—' : inJitter + 'ms'}`,
+                            `بافر پخش ${avgBuffer == null ? '—' : avgBuffer + 'ms'}`,
+                            `افت بسته صوتی ${inLost == null ? (remoteLoss || '—') : inLost}`,
+                            `concealment ${concealments == null ? '—' : concealments}`
+                        ];
+                        el.textContent = parts.join(' | ');
+                    }
+                } catch (e) {
+                    const el = document.getElementById('webrtc-stats-status');
+                    if (el) el.textContent = `خواندن آمار شبکه ناموفق بود: ${e.message}`;
+                }
+            }, 2000);
         }
 
         // ============================================================================
@@ -1368,18 +1590,28 @@
             }
 
             try {
+                const audioConstraints = {
+                    echoCancellation: { ideal: false },
+                    noiseSuppression: { ideal: false },
+                    autoGainControl: { ideal: false }
+                };
+                const requestedAudioDeviceId = options.audioDeviceId || state.currentAudioDeviceId;
+                if (requestedAudioDeviceId) audioConstraints.deviceId = { exact: requestedAudioDeviceId };
+                // In the recommended director-mic mode, capture and transmit camera video only.
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: videoConstraints,
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    }
+                    audio: state.remoteAudioMode === 'camera' ? audioConstraints : false
                 });
 
                 state.localCamStream = stream;
                 state.rawVideoTrack = stream.getVideoTracks()[0];
                 state.rawAudioTrack = stream.getAudioTracks()[0] || null;
+                if (state.rawAudioTrack) {
+                    const audioSettings = state.rawAudioTrack.getSettings ? state.rawAudioTrack.getSettings() : {};
+                    if (audioSettings.deviceId) state.currentAudioDeviceId = audioSettings.deviceId;
+                    const audioStatus = document.getElementById('audio-input-status');
+                    if (audioStatus) audioStatus.textContent = `ورودی فعال: ${state.rawAudioTrack.label || 'میکروفون انتخاب‌شده'} | حذف نویز: ${audioSettings.noiseSuppression ?? 'نامشخص'} | گین خودکار: ${audioSettings.autoGainControl ?? 'نامشخص'}`;
+                }
 
                 if (state.rawVideoTrack && 'contentHint' in state.rawVideoTrack) {
                     state.rawVideoTrack.contentHint = 'motion';
@@ -1414,6 +1646,7 @@
                 document.getElementById('cam-res-indicator').innerText = `RES: ${vid.videoWidth || widthIdeal}x${vid.videoHeight || heightIdeal}`;
 
                 await enumeratePhysicalLenses();
+                await refreshAudioInputs().catch(() => {});
                 await syncActiveStreamTrackToWebRTC();
                 return true;
             } catch (err) {
@@ -1661,7 +1894,7 @@
                         updateConnectionBadge('ready', `آماده اتصال (${pin})`);
                         publishMqttSignal('cam-online', { pin, lenses: state.availableLenses, current: state.currentDeviceId });
                     } else if (state.role === 'director') {
-                        publishMqttSignal('dir-join', { role: 'director' });
+                        publishMqttSignal('dir-join', { role: 'director', audioSourceMode: state.audioSourceMode });
                     }
                 });
             });
@@ -1700,12 +1933,23 @@
                 if (state.role === 'launcher' || !state.pinCode) return;
                 publishMqttSignal('ping', { role: state.role });
 
-                // Auto-heal WebRTC if connection dropped
+                // A transient ICE "disconnected" can recover by itself. Avoid tearing down audio every 4s.
                 if (state.rtcPeerConn) {
+                    const now = Date.now();
                     const st = state.rtcPeerConn.connectionState;
                     const iceSt = state.rtcPeerConn.iceConnectionState;
-                    if (st === 'failed' || st === 'disconnected' || iceSt === 'failed' || iceSt === 'disconnected') {
-                        verifyAndHealConnections();
+                    const failed = st === 'failed' || iceSt === 'failed';
+                    const disconnected = st === 'disconnected' || iceSt === 'disconnected';
+                    if (st === 'connected' && iceSt === 'connected') {
+                        state.webrtcDisconnectedSince = 0;
+                    } else if (disconnected || failed) {
+                        if (!state.webrtcDisconnectedSince) state.webrtcDisconnectedSince = now;
+                        const stableOutage = now - state.webrtcDisconnectedSince >= 8000;
+                        const cooldownPassed = now - state.lastRecoveryAt >= 12000;
+                        if ((failed || stableOutage) && cooldownPassed) {
+                            state.lastRecoveryAt = now;
+                            verifyAndHealConnections();
+                        }
                     }
                 }
             }, 4000);
@@ -1713,7 +1957,7 @@
 
         function verifyAndHealConnections() {
             if (state.role === 'director' && state.pinCode) {
-                publishMqttSignal('dir-join', { role: 'director', reconnect: true });
+                publishMqttSignal('dir-join', { role: 'director', audioSourceMode: state.audioSourceMode, reconnect: true });
             } else if (state.role === 'camera' && state.pinCode) {
                 publishMqttSignal('cam-online', { pin: state.pinCode, lenses: state.availableLenses, current: state.currentDeviceId });
             }
@@ -1738,16 +1982,29 @@
                 requestScreenWakeLock();
             } else if (targetRole === 'director') {
                 document.getElementById('view-director').classList.remove('hidden');
+                const sourceSelect = document.getElementById('audio-source-mode');
+                if (sourceSelect) sourceSelect.value = state.audioSourceMode;
+                setDirectorAudioDelay(state.directorAudioDelayMs);
+                updateAVSyncModeUi();
+                refreshDirectorAudioInputs().catch(() => {});
+                updateRecordingAudioSourceStatus();
+                const remoteVideo = document.getElementById('hidden-cam1-video');
+                if (remoteVideo && remoteVideo.srcObject) startAVSyncEngine(remoteVideo);
                 requestScreenWakeLock();
             }
         }
 
         function cleanupConnections() {
+            stopAVSyncEngine();
             state.bokehProcessingActive = false;
+            if (state.webrtcStatsTimer) { clearInterval(state.webrtcStatsTimer); state.webrtcStatsTimer = null; }
             if (state.heartbeatTimer) { clearInterval(state.heartbeatTimer); state.heartbeatTimer = null; }
             if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch(e){} state.rtcPeerConn = null; }
             if (state.mqttClient) { try { state.mqttClient.end(true); } catch(e){} state.mqttClient = null; }
             if (state.localCamStream) { state.localCamStream.getTracks().forEach(t => t.stop()); state.localCamStream = null; }
+            if (state.directorMicStream) { state.directorMicStream.getTracks().forEach(t => t.stop()); state.directorMicStream = null; }
+            ['cam1','directorMic','cam2'].forEach(disconnectMixerChannel);
+            state.remoteCam1Stream = null;
         }
 
         function updateConnectionBadge(status, text) {
@@ -1780,8 +2037,26 @@
 
         async function handleCameraMqttMessage(topic, data) {
             if (topic.endsWith('/dir-join')) {
+                const requestedMode = data.audioSourceMode === 'camera' ? 'camera' : 'director';
+                const modeChanged = state.remoteAudioMode !== requestedMode;
+                const currentCaptureHasAudio = !!state.localCamStream?.getAudioTracks?.().some(t => t.readyState === 'live');
+                const shouldCaptureAudio = requestedMode === 'camera';
+                const captureMismatch = !!state.localCamStream && (currentCaptureHasAudio !== shouldCaptureAudio);
+                state.remoteAudioMode = requestedMode;
                 publishMqttSignal('lenses', { lenses: state.availableLenses, current: state.currentDeviceId });
-                await startCameraWebRTCOffer();
+                if ((modeChanged || captureMismatch) && state.localCamStream) {
+                    const captureOk = await startHardwareCamera({ deviceId: state.currentDeviceId || undefined, height: state.currentResHeight });
+                    if (!captureOk) {
+                        updateConnectionBadge('ready', 'تغییر منبع صدا/تصویر ناموفق بود؛ مجوز دوربین/میکروفون را بررسی کن');
+                        return;
+                    }
+                }
+                const existing = state.rtcPeerConn;
+                const healthy = existing && ['connected', 'connecting'].includes(existing.connectionState);
+                const mustRestart = Boolean(data.reconnect || modeChanged || captureMismatch);
+                if (!mustRestart && healthy) return;
+                if (mustRestart) state.lastOfferAt = 0;
+                await startCameraWebRTCOffer(mustRestart);
             } else if (topic.endsWith('/webrtc-answer')) {
                 if (state.rtcPeerConn && data.sdp) {
                     try {
@@ -1799,18 +2074,31 @@
             }
         }
 
-        async function startCameraWebRTCOffer() {
-            if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch(e){} }
+        async function startCameraWebRTCOffer(forceReconnect = false) {
+            const now = Date.now();
+            const existing = state.rtcPeerConn;
+            if (existing && ['connected', 'connecting'].includes(existing.connectionState) && !forceReconnect) return;
+            if (!forceReconnect && now - state.lastOfferAt < 10000) return;
+            state.lastOfferAt = now;
+            if (existing) { try { existing.close(); } catch(e){} }
             const pc = new RTCPeerConnection(RTC_CONFIG);
             state.rtcPeerConn = pc;
 
-            const streamToSend = getActiveCameraMediaStream();
-            if (streamToSend) {
-                streamToSend.getTracks().forEach(track => {
-                    const sender = pc.addTrack(track, streamToSend);
-                    if (track.kind === 'video') state.activeVideoSender = sender;
-                    if (track.kind === 'audio') state.activeAudioSender = sender;
+            state.activeVideoSender = null;
+            state.activeAudioSender = null;
+            const videoStreamToSend = getActiveCameraMediaStream();
+            if (videoStreamToSend) {
+                videoStreamToSend.getVideoTracks().forEach(track => {
+                    const sender = pc.addTrack(track, videoStreamToSend);
+                    state.activeVideoSender = sender;
                 });
+            }
+            // The phone-camera microphone is sent only when camera audio mode is explicitly selected.
+            if (state.remoteAudioMode === 'camera') {
+                const cameraAudioTrack = state.localCamStream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                if (cameraAudioTrack) {
+                    state.activeAudioSender = pc.addTrack(cameraAudioTrack, new MediaStream([cameraAudioTrack]));
+                }
             }
 
             pc.onicecandidate = (e) => {
@@ -1820,9 +2108,10 @@
             pc.onconnectionstatechange = () => {
                 if (pc.connectionState === 'connected') {
                     enforceLowLatencyWebRTC(pc);
+                    startWebRTCStatsMonitor(pc);
                     updateConnectionBadge('connected', 'روی آنتن • متصل به کارگردان');
                 } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                    updateConnectionBadge('ready', 'در حال بازیابی خودکار ارتباط...');
+                    updateConnectionBadge('ready', 'اتصال ناپایدار؛ در حال پایش برای بازیابی…');
                 }
             };
 
@@ -1926,10 +2215,8 @@
         async function initDirectorRole(enableLocalDemo) {
             switchRole('director');
             initWebAudioMixer();
-            loadSavedYoutubeConfig();
-            renderYoutubeCommentsList();
-            startYoutubeChatSimulator();
             startCanvasCompositorLoop();
+            installReactionOverlayDrag();
 
             if (enableLocalDemo) {
                 await toggleDirectorLocalCam(true);
@@ -1957,13 +2244,13 @@
             requestScreenWakeLock();
 
             connectMqttSignaling(pin, handleDirectorMqttMessage);
-            setTimeout(() => publishMqttSignal('dir-join', { role: 'director' }), 500);
+            setTimeout(() => publishMqttSignal('dir-join', { role: 'director', audioSourceMode: state.audioSourceMode }), 500);
         }
 
         async function handleDirectorMqttMessage(topic, data) {
             if (topic.endsWith('/cam-online')) {
                 if (data.lenses) populateRemoteLensesDropdown(data.lenses, data.current);
-                publishMqttSignal('dir-join', { role: 'director' });
+                publishMqttSignal('dir-join', { role: 'director', audioSourceMode: state.audioSourceMode });
             } else if (topic.endsWith('/lenses')) {
                 populateRemoteLensesDropdown(data.lenses, data.current);
             } else if (topic.endsWith('/cam-rotate')) {
@@ -1990,10 +2277,30 @@
             const pc = new RTCPeerConnection(RTC_CONFIG);
             state.rtcPeerConn = pc;
 
+            // Firefox may deliver a valid track with an empty event.streams array.
+            // Build/extend a receiver stream from the actual tracks instead of silently ignoring it.
+            const firefoxReceiverStream = new MediaStream();
             pc.ontrack = (event) => {
-                minimizeReceiverJitterBuffer(pc);
-                if (event.streams && event.streams[0]) {
-                    attachRemoteCamera1Stream(event.streams[0]);
+                configureReceiverPlayout(pc);
+                let incomingStream = event.streams && event.streams[0];
+                if (!incomingStream) {
+                    incomingStream = firefoxReceiverStream;
+                    if (!incomingStream.getTracks().some(t => t.id === event.track.id)) {
+                        try { incomingStream.addTrack(event.track); } catch (e) {}
+                    }
+                } else {
+                    // Some browsers can expose tracks in separate ontrack events; keep the stream complete.
+                    event.streams[0].getTracks().forEach(track => {
+                        if (!incomingStream.getTracks().some(t => t.id === track.id)) {
+                            try { incomingStream.addTrack(track); } catch (e) {}
+                        }
+                    });
+                }
+                attachRemoteCamera1Stream(incomingStream);
+                const status = document.getElementById('webrtc-stats-status');
+                if (status) {
+                    const kinds = incomingStream.getTracks().map(t => `${t.kind}:${t.readyState}`).join(', ');
+                    status.textContent = `WebRTC دریافت شد (${navigator.userAgent.includes('Firefox') ? 'Firefox' : 'مرورگر'}): ${kinds || 'بدون ترک'}`;
                 }
             };
 
@@ -2003,11 +2310,13 @@
 
             pc.onconnectionstatechange = () => {
                 if (pc.connectionState === 'connected') {
-                    minimizeReceiverJitterBuffer(pc);
-                    updateConnectionBadge('connected', 'دوربین ۱ متصل شد (بدون لگ)');
+                    configureReceiverPlayout(pc);
+                    startWebRTCStatsMonitor(pc);
+                    const remoteVideo = document.getElementById('hidden-cam1-video');
+                    const hasFrames = remoteVideo && remoteVideo.readyState >= 2 && remoteVideo.videoWidth > 0;
+                    updateConnectionBadge('connected', hasFrames ? 'دوربین ۱ تصویر دارد' : 'WebRTC وصل است؛ منتظر فریم تصویر…');
                 } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                    updateConnectionBadge('ready', 'تلاش مجدد برای اتصال دوربین ۱...');
-                    verifyAndHealConnections();
+                    updateConnectionBadge('ready', 'اتصال ناپایدار؛ در حال پایش برای بازیابی…');
                 }
             };
 
@@ -2018,19 +2327,45 @@
         }
 
         function attachRemoteCamera1Stream(stream) {
-            // Avoid interrupting video playback if identical stream is already attached
             const v1 = document.getElementById('hidden-cam1-video');
-            if (v1.srcObject !== stream) {
-                state.remoteCam1Stream = stream;
-                v1.srcObject = stream;
-                v1.muted = true;
+            state.remoteCam1Stream = stream;
+            v1.muted = true; // Never play remote audio through the hidden video element.
+            v1.autoplay = true;
+            v1.playsInline = true;
+
+            // Reassign/retry playback when a track arrives later (common with streamless ontrack).
+            if (v1.srcObject !== stream) v1.srcObject = stream;
+            const playPromise = v1.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(err => {
+                    const status = document.getElementById('webrtc-stats-status');
+                    if (status) status.textContent = `دریافت ترک انجام شد اما پخش ویدیو شروع نشد: ${err.name || err.message}. روی صفحه یک‌بار لمس کن.`;
+                });
+            }
+            if (typeof v1.requestVideoFrameCallback === 'function') startAVSyncEngine(v1);
+            v1.onloadedmetadata = () => {
                 v1.play().catch(() => {});
+                if (typeof v1.requestVideoFrameCallback === 'function') startAVSyncEngine(v1);
+            };
+            v1.onplaying = () => {
+                const status = document.getElementById('webrtc-stats-status');
+                if (status) status.textContent = `تصویر دوربین دریافت شد: ${v1.videoWidth}×${v1.videoHeight} | readyState ${v1.readyState}`;
+            };
+
+            // Enforce a single authoritative audio source whenever a stream is attached/re-attached.
+            if (state.audioSourceMode === 'director') {
+                stream.getAudioTracks().forEach(track => { track.enabled = false; });
+                disconnectMixerChannel('cam1');
+                if (!state.directorMicStream || !state.directorMicStream.getAudioTracks().some(t => t.readyState === 'live')) {
+                    updateRecordingAudioSourceStatus();
+                }
+            } else {
+                stream.getAudioTracks().forEach(track => { track.enabled = true; });
                 connectStreamToAudioMixer('cam1', stream);
             }
-            updateConnectionBadge('connected', 'دوربین ۱ متصل شد (بدون لگ)');
+            updateConnectionBadge('connected', (v1.readyState >= 2 && v1.videoWidth > 0) ? 'دوربین ۱ تصویر دارد' : 'اتصال برقرار؛ در انتظار فریم تصویر…');
             syncRemoteTallyState();
         }
-
         async function toggleDirectorLocalCam(forceOn = false) {
             const btn = document.getElementById('btn-dir-localcam');
             if (state.directorCam2Stream && !forceOn) {
@@ -2057,6 +2392,7 @@
         // 12. SWITCHER & THROTTLED REMOTE COMMANDS
         // ============================================================================
         function selectPreviewSource(src) {
+            if (src !== 'media' && state.pvwSource === 'media') stopPlaylist();
             state.pvwSource = src;
             document.getElementById('pvw-source-label').innerText = src.toUpperCase();
             document.querySelectorAll('.pvw-btn').forEach(btn => {
@@ -2069,6 +2405,7 @@
         }
 
         function directCutToProgram(src) {
+            if (src !== 'media' && state.pgmSource === 'media') stopPlaylist();
             state.pgmSource = src;
             state.transitionProgress = 0;
             document.getElementById('tbar-slider').value = 0;
@@ -2159,6 +2496,19 @@
         // 13. DESYNCHRONIZED GPU CANVAS COMPOSITOR (Zero-Lag 30/60 FPS Pipeline)
         // ============================================================================
         let compositorRunning = false;
+        function installReactionOverlayDrag() {
+            const canvas = document.getElementById('canvas-pvw'); if (!canvas || canvas.dataset.dragInstalled) return;
+            canvas.dataset.dragInstalled = '1'; let dragging = false, last = null;
+            canvas.addEventListener('pointerdown', e => {
+                if (state.mediaType !== 'video' && state.mediaType !== 'image') return;
+                const r = canvas.getBoundingClientRect(); const x = (e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+                const size = state.reactionOverlay.size || 0.20;
+                if (x >= state.reactionOverlay.x && x <= state.reactionOverlay.x + size && y >= state.reactionOverlay.y && y <= state.reactionOverlay.y + size) { dragging=true; last={x:e.clientX,y:e.clientY}; canvas.setPointerCapture?.(e.pointerId); }
+            });
+            canvas.addEventListener('pointermove', e => { if (!dragging || !last) return; const r=canvas.getBoundingClientRect(); state.reactionOverlay.x=Math.max(0,Math.min(0.80,state.reactionOverlay.x+(e.clientX-last.x)/r.width)); state.reactionOverlay.y=Math.max(0,Math.min(0.80,state.reactionOverlay.y+(e.clientY-last.y)/r.height)); last={x:e.clientX,y:e.clientY}; });
+            const end=()=>{dragging=false;last=null;}; canvas.addEventListener('pointerup',end); canvas.addEventListener('pointercancel',end);
+        }
+
         function startCanvasCompositorLoop() {
             if (compositorRunning) return;
             compositorRunning = true;
@@ -2240,15 +2590,37 @@
             } else if (sourceType === 'cam2') {
                 drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), 0, 0, w, h, 'CAM 2 (دوربین کارگردان)', 0, 'cover', false);
             } else if (sourceType === 'media') {
-                drawMediaLayer(ctx, 0, 0, w, h, ts);
+                const mediaEl = state.mediaType === 'video' ? document.getElementById('hidden-media-video') : document.getElementById('hidden-media-img');
+                const mw = state.mediaType === 'video' ? mediaEl.videoWidth : mediaEl.naturalWidth;
+                const mh = state.mediaType === 'video' ? mediaEl.videoHeight : mediaEl.naturalHeight;
+                const isPortraitMedia = mw > 0 && mh > mw * 1.08;
+                if (mw > 0 && mh > 0 && isPortraitMedia) {
+                    // Portrait media + presenter side-by-side; presenter stays on the LEFT.
+                    const split = w * 0.5;
+                    drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, split, h, 'REACTION', state.cam1Rotation, 'cover', state.cam1Mirror);
+                    drawMediaLayer(ctx, split, 0, w - split, h, ts);
+                } else {
+                    drawMediaLayer(ctx, 0, 0, w, h, ts);
+                    // Landscape media: draggable square presenter overlay, default 20% of output width.
+                    const size = Math.min(w * (state.reactionOverlay.size || 0.20), h * 0.92);
+                    const px = Math.max(0, Math.min(w - size, w * state.reactionOverlay.x));
+                    const py = Math.max(0, Math.min(h - size, h * state.reactionOverlay.y));
+                    ctx.save(); ctx.fillStyle = '#000000'; ctx.fillRect(px - 3, py - 3, size + 6, size + 6);
+                    drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), px, py, size, size, 'REACTION', state.cam1Rotation, 'cover', state.cam1Mirror);
+                    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = Math.max(1, w * 0.002); ctx.strokeRect(px, py, size, size); ctx.restore();
+                }
             } else if (sourceType === 'pip') {
-                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
-                const pw = w * 0.32, ph = h * 0.32, px = w - pw - (w*0.025), py = h * 0.04;
+                // PiP: media is the main picture; CAM 1 is a square inset at 20% of output width, default bottom-left.
+                drawMediaLayer(ctx, 0, 0, w, h, ts);
+                const pw = Math.min(w * 0.20, h * 0.34), ph = pw;
+                const px = Math.max(w * 0.02, Math.min(w - pw - w * 0.02, w * state.reactionOverlay.x));
+                const py = Math.max(h * 0.02, Math.min(h - ph - h * 0.02, h * state.reactionOverlay.y));
                 ctx.save();
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 4;
+                ctx.fillStyle = '#000000'; ctx.fillRect(px - 3, py - 3, pw + 6, ph + 6);
+                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), px, py, pw, ph, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror);
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = Math.max(2, w * 0.003);
                 ctx.strokeRect(px, py, pw, ph);
-                drawMediaLayer(ctx, px, py, pw, ph, ts);
                 ctx.restore();
             } else if (sourceType === 'split') {
                 const halfW = w / 2 - 4;
@@ -2370,44 +2742,8 @@
         }
 
         function drawBroadcastOverlays(ctx, w, h, ts) {
-            // 1. YouTube LIVE Top Bug Badge
-            if (state.ytLiveBugVisible) {
-                ctx.save();
-                const bugX = w * 0.03;
-                const bugY = h * 0.04;
-                const bugH = Math.round(h * 0.048);
-                const liveW = Math.round(w * 0.075);
-                const viewW = Math.round(w * 0.085);
-
-                // Red LIVE pill
-                drawRoundedRectPath(ctx, bugX, bugY, liveW, bugH, 8);
-                ctx.fillStyle = state.ytLiveActive ? '#dc2626' : '#334155';
-                ctx.fill();
-
-                // Blinking dot
-                ctx.beginPath();
-                ctx.arc(bugX + liveW * 0.24, bugY + bugH / 2, bugH * 0.14, 0, Math.PI * 2);
-                ctx.fillStyle = (Math.floor(ts / 500) % 2 === 0) ? '#ffffff' : '#fecaca';
-                ctx.fill();
-
-                ctx.fillStyle = '#ffffff';
-                ctx.font = `800 ${Math.round(h * 0.022)}px JetBrains Mono, monospace`;
-                ctx.textAlign = 'left';
-                ctx.fillText('LIVE', bugX + liveW * 0.40, bugY + bugH * 0.68);
-
-                // Viewer count pill
-                drawRoundedRectPath(ctx, bugX + liveW + 6, bugY, viewW, bugH, 8);
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-                ctx.fill();
-                ctx.fillStyle = '#e2e8f0';
-                ctx.font = `bold ${Math.round(h * 0.02)}px Vazirmatn, sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.fillText(`👁 ${state.ytViewerCount}`, bugX + liveW + 6 + viewW / 2, bugY + bugH * 0.68);
-                ctx.restore();
-            }
-
-            // 2. Lower Third Graphic (shifted or hidden gracefully if a comment is occupying bottom-center)
-            const commentOccupyingBottom = state.activeScreenComment && state.commentPos !== 'top-left';
+            // Lower Third Graphic (shifted or hidden gracefully if a comment is occupying bottom-center)
+            const commentOccupyingBottom = false;
             if (state.lowerThirdVisible && !commentOccupyingBottom && (state.ltTitle || state.ltSub)) {
                 const boxW = w * 0.48, boxH = h * 0.12, bx = w - boxW - (w*0.03), by = h - boxH - (state.tickerVisible ? h*0.09 : h*0.05);
                 ctx.save();
@@ -2424,13 +2760,7 @@
                 ctx.fillText(state.ltSub, bx + boxW - 26, by + boxH * 0.80);
                 ctx.restore();
             }
-
-            // 3. Active YouTube Live Comment Overlay Card
-            if (state.activeScreenComment) {
-                drawYoutubeCommentCardOnCanvas(ctx, w, h, state.activeScreenComment);
-            }
-
-            // 4. Scrolling News Ticker
+// 4. Scrolling News Ticker
             if (state.tickerVisible && state.tickerText) {
                 const th = h * 0.055, ty = h - th;
                 ctx.save();
@@ -2445,141 +2775,127 @@
             }
         }
 
-        function drawYoutubeCommentCardOnCanvas(ctx, w, h, comment) {
-            ctx.save();
-            const cardW = Math.round(w * 0.62);
-            const fontSizeText = Math.round(h * 0.027);
-            const fontSizeAuthor = Math.round(h * 0.025);
-            ctx.font = `500 ${fontSizeText}px Vazirmatn, sans-serif`;
-
-            const textMaxW = cardW - Math.round(w * 0.11);
-            const lines = wrapCanvasLines(ctx, comment.text, textMaxW);
-            const lineHeight = Math.round(h * 0.038);
-            const cardH = Math.max(Math.round(h * 0.14), Math.round(h * 0.075) + lines.length * lineHeight);
-
-            let cx = Math.round((w - cardW) / 2);
-            let cy = h - cardH - (state.tickerVisible ? Math.round(h * 0.085) : Math.round(h * 0.045));
-
-            if (state.commentPos === 'bottom-left') {
-                cx = Math.round(w * 0.03);
-            } else if (state.commentPos === 'top-left') {
-                cx = Math.round(w * 0.03);
-                cy = Math.round(h * 0.11);
-            }
-
-            // Theme colors
-            let bgFill = 'rgba(10, 14, 23, 0.92)';
-            let borderStroke = '#ef4444';
-            let accentColor = '#ef4444';
-            let authorColor = '#ffffff';
-            let textColor = '#f1f5f9';
-
-            if (state.commentTheme === 'yt-red') {
-                bgFill = 'rgba(127, 29, 29, 0.94)';
-                borderStroke = '#f87171';
-                accentColor = '#ffffff';
-            } else if (state.commentTheme === 'gold-vip' || comment.badge === 'superchat') {
-                bgFill = 'rgba(30, 20, 5, 0.94)';
-                borderStroke = '#f59e0b';
-                accentColor = '#f59e0b';
-                authorColor = '#fde68a';
-            } else if (state.commentTheme === 'minimal-light') {
-                bgFill = 'rgba(248, 250, 252, 0.95)';
-                borderStroke = '#dc2626';
-                accentColor = '#dc2626';
-                authorColor = '#0f172a';
-                textColor = '#1e293b';
-            }
-
-            // Fast Hardware-Friendly Drop Shadow & Body (No CPU shadowBlur lag!)
-            drawRoundedRectPath(ctx, cx + 4, cy + 6, cardW, cardH, 16);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-            ctx.fill();
-
-            drawRoundedRectPath(ctx, cx, cy, cardW, cardH, 16);
-            ctx.fillStyle = bgFill;
-            ctx.fill();
-
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = borderStroke;
-            ctx.stroke();
-
-            // Right Accent Bar (RTL Layout)
-            drawRoundedRectPath(ctx, cx + cardW - 10, cy, 10, cardH, 6);
-            ctx.fillStyle = accentColor;
-            ctx.fill();
-
-            // Avatar Circle on the Right
-            const avRadius = Math.round(h * 0.032);
-            const avX = cx + cardW - avRadius - Math.round(w * 0.022);
-            const avY = cy + Math.round(cardH / 2);
-
-            ctx.beginPath();
-            ctx.arc(avX, avY, avRadius, 0, Math.PI * 2);
-            ctx.fillStyle = comment.avatarColor || '#ef4444';
-            ctx.fill();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `bold ${Math.round(h * 0.026)}px Vazirmatn, sans-serif`;
-            ctx.textAlign = 'center';
-            const initial = (comment.author || 'U').trim().charAt(0).toUpperCase();
-            ctx.fillText(initial, avX, avY + Math.round(avRadius * 0.35));
-
-            // Author Name & YouTube Badge
-            const contentRightX = avX - avRadius - Math.round(w * 0.015);
-            const headerY = cy + Math.round(h * 0.042);
-
-            ctx.textAlign = 'right';
-            ctx.fillStyle = authorColor;
-            ctx.font = `800 ${fontSizeAuthor}px Vazirmatn, sans-serif`;
-            let badgeLabel = '🔴 YouTube Live';
-            if (comment.badge === 'superchat') badgeLabel = `💎 SuperChat ${comment.amount || '$10'}`;
-            else if (comment.badge === 'member') badgeLabel = '⭐ عضو کانال';
-
-            ctx.fillText(`${comment.author}  •  ${badgeLabel}`, contentRightX, headerY);
-
-            // Comment Lines
-            ctx.fillStyle = textColor;
-            ctx.font = `500 ${fontSizeText}px Vazirmatn, sans-serif`;
-            lines.forEach((line, idx) => {
-                ctx.fillText(line, contentRightX, headerY + Math.round(h * 0.042) + idx * lineHeight);
-            });
-
-            ctx.restore();
-        }
 
         // ============================================================================
         // 14. MEDIA, GRAPHICS, AUDIO & RECORDING
         // ============================================================================
         function handleMediaUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const url = URL.createObjectURL(file);
-            document.getElementById('media-filename').innerText = file.name;
-
-            if (file.type.startsWith('video/')) {
-                state.mediaType = 'video';
-                const v = document.getElementById('hidden-media-video');
-                v.src = url;
-                v.loop = true;
-                v.play();
-                connectMediaElementToAudioMixer(v);
-            } else if (file.type.startsWith('image/')) {
-                state.mediaType = 'image';
-                document.getElementById('hidden-media-img').src = url;
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+            for (const file of files) {
+                if (!(file.type.startsWith('video/') || file.type.startsWith('image/'))) continue;
+                const url = URL.createObjectURL(file);
+                state.mediaObjectUrls.push(url);
+                state.mediaPlaylist.push({ name: file.name, type: file.type.startsWith('video/') ? 'video' : 'image', url, file });
             }
-            selectPreviewSource('media');
+            e.target.value = '';
+            renderMediaPlaylist();
+            if (state.mediaPlaylistIndex < 0 && state.mediaPlaylist.length) loadPlaylistItem(0, false);
+        }
+
+        function renderMediaPlaylist() {
+            const list = document.getElementById('media-playlist');
+            if (!list) return;
+            list.replaceChildren();
+            if (!state.mediaPlaylist.length) {
+                const li = document.createElement('li'); li.className = 'text-slate-500'; li.textContent = 'هنوز فایلی اضافه نشده است.'; list.appendChild(li); return;
+            }
+            state.mediaPlaylist.forEach((item, i) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center gap-1 bg-slate-900 rounded px-2 py-1 ' + (i === state.mediaPlaylistIndex ? 'border border-emerald-500/70' : 'border border-slate-800');
+                const pick = document.createElement('button'); pick.className = 'text-right text-slate-200 flex-1 truncate'; pick.textContent = `${i + 1}. ${item.type === 'video' ? '🎬' : '🖼️'} ${item.name}`; pick.onclick = () => loadPlaylistItem(i, true);
+                const up = document.createElement('button'); up.textContent = '↑'; up.title = 'انتقال به بالا'; up.className = 'px-1 text-slate-400'; up.disabled = i === 0; up.onclick = () => movePlaylistItem(i, -1);
+                const down = document.createElement('button'); down.textContent = '↓'; down.title = 'انتقال به پایین'; down.className = 'px-1 text-slate-400'; down.disabled = i === state.mediaPlaylist.length - 1; down.onclick = () => movePlaylistItem(i, 1);
+                const del = document.createElement('button'); del.textContent = '×'; del.title = 'حذف'; del.className = 'px-1 text-red-300'; del.onclick = () => removePlaylistItem(i);
+                li.append(pick, up, down, del); list.appendChild(li);
+            });
+        }
+
+        function movePlaylistItem(index, delta) {
+            const target = index + delta; if (target < 0 || target >= state.mediaPlaylist.length) return;
+            [state.mediaPlaylist[index], state.mediaPlaylist[target]] = [state.mediaPlaylist[target], state.mediaPlaylist[index]];
+            if (state.mediaPlaylistIndex === index) state.mediaPlaylistIndex = target;
+            else if (state.mediaPlaylistIndex === target) state.mediaPlaylistIndex = index;
+            renderMediaPlaylist();
+        }
+
+        function removePlaylistItem(index) {
+            const wasCurrent = index === state.mediaPlaylistIndex;
+            state.mediaPlaylist.splice(index, 1);
+            if (!state.mediaPlaylist.length) {
+                stopPlaylist(); state.mediaPlaylistIndex = -1; state.mediaType = 'demo';
+                document.getElementById('media-filename').textContent = 'فهرست پخش خالی است';
+                document.getElementById('media-status').textContent = 'چند ویدیو یا عکس انتخاب کنید';
+            } else if (wasCurrent) {
+                loadPlaylistItem(Math.min(index, state.mediaPlaylist.length - 1), false);
+            } else if (index < state.mediaPlaylistIndex) state.mediaPlaylistIndex--;
+            renderMediaPlaylist();
+        }
+
+        function loadPlaylistItem(index, autoplay = true) {
+            if (index < 0 || index >= state.mediaPlaylist.length) return;
+            if (state.imageAdvanceTimer) { clearTimeout(state.imageAdvanceTimer); state.imageAdvanceTimer = null; }
+            const item = state.mediaPlaylist[index];
+            state.mediaPlaylistIndex = index; state.mediaType = item.type;
+            const video = document.getElementById('hidden-media-video');
+            const img = document.getElementById('hidden-media-img');
+            if (item.type === 'video') {
+                if (video.src !== item.url) { video.pause(); video.src = item.url; video.load(); }
+                img.removeAttribute('src');
+                connectMediaElementToAudioMixer(video);
+                video.onended = () => {
+                    if (!state.mediaPlaylistRunning) return;
+                    const mode = state.mediaPlaylistMode || document.getElementById('playlist-mode')?.value || 'sequence';
+                    if (mode === 'sequence' && state.mediaPlaylistIndex < state.mediaPlaylist.length - 1) loadPlaylistItem(state.mediaPlaylistIndex + 1, true);
+                    else stopPlaylist();
+                };
+                if (autoplay) video.play().catch(err => { const status = document.getElementById('media-status'); if (status) status.textContent = 'برای شروع پخش، دکمه پخش را بزنید.'; });
+                else video.pause();
+            } else {
+                video.pause(); video.removeAttribute('src'); video.load(); img.src = item.url;
+                if (state.mediaPlaylistRunning && autoplay && (document.getElementById('playlist-mode')?.value || 'sequence') === 'sequence') {
+                    // Still images advance after a short, predictable display interval.
+                    state.imageAdvanceTimer = setTimeout(() => {
+                        if (state.mediaPlaylistRunning && state.mediaPlaylistIndex < state.mediaPlaylist.length - 1) loadPlaylistItem(state.mediaPlaylistIndex + 1, true);
+                        else stopPlaylist();
+                    }, 5000);
+                }
+            }
+            document.getElementById('media-filename').textContent = item.name;
+            document.getElementById('media-status').textContent = `${index + 1} از ${state.mediaPlaylist.length} • ${item.type === 'video' ? 'ویدیو' : 'عکس'}`;
+            renderMediaPlaylist(); selectPreviewSource('media');
+        }
+
+        function playPlaylist() {
+            if (!state.mediaPlaylist.length) { document.getElementById('media-status').textContent = 'ابتدا فایل اضافه کنید.'; return; }
+            state.mediaPlaylistMode = document.getElementById('playlist-mode')?.value || 'sequence';
+            state.mediaPlaylistRunning = true;
+            const idx = state.mediaPlaylistIndex >= 0 ? state.mediaPlaylistIndex : 0;
+            loadPlaylistItem(idx, true);
+        }
+
+        function stopPlaylist() {
+            state.mediaPlaylistRunning = false;
+            if (state.imageAdvanceTimer) { clearTimeout(state.imageAdvanceTimer); state.imageAdvanceTimer = null; }
+            const v = document.getElementById('hidden-media-video'); if (v) v.pause();
+            const status = document.getElementById('media-status'); if (status && state.mediaPlaylistIndex >= 0) status.textContent = `متوقف • ${state.mediaPlaylistIndex + 1} از ${state.mediaPlaylist.length}`;
+        }
+
+        function playPlaylistStep(delta) {
+            if (!state.mediaPlaylist.length) return;
+            const next = Math.max(0, Math.min(state.mediaPlaylist.length - 1, (state.mediaPlaylistIndex < 0 ? 0 : state.mediaPlaylistIndex) + delta));
+            loadPlaylistItem(next, true);
         }
 
         function toggleMediaPlayback() {
             const v = document.getElementById('hidden-media-video');
-            if (v.paused) v.play(); else v.pause();
+            if (state.mediaType === 'image') { playPlaylist(); return; }
+            if (v.paused) { state.mediaPlaylistRunning = true; v.play().catch(() => {}); }
+            else { v.pause(); state.mediaPlaylistRunning = false; }
         }
 
         function restartMedia() {
-            const v = document.getElementById('hidden-media-video');
-            v.currentTime = 0;
-            v.play();
+            if (state.mediaPlaylistIndex >= 0) loadPlaylistItem(state.mediaPlaylistIndex, true);
         }
 
         function updateGraphicsText() {
@@ -2599,20 +2915,14 @@
         }
 
         function switchDirectorTab(tab) {
-            ['yt', 'ptz', 'media', 'gfx', 'audio'].forEach(t => {
+            ['ptz', 'media', 'gfx', 'audio'].forEach(t => {
                 const contentEl = document.getElementById(`tab-content-${t}`);
                 const btnEl = document.getElementById(`tab-btn-${t}`);
                 if (contentEl) contentEl.classList.toggle('hidden', t !== tab);
                 if (btnEl) {
-                    if (t === 'yt') {
-                        btnEl.className = (t === tab)
-                            ? 'py-2.5 text-red-400 border-b-2 border-red-500 bg-red-950/25 flex items-center justify-center gap-1'
-                            : 'py-2.5 text-red-300/70 hover:text-red-300 flex items-center justify-center gap-1';
-                    } else {
-                        btnEl.className = (t === tab)
-                            ? 'py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60'
-                            : 'py-2.5 text-slate-400 hover:text-white';
-                    }
+                    btnEl.className = (t === tab)
+                        ? 'py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60'
+                        : 'py-2.5 text-slate-400 hover:text-white';
                 }
             });
         }
@@ -2623,25 +2933,63 @@
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 state.audioCtx = new AudioContextClass();
                 state.destNode = state.audioCtx.createMediaStreamDestination();
+                if (state.audioCtx.state === 'suspended') state.audioCtx.resume().catch(() => {});
             } catch (e) {}
+        }
+
+        function disconnectMixerChannel(channel) {
+            try { if (state.sourceNodes[channel]) state.sourceNodes[channel].disconnect(); } catch (e) {}
+            try { if (state.gainNodes[channel]) state.gainNodes[channel].disconnect(); } catch (e) {}
+            delete state.sourceNodes[channel];
+            delete state.gainNodes[channel];
+            if (channel === 'directorMic') {
+                try { if (state.directorAudioDelayNode) state.directorAudioDelayNode.disconnect(); } catch (e) {}
+                state.directorAudioDelayNode = null;
+            }
         }
 
         function connectStreamToAudioMixer(channel, stream) {
-            if (!state.audioCtx || !stream || stream.getAudioTracks().length === 0) return;
-            try {
-                if (state.sourceNodes[channel]) {
-                    try { state.sourceNodes[channel].disconnect(); } catch (e) {}
-                }
-                const src = state.audioCtx.createMediaStreamSource(stream);
-                const gain = state.gainNodes[channel] || state.audioCtx.createGain();
-                gain.gain.value = state.gains[channel] ?? 1.0;
-                src.connect(gain);
-                gain.connect(state.destNode);
-                state.sourceNodes[channel] = src;
-                state.gainNodes[channel] = gain;
-            } catch (e) {}
-        }
+            if (!stream || !stream.getAudioTracks || stream.getAudioTracks().length === 0) {
+                disconnectMixerChannel(channel);
+                return;
+            }
+            // Director-mic mode is a hard source lock: receiver audio is disabled and detached.
+            if (channel === 'cam1' && state.audioSourceMode === 'director') {
+                stream.getAudioTracks().forEach(track => { track.enabled = false; });
+                disconnectMixerChannel('cam1');
+                return;
+            }
+            if (channel === 'directorMic' && state.audioSourceMode !== 'director') {
+                disconnectMixerChannel('directorMic');
+                return;
+            }
 
+            initWebAudioMixer();
+            if (!state.audioCtx || !state.destNode) return;
+            try {
+                disconnectMixerChannel(channel);
+                const audioOnlyStream = new MediaStream(stream.getAudioTracks());
+                const source = state.audioCtx.createMediaStreamSource(audioOnlyStream);
+                const gain = state.audioCtx.createGain();
+                gain.gain.value = state.gains[channel] ?? 1.0;
+                source.connect(gain);
+
+                if (channel === 'directorMic') {
+                    const delay = state.audioCtx.createDelay(3.0);
+                    delay.delayTime.value = Math.max(0, Math.min(2.5, state.directorAudioDelayMs / 1000));
+                    gain.connect(delay);
+                    delay.connect(state.destNode);
+                    state.directorAudioDelayNode = delay;
+                } else {
+                    gain.connect(state.destNode);
+                }
+
+                state.sourceNodes[channel] = source;
+                state.gainNodes[channel] = gain;
+            } catch (e) {
+                disconnectMixerChannel(channel);
+            }
+        }
         function connectMediaElementToAudioMixer(videoEl) {
             if (!state.audioCtx || state.gainNodes['mediaEl']) return;
             try {
@@ -2701,6 +3049,27 @@
         }
 
         function startProgramRecording() {
+            if (state.audioSourceMode === 'director') {
+                const micTrack = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                if (!micTrack) {
+                    const status = document.getElementById('director-audio-input-status');
+                    if (status) status.textContent = 'ضبط شروع نشد: میکروفون گوشی کارگردان فعال نیست. برای جلوگیری از ضبط صدای اشتباه، ابتدا میکروفون محلی را فعال کن.';
+                    const route = document.getElementById('audio-route-status');
+                    if (route) route.textContent = 'ضبط قفل است: منبع انتخابی گوشی کارگردان است اما ترک زنده میکروفون محلی وجود ندارد. صدای دوربین به‌عنوان جایگزین استفاده نمی‌شود.';
+                    return;
+                }
+                micTrack.enabled = true;
+                // Reassert source lock immediately before recording.
+                if (state.remoteCam1Stream) state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = false; });
+                disconnectMixerChannel('cam1');
+                connectStreamToAudioMixer('directorMic', state.directorMicStream);
+                if (!state.sourceNodes.directorMic || !state.destNode?.stream?.getAudioTracks?.().length) {
+                    const status = document.getElementById('director-audio-input-status');
+                    if (status) status.textContent = 'ضبط شروع نشد: مسیر میکس میکروفون کارگردان برقرار نیست. میکروفون را دوباره فعال کن.';
+                    return;
+                }
+                updateRecordingAudioSourceStatus();
+            }
             const cPgm = document.getElementById('canvas-pgm');
             // 25 FPS hardware-paced stream prevents mobile encoder queue buildup and lag
             const canvasStream = cPgm.captureStream(25);
@@ -2742,10 +3111,14 @@
         }
 
         function saveRecordedVideo() {
-            const isMp4 = state.recFormat === 'mp4';
-            const ext = isMp4 ? 'mp4' : 'webm';
-            const blobType = isMp4 ? 'video/mp4' : (state.activeRecMime || 'video/webm');
-            const blob = new Blob(state.recordedChunks, { type: blobType });
+            const actualMime = state.mediaRecorder?.mimeType || state.activeRecMime || state.recordedChunks[0]?.type || 'video/webm';
+            const isActuallyMp4 = actualMime.toLowerCase().includes('mp4');
+            const ext = isActuallyMp4 ? 'mp4' : 'webm';
+            const blob = new Blob(state.recordedChunks, { type: actualMime });
+            if (state.recFormat === 'mp4' && !isActuallyMp4) {
+                const status = document.getElementById('media-status');
+                if (status) status.textContent = 'مرورگر MP4 واقعی را پشتیبانی نکرد؛ فایل با پسوند WebM ذخیره شد تا خراب یا اشتباه نام‌گذاری نشود.';
+            }
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -2776,472 +3149,6 @@
         }
 
         // ============================================================================
-        // 15. YOUTUBE LIVE STREAMING & INTERACTIVE LIVE CHAT OVERLAY ENGINE
-        // ============================================================================
-        function switchYoutubeSubTab(sub) {
-            const isChat = sub === 'chat';
-            document.getElementById('yt-subview-chat').classList.toggle('hidden', !isChat);
-            document.getElementById('yt-subview-settings').classList.toggle('hidden', isChat);
-
-            document.getElementById('yt-subbtn-chat').className = isChat
-                ? 'py-1.5 rounded-lg bg-red-600 text-white transition flex items-center justify-center gap-1'
-                : 'py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1';
-            document.getElementById('yt-subbtn-settings').className = !isChat
-                ? 'py-1.5 rounded-lg bg-red-600 text-white transition flex items-center justify-center gap-1'
-                : 'py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-1';
-        }
-
-        function extractYoutubeVideoId(inputStr) {
-            const s = (inputStr || '').trim();
-            if (!s) return '';
-            if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
-            const m1 = s.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-            if (m1) return m1[1];
-            const m2 = s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-            if (m2) return m2[1];
-            const m3 = s.match(/youtube\.com\/live\/([a-zA-Z0-9_-]{11})/);
-            if (m3) return m3[1];
-            return s;
-        }
-
-        function handleYoutubeUrlInput(val) {
-            const vid = extractYoutubeVideoId(val);
-            state.ytVideoId = vid;
-        }
-
-        function loadSavedYoutubeConfig() {
-            try {
-                const savedKey = localStorage.getItem('prism_yt_stream_key');
-                const savedApi = localStorage.getItem('prism_yt_api_key');
-                const savedVid = localStorage.getItem('prism_yt_video_id');
-                if (savedKey) document.getElementById('yt-stream-key').value = savedKey;
-                if (savedApi) {
-                    document.getElementById('yt-api-key-input').value = savedApi;
-                    state.ytApiKey = savedApi;
-                }
-                if (savedVid) {
-                    document.getElementById('yt-video-id-input').value = savedVid;
-                    state.ytVideoId = savedVid;
-                }
-            } catch (e) {}
-        }
-
-        function saveYoutubeStreamConfig() {
-            try {
-                const key = document.getElementById('yt-stream-key').value.trim();
-                localStorage.setItem('prism_yt_stream_key', key);
-            } catch (e) {}
-        }
-
-        function saveYoutubeApiKey() {
-            try {
-                const api = document.getElementById('yt-api-key-input').value.trim();
-                state.ytApiKey = api;
-                localStorage.setItem('prism_yt_api_key', api);
-                if (state.ytVideoId && api) {
-                    connectYoutubeLiveChat();
-                }
-            } catch (e) {}
-        }
-
-        function toggleStreamKeyVisibility() {
-            const inp = document.getElementById('yt-stream-key');
-            if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-        }
-
-        function copyInputValue(id) {
-            const inp = document.getElementById(id);
-            if (!inp) return;
-            inp.select();
-            try {
-                navigator.clipboard.writeText(inp.value);
-            } catch (e) {
-                document.execCommand('copy');
-            }
-        }
-
-        function toggleOfficialYoutubeChatEmbed() {
-            const box = document.getElementById('yt-official-embed-box');
-            const iframe = document.getElementById('yt-chat-iframe');
-            const isHidden = box.classList.contains('hidden');
-            box.classList.toggle('hidden', !isHidden);
-
-            if (isHidden) {
-                const vid = extractYoutubeVideoId(document.getElementById('yt-video-id-input').value);
-                if (vid) {
-                    const domain = window.location.hostname || 'localhost';
-                    iframe.src = `https://www.youtube.com/live_chat?v=${encodeURIComponent(vid)}&embed_domain=${encodeURIComponent(domain)}`;
-                }
-            }
-        }
-
-        function popoutYoutubeChatWindow() {
-            const vid = extractYoutubeVideoId(document.getElementById('yt-video-id-input').value);
-            const url = vid
-                ? `https://www.youtube.com/live_chat?is_popout=1&v=${encodeURIComponent(vid)}`
-                : 'https://studio.youtube.com/';
-            window.open(url, '_blank', 'width=420,height=640');
-        }
-
-        async function connectYoutubeLiveChat() {
-            const rawInput = document.getElementById('yt-video-id-input').value;
-            const vid = extractYoutubeVideoId(rawInput);
-            state.ytVideoId = vid;
-            try { localStorage.setItem('prism_yt_video_id', vid); } catch (e) {}
-
-            const btn = document.getElementById('btn-yt-connect-chat');
-            const apiKey = document.getElementById('yt-api-key-input').value.trim() || state.ytApiKey;
-
-            if (vid && apiKey) {
-                btn.innerText = 'در حال اتصال...';
-                try {
-                    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=${encodeURIComponent(vid)}&key=${encodeURIComponent(apiKey)}`);
-                    const data = await res.json();
-                    const item = data.items && data.items[0];
-                    const chatId = item && item.liveStreamingDetails && item.liveStreamingDetails.activeLiveChatId;
-                    if (chatId) {
-                        state.ytLiveChatId = chatId;
-                        btn.innerText = '✅ متصل به API';
-                        if (item.liveStreamingDetails.concurrentViewers) {
-                            state.ytViewerCount = Number(item.liveStreamingDetails.concurrentViewers);
-                        }
-                        startYoutubeApiPolling(chatId, apiKey);
-                        return;
-                    }
-                } catch (e) {}
-            }
-
-            if (vid) {
-                btn.innerText = '✅ لینک ثبت شد';
-                const domain = window.location.hostname || 'localhost';
-                const iframe = document.getElementById('yt-chat-iframe');
-                if (iframe) {
-                    iframe.src = `https://www.youtube.com/live_chat?v=${encodeURIComponent(vid)}&embed_domain=${encodeURIComponent(domain)}`;
-                }
-            }
-        }
-
-        function startYoutubeApiPolling(chatId, apiKey) {
-            if (state.ytPollInterval) clearInterval(state.ytPollInterval);
-            const seenIds = new Set();
-            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444'];
-
-            async function poll() {
-                try {
-                    const url = `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${encodeURIComponent(chatId)}&part=snippet,authorDetails&key=${encodeURIComponent(apiKey)}`;
-                    const res = await fetch(url);
-                    const data = await res.json();
-                    if (data.items) {
-                        data.items.forEach(msg => {
-                            if (seenIds.has(msg.id)) return;
-                            seenIds.add(msg.id);
-                            const author = (msg.authorDetails && msg.authorDetails.displayName) || 'کاربر یوتیوب';
-                            const text = (msg.snippet && msg.snippet.displayMessage) || '';
-                            const isSuper = msg.snippet && msg.snippet.type === 'superChatEvent';
-                            const isMember = msg.authorDetails && msg.authorDetails.isChatSponsor;
-                            pushYoutubeCommentObject({
-                                id: msg.id,
-                                author,
-                                text,
-                                badge: isSuper ? 'superchat' : (isMember ? 'member' : 'normal'),
-                                amount: isSuper ? (msg.snippet.superChatDetails?.amountDisplayString || '$5') : '',
-                                time: 'زنده',
-                                avatarColor: colors[Math.floor(Math.random() * colors.length)]
-                            });
-                        });
-                    }
-                } catch (e) {}
-            }
-            poll();
-            state.ytPollInterval = setInterval(poll, 5000);
-        }
-
-        function renderYoutubeCommentsList() {
-            const listEl = document.getElementById('yt-comments-list');
-            const badgeEl = document.getElementById('yt-unread-badge');
-            if (!listEl) return;
-
-            if (badgeEl) badgeEl.innerText = state.ytComments.length;
-
-            const activeId = state.activeScreenComment ? state.activeScreenComment.id : null;
-
-            listEl.innerHTML = state.ytComments.map(c => {
-                const isShowing = c.id === activeId;
-                const badgeHtml = c.badge === 'superchat'
-                    ? `<span class="text-[9px] bg-amber-500 text-black font-black px-1.5 py-0.5 rounded">💎 ${c.amount || 'SuperChat'}</span>`
-                    : c.badge === 'member'
-                    ? `<span class="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold px-1.5 py-0.5 rounded">⭐ عضو ویژه</span>`
-                    : `<span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">${c.time || 'زنده'}</span>`;
-
-                return `
-                <div class="p-2 rounded-xl border transition ${isShowing ? 'bg-red-950/50 border-red-500 shadow-lg shadow-red-950/30' : 'bg-studio-900/95 border-slate-800 hover:border-slate-700'} flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-1.5 min-w-0">
-                            <span class="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-[11px] shrink-0" style="background:${c.avatarColor || '#ef4444'}">
-                                ${(c.author || 'U').trim().charAt(0)}
-                            </span>
-                            <strong class="text-xs text-white truncate">${c.author}</strong>
-                            ${badgeHtml}
-                        </div>
-                        <div class="flex items-center gap-1 shrink-0">
-                            <button onclick="sendCommentToCam1Teleprompter('${c.id}')" class="text-[10px] bg-slate-800 hover:bg-amber-500 hover:text-black text-amber-300 border border-slate-700 px-2 py-1 rounded-lg font-bold transition" title="ارسال این کامنت به صفحه موبایل فیلمبردار/مجری">
-                                📲 ارسال به دوربین ۱
-                            </button>
-                            <button onclick="toggleCommentOnScreen('${c.id}')" class="text-[10px] ${isShowing ? 'bg-red-600 text-white animate-pulse' : 'bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40'} px-2.5 py-1 rounded-lg font-bold transition">
-                                ${isShowing ? '🟢 روی آنتن (حذف)' : '📺 نمایش روی صفحه'}
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-200 leading-relaxed pr-1">${c.text}</p>
-                </div>`;
-            }).join('');
-        }
-
-        function pushYoutubeCommentObject(commentObj, showImmediately = false) {
-            state.ytComments.unshift(commentObj);
-            if (state.ytComments.length > 30) state.ytComments.pop();
-            if (showImmediately) {
-                showCommentOnScreen(commentObj);
-            } else {
-                renderYoutubeCommentsList();
-            }
-        }
-
-        function addCustomComment(showOnAirImmediately) {
-            const authorInp = document.getElementById('custom-comment-author');
-            const textInp = document.getElementById('custom-comment-text');
-            const badgeSel = document.getElementById('custom-comment-badge');
-
-            const text = textInp.value.trim();
-            if (!text) return;
-            const author = authorInp.value.trim() || 'مخاطب یوتیوب';
-            const badge = badgeSel.value || 'normal';
-            const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
-
-            const newComment = {
-                id: 'cust_' + Date.now(),
-                author,
-                text,
-                badge,
-                amount: badge === 'superchat' ? '$10.00' : '',
-                time: 'الان',
-                avatarColor: colors[Math.floor(Math.random() * colors.length)]
-            };
-
-            textInp.value = '';
-            pushYoutubeCommentObject(newComment, showOnAirImmediately);
-        }
-
-        function toggleCommentOnScreen(commentId) {
-            if (state.activeScreenComment && state.activeScreenComment.id === commentId) {
-                clearCommentFromScreen();
-                return;
-            }
-            const found = state.ytComments.find(c => c.id === commentId);
-            if (found) {
-                showCommentOnScreen(found);
-            }
-        }
-
-        function showCommentOnScreen(commentObj) {
-            state.activeScreenComment = commentObj;
-            updateCommentOverlayStyle();
-
-            const banner = document.getElementById('active-comment-banner');
-            const clearBtn = document.getElementById('btn-clear-active-comment');
-            if (banner) {
-                banner.classList.remove('hidden');
-                document.getElementById('active-comment-author').innerText = commentObj.author + ':';
-                document.getElementById('active-comment-text').innerText = commentObj.text;
-            }
-            if (clearBtn) clearBtn.classList.remove('hidden');
-
-            if (state.commentAutoHideTimeout) clearTimeout(state.commentAutoHideTimeout);
-            if (state.commentAutoHideSec > 0) {
-                state.commentAutoHideTimeout = setTimeout(() => {
-                    clearCommentFromScreen();
-                }, state.commentAutoHideSec * 1000);
-            }
-
-            renderYoutubeCommentsList();
-        }
-
-        function clearCommentFromScreen() {
-            state.activeScreenComment = null;
-            if (state.commentAutoHideTimeout) {
-                clearTimeout(state.commentAutoHideTimeout);
-                state.commentAutoHideTimeout = null;
-            }
-            const banner = document.getElementById('active-comment-banner');
-            const clearBtn = document.getElementById('btn-clear-active-comment');
-            if (banner) banner.classList.add('hidden');
-            if (clearBtn) clearBtn.classList.add('hidden');
-            renderYoutubeCommentsList();
-        }
-
-        function updateCommentOverlayStyle() {
-            const themeEl = document.getElementById('yt-comment-theme');
-            const posEl = document.getElementById('yt-comment-pos');
-            const autoEl = document.getElementById('yt-comment-autohide');
-            if (themeEl) state.commentTheme = themeEl.value;
-            if (posEl) state.commentPos = posEl.value;
-            if (autoEl) state.commentAutoHideSec = Number(autoEl.value) || 0;
-        }
-
-        function sendCommentToCam1Teleprompter(commentId) {
-            const found = state.ytComments.find(c => c.id === commentId);
-            if (!found) return;
-            sendRemoteCommand({
-                type: 'intercom',
-                text: `💬 ${found.author}: ${found.text}`
-            });
-        }
-
-        function toggleYoutubeChatSimulator() {
-            state.ytSimActive = !state.ytSimActive;
-            const btn = document.getElementById('btn-yt-sim');
-            if (btn) {
-                btn.innerText = state.ytSimActive ? '🤖 شبیه‌ساز زنده: روشن' : '🤖 شبیه‌ساز زنده: خاموش';
-                btn.className = state.ytSimActive
-                    ? 'text-[10px] bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold transition'
-                    : 'text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded font-bold transition';
-            }
-            if (state.ytSimActive) startYoutubeChatSimulator();
-            else if (state.ytSimInterval) clearInterval(state.ytSimInterval);
-        }
-
-        function startYoutubeChatSimulator() {
-            if (state.ytSimInterval) clearInterval(state.ytSimInterval);
-            const samplePool = [
-                { author: 'نیما علوی', text: 'صدا و تصویر هر دو عالی و بدون هیچ گونه تأخیری می‌رسه 🌟', badge: 'normal', color: '#3b82f6' },
-                { author: 'پریسا راد', text: 'چطور می‌تونم با گوشی دومم به این اتاق فرمان وصل بشم؟', badge: 'member', color: '#10b981' },
-                { author: 'Kaveh Studio', text: 'دمت گرم! قابلیت نمایش کامنت‌های یوتیوب روی تصویر خیلی حرفه‌ایه 👏🔥', badge: 'superchat', amount: '$15.00', color: '#f59e0b' },
-                { author: 'آرش کمانگیر', text: 'نمای تصویر در تصویر (PiP) رو هم نشون بدید لطفا!', badge: 'normal', color: '#ec4899' },
-                { author: 'عرفان حسینی', text: 'آیا خروجی 1080p همزمان ضبط هم میشه؟', badge: 'normal', color: '#8b5cf6' }
-            ];
-            let idx = 0;
-            state.ytSimInterval = setInterval(() => {
-                if (!state.ytSimActive || state.role !== 'director') return;
-                const item = samplePool[idx % samplePool.length];
-                idx++;
-                state.ytViewerCount += Math.floor(Math.random() * 5) - 1;
-                if (state.ytViewerCount < 50) state.ytViewerCount = 85;
-                const vText = document.getElementById('yt-viewers-text');
-                if (vText) vText.innerText = `${state.ytViewerCount} نفر`;
-
-                pushYoutubeCommentObject({
-                    id: 'sim_' + Date.now(),
-                    author: item.author,
-                    text: item.text,
-                    badge: item.badge,
-                    amount: item.amount || '',
-                    time: 'الان',
-                    avatarColor: item.color
-                }, false);
-            }, 14000);
-        }
-
-        function toggleYoutubeLiveBug() {
-            state.ytLiveBugVisible = !state.ytLiveBugVisible;
-            const btn = document.getElementById('btn-yt-live-bug');
-            if (btn) {
-                btn.innerText = state.ytLiveBugVisible ? 'نشان 🔴 LIVE روی تصویر: روشن' : 'نشان 🔴 LIVE روی تصویر: خاموش';
-            }
-        }
-
-        function toggleYoutubeLiveBroadcast() {
-            if (state.ytLiveActive) {
-                stopYoutubeLiveBroadcast();
-            } else {
-                startYoutubeLiveBroadcast();
-            }
-        }
-
-        function startYoutubeLiveBroadcast() {
-            state.ytLiveActive = true;
-            state.ytLiveStartTime = Date.now();
-            state.ytLiveBugVisible = true;
-            saveYoutubeStreamConfig();
-            requestScreenWakeLock();
-
-            // Optional WebSocket RTMP relay streaming if ws:// URL is provided
-            const wsUrl = (document.getElementById('yt-ws-relay').value || '').trim();
-            const streamKey = (document.getElementById('yt-stream-key').value || '').trim();
-            if (wsUrl.startsWith('ws://') || wsUrl.startsWith('wss://')) {
-                try {
-                    const targetUrl = streamKey ? `${wsUrl}?key=${encodeURIComponent(streamKey)}` : wsUrl;
-                    state.ytWsRelaySocket = new WebSocket(targetUrl);
-                    state.ytWsRelaySocket.onopen = () => {
-                        const cPgm = document.getElementById('canvas-pgm');
-                        const stream = cPgm.captureStream(30);
-                        if (state.destNode && state.destNode.stream.getAudioTracks().length > 0) {
-                            stream.addTrack(state.destNode.stream.getAudioTracks()[0]);
-                        }
-                        let mimeType = 'video/webm;codecs=vp8,opus';
-                        if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
-                        state.ytWsRecorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 3500000 });
-                        state.ytWsRecorder.ondataavailable = (e) => {
-                            if (e.data && e.data.size > 0 && state.ytWsRelaySocket && state.ytWsRelaySocket.readyState === 1) {
-                                state.ytWsRelaySocket.send(e.data);
-                            }
-                        };
-                        state.ytWsRecorder.start(500);
-                    };
-                } catch (e) {}
-            }
-
-            // Update UI badges & timers
-            document.getElementById('btn-yt-golive-label').innerText = '⏹ پایان پخش زنده یوتیوب (END STREAM)';
-            document.getElementById('btn-yt-golive').className = 'py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-red-950 text-red-400 border-2 border-red-500 font-black text-xs flex items-center justify-center gap-2 transition';
-            document.getElementById('yt-status-text').innerText = '🔴 روی آنتن زنده (ON AIR)';
-            document.getElementById('yt-status-text').className = 'text-xs font-bold text-red-400 mt-0.5 animate-pulse';
-
-            const topTimer = document.getElementById('top-yt-timer');
-            const topLabel = document.getElementById('top-yt-label');
-            if (topTimer) topTimer.classList.remove('hidden');
-            if (topLabel) topLabel.innerText = '🔴 LIVE ON YOUTUBE';
-
-            if (state.ytLiveTimerInterval) clearInterval(state.ytLiveTimerInterval);
-            state.ytLiveTimerInterval = setInterval(() => {
-                const sec = Math.floor((Date.now() - state.ytLiveStartTime) / 1000);
-                const hrs = String(Math.floor(sec / 3600)).padStart(2, '0');
-                const mins = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
-                const secs = String(sec % 60).padStart(2, '0');
-                const formatted = `${hrs}:${mins}:${secs}`;
-                const durEl = document.getElementById('yt-duration-text');
-                if (durEl) durEl.innerText = formatted;
-                if (topTimer) topTimer.innerText = `${mins}:${secs}`;
-            }, 1000);
-
-            syncRemoteTallyState();
-        }
-
-        function stopYoutubeLiveBroadcast() {
-            state.ytLiveActive = false;
-            if (state.ytLiveTimerInterval) {
-                clearInterval(state.ytLiveTimerInterval);
-                state.ytLiveTimerInterval = null;
-            }
-            if (state.ytWsRecorder) {
-                try { state.ytWsRecorder.stop(); } catch (e) {}
-                state.ytWsRecorder = null;
-            }
-            if (state.ytWsRelaySocket) {
-                try { state.ytWsRelaySocket.close(); } catch (e) {}
-                state.ytWsRelaySocket = null;
-            }
-
-            document.getElementById('btn-yt-golive-label').innerText = '🔴 شروع پخش زنده یوتیوب (GO LIVE)';
-            document.getElementById('btn-yt-golive').className = 'py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition';
-            document.getElementById('yt-status-text').innerText = 'آماده پخش (Standby)';
-            document.getElementById('yt-status-text').className = 'text-xs font-bold text-amber-400 mt-0.5';
-
-            const topTimer = document.getElementById('top-yt-timer');
-            const topLabel = document.getElementById('top-yt-label');
-            if (topTimer) topTimer.classList.add('hidden');
-            if (topLabel) topLabel.innerText = '▶️ لایو یوتیوب و کامنت‌ها';
-        }
-
         function toggleCleanProgramFullscreen(forceState) {
             const modal = document.getElementById('clean-pgm-modal');
             const show = typeof forceState === 'boolean' ? forceState : modal.classList.contains('hidden');
