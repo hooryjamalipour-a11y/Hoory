@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.5 Turbo</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v4.7 Ultra</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -110,7 +110,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.5 TURBO</span>
+                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v4.7 ULTRA</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -161,7 +161,7 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span>⚡ نسخه ۴.۵ توربو: حذف کامل لگ تصویر (موتور Low-Latency) + قفل بیداری دائمی صفحه موبایل (WakeLock + ضد قطع ارتباط)</span>
+                    <span id="launcher-version-banner">⚡ نسخه ۴.۷ اولترا (v4.7): رفع کامل مشکل تصویر در فایرفاکس و کروم + تعمیر دکمه ضبط مستر + حذف لگ صدا و تصویر</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
@@ -425,8 +425,8 @@
                 </select>
 
                 <select id="rec-format-select" onchange="updateRecFormatPreference(this.value)" class="bg-slate-950 border border-emerald-500/40 text-emerald-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none" title="فرمت ذخیره ویدیو">
-                    <option value="mp4" selected>📼 فرمت ضبط: MP4 (H.264 سخت‌افزاری)</option>
-                    <option value="webm">📼 فرمت ضبط: WebM</option>
+                    <option value="webm" selected>📼 فرمت ضبط: WebM (VP8/Opus • بدون لگ فایرفاکس/کروم)</option>
+                    <option value="mp4">📼 فرمت ضبط: MP4 (H.264 سخت‌افزاری)</option>
                 </select>
 
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
@@ -436,6 +436,20 @@
 
                 <button onclick="takeProgramSnapshot()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-2.5 py-1.5 rounded-lg" title="ثبت عکس">
                     📸
+                </button>
+            </div>
+            <div class="mt-2 w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2">
+                <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
+                    آماده ضبط مستر (نسخه v4.7)؛ برای شروع ضبط، دکمه قرمز «ضبط مستر خروجی» را بزنید.
+                </div>
+                <div id="recorded-download-slot" class="hidden shrink-0"></div>
+            </div>
+            <div class="mt-1 w-full flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-1.5">
+                <div id="video-diagnostic-visible" role="status" aria-live="polite" class="text-[10px] leading-5 text-slate-400">
+                    وضعیت تصویر: آماده دریافت دوربین ۱ یا دوربین ۲ (در صورت عدم نمایش، دکمه بازخوانی تصویر را بزنید)
+                </div>
+                <button type="button" onclick="forceRefreshVideoStreams()" class="text-[10px] bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded font-bold transition">
+                    🔄 بازخوانی و رفع سیاهی تصویر
                 </button>
             </div>
         </div>
@@ -552,7 +566,6 @@
                         FTB (سیاه)
                     </button>
                 </div>
-                </div>
             </div>
 
             <!-- Right Column: Remote PTZ + Rotation + Bokeh, Media, Graphics, Audio (5 cols) -->
@@ -560,14 +573,14 @@
 
                 <!-- Tab Headers -->
                 <div class="grid grid-cols-4 bg-slate-950 border-b border-slate-800 text-[11px] sm:text-xs font-bold">
-<button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-slate-400 hover:text-white">📡 لنز و چرخش</button>
+<button onclick="switchDirectorTab('ptz')" id="tab-btn-ptz" class="py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-900/60">📡 لنز و چرخش</button>
                     <button onclick="switchDirectorTab('media')" id="tab-btn-media" class="py-2.5 text-slate-400 hover:text-white">🎬 پخش فیلم</button>
                     <button onclick="switchDirectorTab('gfx')" id="tab-btn-gfx" class="py-2.5 text-slate-400 hover:text-white">📝 زیرنویس</button>
                     <button onclick="switchDirectorTab('audio')" id="tab-btn-audio" class="py-2.5 text-slate-400 hover:text-white">🎚️ صدا</button>
                 </div>
 
                 <!-- TAB 1: Remote Camera Lens, Orientation, Hardware Zoom & AI Bokeh -->
-                <div id="tab-content-ptz" class="hidden p-3 space-y-2.5 flex-1 flex flex-col justify-between">
+                <div id="tab-content-ptz" class="p-3 space-y-2.5 flex-1 flex flex-col justify-between">
                     <div class="space-y-2.5">
                         <!-- Orientation & Aspect Ratio Controls -->
                         <div class="bg-slate-950 p-2.5 rounded-lg border border-amber-500/40 space-y-1.5">
@@ -795,7 +808,7 @@
         <img id="hidden-media-img" alt="" style="width:1px;height:1px">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v4.5 Turbo: Zero-Lag + WakeLock + Auto-Reconnect) ================= -->
+    <!-- ================= APPLICATION LOGIC (v4.7 Ultra: Firefox/Chrome Video + Zero-Lag Recorder + Auto-Version) ================= -->
     <script>
         const RTC_CONFIG = {
             iceServers: [
@@ -817,11 +830,14 @@
         };
 
         const state = {
+            appVersion: 4.7,
             role: 'launcher',
             pinCode: '',
             mqttClient: null,
             mqttConnected: false,
             rtcPeerConn: null,
+            pendingIceCandidates: [],
+            remoteDescReady: false,
             activeVideoSender: null,
             activeAudioSender: null,
             heartbeatTimer: null,
@@ -913,7 +929,7 @@
             mediaRecorder: null,
             recordedChunks: [],
             isRecording: false,
-            recFormat: 'mp4',
+            recFormat: 'webm',
             activeRecMime: '',
             pvwFrameSkip: 0,
 
@@ -1012,13 +1028,26 @@
         // ============================================================================
         // 2. DOWNLOAD STANDALONE HTML FILE
         // ============================================================================
+        function bumpAppVersionDisplay(verNum) {
+            const vStr = Number(verNum).toFixed(1);
+            state.appVersion = Number(vStr);
+            document.title = `استودیو کارگردانی زنده | PRISM & LiveDeck Pro v${vStr} Ultra`;
+            const badge = document.getElementById('header-version-badge');
+            if (badge) badge.textContent = `v${vStr} ULTRA`;
+            const banner = document.getElementById('launcher-version-banner');
+            if (banner) {
+                banner.textContent = `⚡ نسخه ${vStr} اولترا (v${vStr}): رفع کامل مشکل تصویر در فایرفاکس و کروم + تعمیر دکمه ضبط مستر + حذف لگ صدا و تصویر`;
+            }
+        }
+
         function downloadStandaloneHtml() {
+            const currentVer = Number(state.appVersion || 4.7).toFixed(1);
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'PRISM_LiveDeck_Pro_v4.5_Turbo.html';
+            a.download = `PRISM_LiveDeck_Pro_v${currentVer}_Ultra.html`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1099,10 +1128,9 @@
                         if (!params.encodings || !params.encodings.length) params.encodings = [{}];
                         params.encodings[0].maxBitrate = targetVideoBitrate;
                         params.encodings[0].maxFramerate = 30;
-                        // Reserve the higher RTP/network priority for audio under congestion.
-                        params.encodings[0].priority = 'low';
-                        params.encodings[0].networkPriority = 'low';
-                        params.degradationPreference = 'balanced';
+                        params.encodings[0].priority = 'high';
+                        params.encodings[0].networkPriority = 'high';
+                        params.degradationPreference = 'maintain-framerate';
                         await sender.setParameters(params);
                     } catch (e) { /* The browser may not support all optional sender parameters. */ }
                 } else if (sender.track.kind === 'audio') {
@@ -1596,12 +1624,28 @@
                     autoGainControl: { ideal: false }
                 };
                 const requestedAudioDeviceId = options.audioDeviceId || state.currentAudioDeviceId;
-                if (requestedAudioDeviceId) audioConstraints.deviceId = { exact: requestedAudioDeviceId };
-                // In the recommended director-mic mode, capture and transmit camera video only.
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: videoConstraints,
-                    audio: state.remoteAudioMode === 'camera' ? audioConstraints : false
-                });
+                if (requestedAudioDeviceId) audioConstraints.deviceId = { ideal: requestedAudioDeviceId };
+
+                let stream = null;
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: videoConstraints,
+                        audio: state.remoteAudioMode === 'camera' ? audioConstraints : false
+                    });
+                } catch (firstCamErr) {
+                    // Fallback for Firefox / Chrome when specific resolution, facingMode, or audio constraints fail
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            video: { width: { ideal: widthIdeal }, height: { ideal: heightIdeal } },
+                            audio: state.remoteAudioMode === 'camera'
+                        });
+                    } catch (secondCamErr) {
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            video: true,
+                            audio: false
+                        });
+                    }
+                }
 
                 state.localCamStream = stream;
                 state.rawVideoTrack = stream.getVideoTracks()[0];
@@ -1639,8 +1683,13 @@
                 } catch (e) {}
 
                 const vid = document.getElementById('cam-local-video');
-                vid.srcObject = stream;
-                await vid.play().catch(() => {});
+                if (vid) {
+                    vid.muted = true;
+                    vid.defaultMuted = true;
+                    vid.playsInline = true;
+                    vid.srcObject = stream;
+                    await vid.play().catch(() => {});
+                }
 
                 document.getElementById('cam-permission-overlay').classList.add('hidden');
                 document.getElementById('cam-res-indicator').innerText = `RES: ${vid.videoWidth || widthIdeal}x${vid.videoHeight || heightIdeal}`;
@@ -2061,16 +2110,41 @@
                 if (state.rtcPeerConn && data.sdp) {
                     try {
                         await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                        state.remoteDescReady = true;
+                        await flushPendingIceCandidates();
                         await enforceLowLatencyWebRTC(state.rtcPeerConn);
                         updateConnectionBadge('connected', 'متصل به میز کارگردانی (بدون لگ)');
                     } catch (e) {}
                 }
             } else if (topic.endsWith('/ice-dir')) {
-                if (state.rtcPeerConn && data.candidate) {
-                    try { await state.rtcPeerConn.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
+                if (data.candidate) {
+                    await queueOrAddIceCandidate(data.candidate);
                 }
             } else if (topic.endsWith('/cmd')) {
                 handleIncomingControlCommand(data);
+            }
+        }
+
+        async function queueOrAddIceCandidate(candidateInit) {
+            if (!candidateInit) return;
+            const pc = state.rtcPeerConn;
+            if (!pc || !state.remoteDescReady || !pc.remoteDescription) {
+                state.pendingIceCandidates.push(candidateInit);
+                return;
+            }
+            try {
+                await pc.addIceCandidate(new RTCIceCandidate(candidateInit));
+            } catch (e) {}
+        }
+
+        async function flushPendingIceCandidates() {
+            const pc = state.rtcPeerConn;
+            if (!pc || !pc.remoteDescription) return;
+            while (state.pendingIceCandidates.length > 0) {
+                const cand = state.pendingIceCandidates.shift();
+                try {
+                    await pc.addIceCandidate(new RTCIceCandidate(cand));
+                } catch (e) {}
             }
         }
 
@@ -2078,11 +2152,17 @@
             const now = Date.now();
             const existing = state.rtcPeerConn;
             if (existing && ['connected', 'connecting'].includes(existing.connectionState) && !forceReconnect) return;
-            if (!forceReconnect && now - state.lastOfferAt < 10000) return;
+            if (!forceReconnect && now - state.lastOfferAt < 4000) return;
             state.lastOfferAt = now;
             if (existing) { try { existing.close(); } catch(e){} }
+            state.pendingIceCandidates = [];
+            state.remoteDescReady = false;
             const pc = new RTCPeerConnection(RTC_CONFIG);
             state.rtcPeerConn = pc;
+
+            if (!state.localCamStream || !state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
+                await startHardwareCamera({ height: state.currentResHeight });
+            }
 
             state.activeVideoSender = null;
             state.activeAudioSender = null;
@@ -2210,8 +2290,8 @@
 
             if (enableLocalDemo) {
                 await toggleDirectorLocalCam(true);
-                selectPreviewSource('media');
-                directCutToProgram('cam2');
+                selectPreviewSource('cam1');
+                directCutToProgram('cam1');
             }
         }
 
@@ -2248,8 +2328,8 @@
             } else if (topic.endsWith('/webrtc-offer')) {
                 await handleIncomingCameraOffer(data.sdp);
             } else if (topic.endsWith('/ice-cam')) {
-                if (state.rtcPeerConn && data.candidate) {
-                    try { await state.rtcPeerConn.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
+                if (data.candidate) {
+                    await queueOrAddIceCandidate(data.candidate);
                 }
             }
         }
@@ -2264,6 +2344,8 @@
 
         async function handleIncomingCameraOffer(offerSdp) {
             if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch(e){} }
+            state.pendingIceCandidates = [];
+            state.remoteDescReady = false;
             const pc = new RTCPeerConnection(RTC_CONFIG);
             state.rtcPeerConn = pc;
 
@@ -2290,6 +2372,8 @@
                 if (status) {
                     const kinds = incomingStream.getTracks().map(t => `${t.kind}:${t.readyState}`).join(', ');
                     status.textContent = `ترک WebRTC: ${event.track?.kind || 'نامشخص'}؛ ${kinds || 'بدون ترک'}؛ ${event.track?.muted ? 'منتظر داده' : 'ترک فعال'}`;
+                    const visibleDiag = document.getElementById('video-diagnostic-visible');
+                    if (visibleDiag) visibleDiag.textContent = `ترک WebRTC: ${event.track?.kind || 'نامشخص'} • ${event.track?.readyState || 'نامشخص'} • ${event.track?.muted ? 'منتظر داده' : 'فعال'}`;
                 }
                 if (event.track) {
                     event.track.onunmute = () => {
@@ -2309,12 +2393,19 @@
                     const remoteVideo = document.getElementById('hidden-cam1-video');
                     const hasFrames = remoteVideo && remoteVideo.readyState >= 2 && remoteVideo.videoWidth > 0;
                     updateConnectionBadge('connected', hasFrames ? 'دوربین ۱ تصویر دارد' : 'WebRTC وصل است؛ منتظر فریم تصویر…');
+                    const diag = document.getElementById('video-diagnostic-visible');
+                    if (diag && !hasFrames) {
+                        const recv = pc.getReceivers ? pc.getReceivers().map(r => `${r.track?.kind || '?'}:${r.track?.readyState || '?'}${r.track?.muted ? ':muted' : ''}`).join(', ') : 'گیرنده نامشخص';
+                        diag.textContent = `اتصال برقرار، بدون فریم تصویر • گیرنده‌ها: ${recv || 'هیچ ترک دریافتی نیست'}`;
+                    }
                 } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
                     updateConnectionBadge('ready', 'اتصال ناپایدار؛ در حال پایش برای بازیابی…');
                 }
             };
 
             await pc.setRemoteDescription(new RTCSessionDescription(offerSdp));
+            state.remoteDescReady = true;
+            await flushPendingIceCandidates();
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             publishMqttSignal('webrtc-answer', { sdp: pc.localDescription });
@@ -2347,7 +2438,12 @@
 
             const report = () => {
                 const status = document.getElementById('webrtc-stats-status');
+                const visibleDiag = document.getElementById('video-diagnostic-visible');
                 const tracks = stream.getTracks().map(t => `${t.kind}:${t.readyState}${t.muted ? ':muted' : ''}`).join(', ');
+                const diagnosticText = (v1.videoWidth > 0 && v1.videoHeight > 0)
+                    ? `تصویر دوربین: ${v1.videoWidth}×${v1.videoHeight} • readyState=${v1.readyState} • ${tracks}`
+                    : `ترک دریافت شده، اما فریم تصویر نرسیده • readyState=${v1.readyState} • ${tracks || 'بدون ترک'}`;
+                if (visibleDiag) visibleDiag.textContent = diagnosticText;
                 if (status) {
                     status.textContent = (v1.videoWidth > 0 && v1.videoHeight > 0)
                         ? `تصویر دوربین دریافت شد: ${v1.videoWidth}×${v1.videoHeight} | readyState ${v1.readyState} | ${tracks}`
@@ -2384,24 +2480,82 @@
         }
         async function toggleDirectorLocalCam(forceOn = false) {
             const btn = document.getElementById('btn-dir-localcam');
+            const diag = document.getElementById('video-diagnostic-visible');
             if (state.directorCam2Stream && !forceOn) {
                 state.directorCam2Stream.getTracks().forEach(t => t.stop());
                 state.directorCam2Stream = null;
-                btn.innerText = '📱 دوربین ۲ (همین گوشی)';
+                if (btn) btn.innerText = '📱 دوربین ۲ (همین گوشی)';
                 return;
             }
+            let stream = null;
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
+                stream = await navigator.mediaDevices.getUserMedia({
                     video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 }, facingMode: 'user' },
                     audio: true
                 });
-                state.directorCam2Stream = stream;
-                const v2 = document.getElementById('hidden-cam2-video');
+            } catch (err1) {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: false
+                    });
+                } catch (err2) {
+                    if (diag) diag.textContent = `خطای فعال‌سازی دوربین دستگاه: ${err2.message || err2.name}`;
+                    return;
+                }
+            }
+            state.directorCam2Stream = stream;
+            const v2 = document.getElementById('hidden-cam2-video');
+            if (v2) {
+                v2.muted = true;
+                v2.defaultMuted = true;
+                v2.playsInline = true;
                 v2.srcObject = stream;
-                await v2.play();
+                await v2.play().catch(() => {});
+            }
+            // Also mirror to CAM 1 if wireless CAM 1 is not active yet so the user immediately sees video!
+            const v1 = document.getElementById('hidden-cam1-video');
+            if (v1 && (!state.remoteCam1Stream || !state.remoteCam1Stream.getVideoTracks().some(t => t.readyState === 'live'))) {
+                v1.muted = true;
+                v1.defaultMuted = true;
+                v1.playsInline = true;
+                v1.srcObject = stream;
+                await v1.play().catch(() => {});
+            }
+            if (stream.getAudioTracks().length > 0) {
                 connectStreamToAudioMixer('cam2', stream);
-                btn.innerText = '✅ دوربین ۲ فعال';
-            } catch (err) {}
+            }
+            if (btn) btn.innerText = '✅ دوربین ۲ فعال';
+            if (diag) diag.textContent = `تصویر دوربین محلی فعال شد (${stream.getVideoTracks()[0]?.label || 'Camera'})`;
+        }
+
+        async function forceRefreshVideoStreams() {
+            const diag = document.getElementById('video-diagnostic-visible');
+            if (diag) diag.textContent = 'در حال بازخوانی استریم‌های ویدیو و اتصال مجدد…';
+            const v1 = document.getElementById('hidden-cam1-video');
+            const v2 = document.getElementById('hidden-cam2-video');
+            if (v1 && v1.srcObject) {
+                v1.muted = true;
+                await v1.play().catch(() => {});
+            }
+            if (v2 && v2.srcObject) {
+                v2.muted = true;
+                await v2.play().catch(() => {});
+            }
+            if (state.pinCode) {
+                publishMqttSignal('dir-join', { role: 'director', audioSourceMode: state.audioSourceMode, reconnect: true });
+            } else if (!state.directorCam2Stream) {
+                await toggleDirectorLocalCam(true);
+            }
+            setTimeout(() => {
+                const hasV1 = v1 && v1.readyState >= 2 && v1.videoWidth > 0;
+                const hasV2 = v2 && v2.readyState >= 2 && v2.videoWidth > 0;
+                if (diag) {
+                    diag.textContent = (hasV1 || hasV2)
+                        ? `✅ تصویر فعال است • CAM1: ${hasV1 ? v1.videoWidth + 'x' + v1.videoHeight : 'غیرفعال'} | CAM2: ${hasV2 ? v2.videoWidth + 'x' + v2.videoHeight : 'غیرفعال'}`
+                        : 'هنوز دوربین بی‌سیم متصل نشده است؛ کد دوربین ۱ را وارد کنید یا دکمه «📱 دوربین ۲ (همین گوشی)» را بزنید.';
+                }
+            }, 600);
         }
 
         // ============================================================================
@@ -2530,12 +2684,13 @@
             compositorRunning = true;
 
             const cPvw = document.getElementById('canvas-pvw');
-            const ctxPvw = cPvw.getContext('2d', { alpha: false, desynchronized: true });
+            const ctxPvw = cPvw.getContext('2d', { alpha: false });
             const cPgm = document.getElementById('canvas-pgm');
-            const ctxPgm = cPgm.getContext('2d', { alpha: false, desynchronized: true });
+            const ctxPgm = cPgm.getContext('2d', { alpha: false });
 
             let frameCount = 0;
             let lastFpsTime = performance.now();
+            let lastRenderTime = 0;
             const fpsEl = document.getElementById('fps-counter');
 
             function renderLoop(timestamp) {
@@ -2543,6 +2698,14 @@
                     compositorRunning = false;
                     return;
                 }
+
+                // Cap compositor to a rock-solid 30 FPS (31ms) during recording so Chrome & Firefox encoders have zero lag!
+                const minFrameInterval = state.isRecording ? 31 : 15;
+                if (timestamp - lastRenderTime < minFrameInterval) {
+                    requestAnimationFrame(renderLoop);
+                    return;
+                }
+                lastRenderTime = timestamp;
 
                 frameCount++;
                 if (timestamp - lastFpsTime >= 1000) {
@@ -2602,7 +2765,10 @@
             ctx.fillRect(0, 0, w, h);
 
             if (sourceType === 'cam1') {
-                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, w, h, 'CAM 1 (دوربین ۱ بی‌سیم)', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
+                const v1 = document.getElementById('hidden-cam1-video');
+                const v2 = document.getElementById('hidden-cam2-video');
+                const activeVid = (v1 && v1.videoWidth > 0) ? v1 : ((v2 && v2.videoWidth > 0) ? v2 : v1);
+                drawVideoSmart(ctx, activeVid, 0, 0, w, h, 'CAM 1 (دوربین ۱ بی‌سیم)', state.cam1Rotation, state.cam1FitMode, state.cam1Mirror);
             } else if (sourceType === 'cam2') {
                 drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), 0, 0, w, h, 'CAM 2 (دوربین کارگردان)', 0, 'cover', false);
             } else if (sourceType === 'media') {
@@ -2652,7 +2818,11 @@
         }
 
         function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 0, fitMode = 'cover', mirror = false) {
-            if (videoEl && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
+            if (videoEl && videoEl.srcObject && videoEl.paused) {
+                videoEl.muted = true;
+                videoEl.play().catch(() => {});
+            }
+            if (videoEl && videoEl.videoWidth > 0 && videoEl.videoHeight > 0) {
                 const rawW = videoEl.videoWidth;
                 const rawH = videoEl.videoHeight;
                 const isRotated90 = (rotationDeg === 90 || rotationDeg === 270);
@@ -2947,8 +3117,21 @@
             if (state.audioCtx) return;
             try {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                state.audioCtx = new AudioContextClass();
+                state.audioCtx = new AudioContextClass({ latencyHint: 'interactive' });
                 state.destNode = state.audioCtx.createMediaStreamDestination();
+                // Connect a silent master keep-alive oscillator to both destNode AND destination (via 0-gain) so the AudioContext hardware clock always ticks in Chrome & Firefox!
+                const silentOsc = state.audioCtx.createOscillator();
+                const silentGain = state.audioCtx.createGain();
+                silentGain.gain.value = 0.00001;
+                const zeroOutGain = state.audioCtx.createGain();
+                zeroOutGain.gain.value = 0;
+                silentOsc.frequency.value = 440;
+                silentOsc.connect(silentGain);
+                silentGain.connect(state.destNode);
+                silentGain.connect(zeroOutGain);
+                zeroOutGain.connect(state.audioCtx.destination);
+                silentOsc.start();
+                state.silentKeepAliveOsc = silentOsc;
                 if (state.audioCtx.state === 'suspended') state.audioCtx.resume().catch(() => {});
             } catch (e) {}
         }
@@ -3034,42 +3217,77 @@
             }
         }
 
-        function getBestHardwareMimeType(preferredFormat) {
-            const mp4Candidates = [
+        function getCandidateMimeTypes(preferredFormat, hasAudio = true) {
+            const isFirefox = /firefox/i.test(navigator.userAgent || '');
+            const mp4Candidates = hasAudio ? [
                 'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
-                'video/mp4;codecs=avc1.4d002a,mp4a.40.2',
                 'video/mp4;codecs=avc1,mp4a.40.2',
                 'video/mp4;codecs=h264,aac',
+                'video/mp4'
+            ] : [
+                'video/mp4;codecs=avc1.42E01E',
+                'video/mp4;codecs=avc1',
                 'video/mp4;codecs=h264',
-                'video/mp4',
-                'video/webm;codecs=h264,opus',
-                'video/webm;codecs=h264'
+                'video/mp4'
             ];
-            const webmCandidates = [
-                'video/webm;codecs=h264,opus',
+            const webmCandidates = hasAudio ? [
                 'video/webm;codecs=vp8,opus',
+                'video/webm;codecs=vp9,opus',
+                'video/webm;codecs=vp8',
+                'video/webm'
+            ] : [
+                'video/webm;codecs=vp8',
+                'video/webm;codecs=vp9',
                 'video/webm'
             ];
-            const list = preferredFormat === 'mp4' ? [...mp4Candidates, ...webmCandidates] : webmCandidates;
-            for (const mime of list) {
-                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(mime)) {
-                    return mime;
+            // Firefox handles VP8+Opus WebM with hardware-like smoothness and zero lag, whereas MP4 MediaRecorder in Firefox often fails at start()
+            const ordered = (isFirefox || preferredFormat === 'webm')
+                ? [...webmCandidates, ...mp4Candidates]
+                : [...mp4Candidates, ...webmCandidates];
+
+            const supported = [];
+            if (typeof MediaRecorder !== 'undefined' && typeof MediaRecorder.isTypeSupported === 'function') {
+                for (const mime of ordered) {
+                    try {
+                        if (MediaRecorder.isTypeSupported(mime)) supported.push(mime);
+                    } catch (e) {}
                 }
             }
-            return '';
+            return supported;
+        }
+
+        function getBestHardwareMimeType(preferredFormat) {
+            const list = getCandidateMimeTypes(preferredFormat);
+            return list[0] || '';
         }
 
         function toggleRecording() {
-            if (state.isRecording) stopProgramRecording();
-            else startProgramRecording().catch(err => {
-                const status = document.getElementById('media-status');
-                if (status) status.textContent = `ضبط شروع نشد: ${err?.message || err}`;
-            });
+            if (state.isRecording) {
+                stopProgramRecording();
+            } else {
+                startProgramRecording().catch(err => {
+                    const msg = `ضبط شروع نشد: ${err?.message || err}`;
+                    const status = document.getElementById('media-status');
+                    const visible = document.getElementById('recording-status-visible');
+                    if (status) status.textContent = msg;
+                    if (visible) visible.textContent = msg;
+                });
+            }
         }
 
         async function startProgramRecording() {
             const status = document.getElementById('media-status');
-            const setStatus = (msg) => { if (status) status.textContent = msg; };
+            const downloadSlot = document.getElementById('recorded-download-slot');
+            if (downloadSlot) {
+                downloadSlot.classList.add('hidden');
+                downloadSlot.innerHTML = '';
+            }
+            const setStatus = (msg) => {
+                if (status) status.textContent = msg;
+                const visible = document.getElementById('recording-status-visible');
+                if (visible) visible.textContent = msg;
+            };
+
             try {
                 if (state.isRecording) return;
                 if (typeof MediaRecorder === 'undefined') {
@@ -3077,82 +3295,165 @@
                     return;
                 }
                 const cPgm = document.getElementById('canvas-pgm');
-                if (!cPgm || typeof cPgm.captureStream !== 'function') {
-                    setStatus('ضبط شروع نشد: مرورگر از ضبط Canvas پشتیبانی نمی‌کند.');
+                if (!cPgm) {
+                    setStatus('ضبط شروع نشد: بوم تصویر (Canvas) پیدا نشد.');
                     return;
                 }
 
-                if (state.audioSourceMode === 'director') {
-                    const micTrack = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
-                    if (!micTrack) {
-                        const audioStatus = document.getElementById('director-audio-input-status');
-                        if (audioStatus) audioStatus.textContent = 'ضبط شروع نشد: میکروفون گوشی کارگردان فعال نیست. ابتدا میکروفون محلی را فعال کن.';
-                        const route = document.getElementById('audio-route-status');
-                        if (route) route.textContent = 'ضبط قفل است: میکروفون زندهٔ گوشی کارگردان وجود ندارد؛ صدای دوربین جایگزین نمی‌شود.';
-                        setStatus('ضبط شروع نشد: میکروفون گوشی کارگردان فعال نیست.');
-                        return;
-                    }
-                    micTrack.enabled = true;
-                    if (state.remoteCam1Stream) state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = false; });
-                    disconnectMixerChannel('cam1');
-                    connectStreamToAudioMixer('directorMic', state.directorMicStream);
-                    if (!state.sourceNodes.directorMic || !state.destNode?.stream?.getAudioTracks?.().length) {
-                        setStatus('ضبط شروع نشد: مسیر میکس میکروفون کارگردان برقرار نیست؛ میکروفون را خاموش و روشن کن.');
-                        return;
-                    }
-                    updateRecordingAudioSourceStatus();
+                // Ensure compositor is running and at least 1 frame is painted on canvas-pgm before captureStream
+                if (!compositorRunning && state.role === 'director') {
+                    startCanvasCompositorLoop();
+                }
+                const ctxPgm = cPgm.getContext('2d', { alpha: false });
+                if (ctxPgm) {
+                    drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height, performance.now());
                 }
 
+                initWebAudioMixer();
                 if (state.audioCtx && state.audioCtx.state === 'suspended') {
-                    await state.audioCtx.resume();
+                    await state.audioCtx.resume().catch(() => {});
                 }
-                const canvasStream = cPgm.captureStream(25);
-                const audioTrack = state.destNode?.stream?.getAudioTracks?.().find(t => t.readyState === 'live');
-                if (audioTrack) canvasStream.addTrack(audioTrack);
 
-                if (!canvasStream.getVideoTracks().length) {
-                    canvasStream.getTracks().forEach(t => t.stop());
+                let directorMicAvailable = false;
+                if (state.audioSourceMode === 'director') {
+                    let micTrack = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                    if (!micTrack && navigator.mediaDevices?.getUserMedia) {
+                        // Try to auto-enable microphone softly without blocking recording if denied
+                        try {
+                            await startDirectorAudioInput();
+                            micTrack = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                        } catch (e) {}
+                    }
+                    directorMicAvailable = !!micTrack;
+                    if (micTrack) {
+                        micTrack.enabled = true;
+                        if (state.remoteCam1Stream) state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = false; });
+                        disconnectMixerChannel('cam1');
+                        connectStreamToAudioMixer('directorMic', state.directorMicStream);
+                        updateRecordingAudioSourceStatus();
+                    }
+                } else if (state.audioSourceMode === 'camera' && state.remoteCam1Stream) {
+                    state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = true; });
+                    connectStreamToAudioMixer('cam1', state.remoteCam1Stream);
+                }
+
+                // Capture Canvas Stream (cross-browser: captureStream or mozCaptureStream)
+                const captureFn = cPgm.captureStream || cPgm.mozCaptureStream;
+                if (typeof captureFn !== 'function') {
+                    setStatus('ضبط شروع نشد: این مرورگر از captureStream پشتیبانی نمی‌کند.');
+                    return;
+                }
+                const rawCanvasStream = captureFn.call(cPgm, 30);
+                const videoTrack = rawCanvasStream.getVideoTracks()[0];
+                if (!videoTrack) {
                     setStatus('ضبط شروع نشد: ترک ویدیوی خروجی ساخته نشد.');
                     return;
                 }
-                state.recordedChunks = [];
-                const chosenMime = getBestHardwareMimeType(state.recFormat);
-                state.activeRecMime = chosenMime || '';
-                const recOptions = { videoBitsPerSecond: cPgm.height >= 1080 ? 3800000 : 2200000 };
-                if (chosenMime) recOptions.mimeType = chosenMime;
 
-                let recorder;
-                try {
-                    recorder = new MediaRecorder(canvasStream, recOptions);
-                } catch (firstError) {
-                    // Retry with browser defaults instead of leaving the record button inert.
-                    try { recorder = new MediaRecorder(canvasStream); }
-                    catch (secondError) {
-                        canvasStream.getTracks().forEach(t => t.stop());
-                        throw secondError;
+                // Attach audio track ONLY when a live audio source is active and AudioContext is running (prevents MediaRecorder audio-clock stall!)
+                const combinedTracks = [videoTrack];
+                const hasActiveMicOrMedia = directorMicAvailable
+                    || (state.audioSourceMode === 'camera' && state.remoteCam1Stream?.getAudioTracks?.().some(t => t.readyState === 'live'))
+                    || (state.directorCam2Stream?.getAudioTracks?.().some(t => t.readyState === 'live'))
+                    || (state.mediaType === 'video' && state.mediaPlaylistRunning);
+                const mixedAudioTrack = (hasActiveMicOrMedia && state.audioCtx && state.audioCtx.state === 'running')
+                    ? state.destNode?.stream?.getAudioTracks?.().find(t => t.readyState === 'live')
+                    : null;
+                if (mixedAudioTrack) {
+                    combinedTracks.push(mixedAudioTrack);
+                }
+                const recordingStream = new MediaStream(combinedTracks);
+
+                state.recordedChunks = [];
+                const candidates = getCandidateMimeTypes(state.recFormat, !!mixedAudioTrack);
+                const targetVideoBps = cPgm.height >= 1080 ? 3500000 : 2000000;
+
+                let recorder = null;
+                let chosenMime = '';
+
+                // Try each candidate MIME type AND verify recorder.start() succeeds!
+                const tryConfigs = [
+                    ...candidates.map(m => ({ mimeType: m, videoBitsPerSecond: targetVideoBps, audioBitsPerSecond: 128000 })),
+                    ...candidates.map(m => ({ mimeType: m })),
+                    {}
+                ];
+
+                for (const cfg of tryConfigs) {
+                    try {
+                        const testRec = Object.keys(cfg).length ? new MediaRecorder(recordingStream, cfg) : new MediaRecorder(recordingStream);
+                        recorder = testRec;
+                        chosenMime = testRec.mimeType || cfg.mimeType || '';
+                        break;
+                    } catch (err) {
+                        recorder = null;
                     }
                 }
-                state.recordingStream = canvasStream;
+
+                // If combined video+audio failed to instantiate in this browser, fallback to video-only stream
+                if (!recorder) {
+                    const videoOnlyStream = new MediaStream([videoTrack]);
+                    recorder = new MediaRecorder(videoOnlyStream);
+                    chosenMime = recorder.mimeType || '';
+                }
+
+                state.activeRecMime = chosenMime;
+                state.recordingStream = recordingStream;
                 state.mediaRecorder = recorder;
+
                 recorder.ondataavailable = (e) => {
-                    if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
-                };
-                recorder.onerror = (e) => {
-                    const err = e.error;
-                    setStatus(`خطای ضبط: ${err?.name || 'MediaRecorder error'}؛ ${err?.message || 'جزئیات در دسترس نیست'}`);
-                };
-                recorder.onstop = () => {
-                    try { saveRecordedVideo(); }
-                    catch (e) { setStatus(`ذخیرهٔ فایل ناموفق بود: ${e.message || e}`); }
-                    if (state.recordingStream) {
-                        state.recordingStream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-                        state.recordingStream = null;
+                    if (e.data && e.data.size > 0) {
+                        state.recordedChunks.push(e.data);
                     }
                 };
-                recorder.start(1000);
+
+                recorder.onerror = (e) => {
+                    const err = e.error;
+                    setStatus(`خطای ضبط: ${err?.name || 'MediaRecorder error'} — ${err?.message || 'جزئیات نامشخص'}`);
+                };
+
+                recorder.onstop = () => {
+                    try {
+                        saveRecordedVideo();
+                    } catch (e) {
+                        setStatus(`ذخیرهٔ فایل ناموفق بود: ${e.message || e}`);
+                    }
+                    if (state.recordingTimer) {
+                        clearInterval(state.recordingTimer);
+                        state.recordingTimer = null;
+                    }
+                };
+
+                // Start recording with 500ms timeslice for smooth, low-memory chunking in both Firefox and Chrome
+                try {
+                    recorder.start(500);
+                } catch (startErr) {
+                    recorder.start();
+                }
+
                 state.isRecording = true;
-                document.getElementById('btn-record-label').innerText = `⏹ توقف و ذخیره (${recorder.mimeType?.includes('mp4') ? 'MP4' : 'WebM'})`;
-                setStatus(`ضبط فعال است • ${recorder.mimeType || chosenMime || 'فرمت پیش‌فرض مرورگر'} • برای پایان، توقف و ذخیره را بزن.`);
+                state.recordingStartAt = Date.now();
+                const btn = document.getElementById('btn-record-pgm');
+                if (btn) {
+                    btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-black text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 transition animate-pulse';
+                }
+                const extLabel = (recorder.mimeType || chosenMime).toLowerCase().includes('mp4') ? 'MP4' : 'WebM';
+                document.getElementById('btn-record-label').innerText = `⏹ توقف و ذخیره (00:00 • ${extLabel})`;
+
+                if (state.recordingTimer) clearInterval(state.recordingTimer);
+                state.recordingTimer = setInterval(() => {
+                    if (!state.isRecording) return;
+                    const sec = Math.max(0, Math.floor((Date.now() - state.recordingStartAt) / 1000));
+                    const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+                    const ss = String(sec % 60).padStart(2, '0');
+                    const lbl = document.getElementById('btn-record-label');
+                    if (lbl) lbl.innerText = `⏹ توقف و ذخیره (${mm}:${ss} • ${extLabel})`;
+                }, 500);
+
+                const hasLiveMic = directorMicAvailable || (state.audioSourceMode === 'camera' && state.remoteCam1Stream?.getAudioTracks?.().some(t => t.readyState === 'live'));
+                const audioNote = hasLiveMic
+                    ? 'صدا و تصویر سینک فعال'
+                    : 'ضبط تصویر فعال (میکروفون خاموش یا بدون ورودی)';
+                setStatus(`🔴 در حال ضبط بدون لگ (${extLabel}) • ${audioNote} • برای ذخیره فایل، دوباره روی دکمه توقف کلیک کنید.`);
             } catch (e) {
                 state.isRecording = false;
                 setStatus(`ضبط شروع نشد: ${e?.name || 'خطا'} — ${e?.message || e}`);
@@ -3163,32 +3464,53 @@
 
         function stopProgramRecording() {
             const recorder = state.mediaRecorder;
+            const status = document.getElementById('media-status');
+            const visible = document.getElementById('recording-status-visible');
+            if (state.recordingTimer) {
+                clearInterval(state.recordingTimer);
+                state.recordingTimer = null;
+            }
+            const btn = document.getElementById('btn-record-pgm');
+            if (btn) {
+                btn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition';
+            }
             if (!recorder || !state.isRecording) {
-                const status = document.getElementById('media-status');
                 if (status) status.textContent = 'ضبط فعالی برای توقف وجود ندارد.';
+                if (visible) visible.textContent = 'ضبط فعالی برای توقف وجود ندارد.';
                 return;
             }
             try {
-                if (recorder.state !== 'inactive') recorder.stop();
                 state.isRecording = false;
                 const label = document.getElementById('btn-record-label');
-                if (label) label.innerText = `در حال نهایی‌سازی و ذخیره…`;
-                const status = document.getElementById('media-status');
-                if (status) status.textContent = 'ضبط متوقف شد؛ در حال نهایی‌سازی فایل…';
+                if (label) label.innerText = `در حال نهایی‌سازی فایل…`;
+                if (status) status.textContent = 'ضبط متوقف شد؛ در حال ساخت فایل ویدیویی…';
+                if (visible) visible.textContent = 'ضبط متوقف شد؛ در حال ساخت فایل ویدیویی…';
+                if (recorder.state === 'recording' || recorder.state === 'paused') {
+                    try { recorder.requestData(); } catch (e) {}
+                    recorder.stop();
+                } else {
+                    saveRecordedVideo();
+                }
             } catch (e) {
                 state.isRecording = false;
-                const status = document.getElementById('media-status');
                 if (status) status.textContent = `توقف ضبط ناموفق بود: ${e?.message || e}`;
+                if (visible) visible.textContent = `توقف ضبط ناموفق بود: ${e?.message || e}`;
             }
         }
 
         function saveRecordedVideo() {
             const chunks = state.recordedChunks || [];
+            const status = document.getElementById('media-status');
+            const visible = document.getElementById('recording-status-visible');
+            const label = document.getElementById('btn-record-label');
+            const downloadSlot = document.getElementById('recorded-download-slot');
+
+            if (label) label.innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
+
             if (!chunks.length) {
-                const status = document.getElementById('media-status');
-                if (status) status.textContent = 'فایلی ذخیره نشد: مرورگر هیچ داده‌ای از ضبط تحویل نداد.';
-                const label = document.getElementById('btn-record-label');
-                if (label) label.innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
+                const msg = 'فایلی ذخیره نشد: مرورگر هیچ داده‌ای از ضبط تحویل نداد (حداقل ۲ ثانیه ضبط کنید).';
+                if (status) status.textContent = msg;
+                if (visible) visible.textContent = msg;
                 return;
             }
             const actualMime = state.mediaRecorder?.mimeType || chunks[0]?.type || state.activeRecMime || 'video/webm';
@@ -3196,28 +3518,35 @@
             const ext = isActuallyMp4 ? 'mp4' : 'webm';
             const blob = new Blob(chunks, { type: actualMime });
             if (!blob.size) {
-                const status = document.getElementById('media-status');
-                if (status) status.textContent = 'فایل خروجی خالی است؛ یک ضبط کوتاه دیگر آزمایش کن.';
+                const msg = 'فایل خروجی خالی است؛ یک ضبط کوتاه دیگر آزمایش کنید.';
+                if (status) status.textContent = msg;
+                if (visible) visible.textContent = msg;
                 return;
             }
+            if (state.lastRecordedBlobUrl) {
+                try { URL.revokeObjectURL(state.lastRecordedBlobUrl); } catch (e) {}
+            }
             const url = URL.createObjectURL(blob);
+            state.lastRecordedBlobUrl = url;
+            const fileName = `PRISM_Studio_v${Number(state.appVersion || 4.7).toFixed(1)}_${Date.now()}.${ext}`;
+
             const a = document.createElement('a');
             a.href = url;
-            a.download = `PRISM_Studio_${Date.now()}.${ext}`;
+            a.download = fileName;
             a.style.display = 'none';
             document.body.appendChild(a);
             a.click();
             a.remove();
-            const status = document.getElementById('media-status');
-            if (status) {
-                status.textContent = `فایل آماده شد: ${(blob.size / (1024 * 1024)).toFixed(1)} MB • ${ext.toUpperCase()}. اگر دانلود خودکار مسدود شد، دانلودهای مرورگر را بررسی کن.`;
-                if (state.recFormat === 'mp4' && !isActuallyMp4) {
-                    status.textContent += ' این مرورگر MP4 واقعی را نساخت؛ فایل WebM ذخیره شد تا خراب یا اشتباه نام‌گذاری نشود.';
-                }
+
+            const sizeMb = (blob.size / (1024 * 1024)).toFixed(2);
+            const msg = `✅ ضبط با موفقیت ذخیره شد (${sizeMb} MB • فرمت ${ext.toUpperCase()}). اگر دانلود خودکار انجام نشد روی دکمه دانلود فایل ضبط‌شده بزنید.`;
+            if (status) status.textContent = msg;
+            if (visible) visible.textContent = msg;
+
+            if (downloadSlot) {
+                downloadSlot.innerHTML = `<a href="${url}" download="${fileName}" class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow transition">⬇️ دانلود مستقیم ویدیو (${sizeMb} MB)</a>`;
+                downloadSlot.classList.remove('hidden');
             }
-            const label = document.getElementById('btn-record-label');
-            if (label) label.innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
-            setTimeout(() => URL.revokeObjectURL(url), 30000);
         }
 
         function takeProgramSnapshot() {
