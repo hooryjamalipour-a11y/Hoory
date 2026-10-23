@@ -789,7 +789,7 @@
     <!-- Hidden Media Elements for Mixing Engine -->
     <!-- Keep source videos composited (tiny + transparent) so requestVideoFrameCallback can report remote-frame capture timing. -->
     <div aria-hidden="true" style="position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;overflow:hidden;pointer-events:none;z-index:2147483647">
-        <video id="hidden-cam1-video" autoplay playsinline muted style="position:fixed;left:0;top:0;width:16px;height:16px;opacity:0.01;pointer-events:none"></video>
+        <video id="hidden-cam1-video" autoplay playsinline muted style="position:fixed;left:0;top:0;width:160px;height:90px;opacity:0.01;pointer-events:none"></video>
         <video id="hidden-cam2-video" autoplay playsinline muted style="width:2px;height:2px"></video>
         <video id="hidden-media-video" playsinline preload="metadata" crossorigin="anonymous" style="width:2px;height:2px"></video>
         <img id="hidden-media-img" alt="" style="width:1px;height:1px">
@@ -2088,10 +2088,16 @@
             state.activeAudioSender = null;
             const videoStreamToSend = getActiveCameraMediaStream();
             if (videoStreamToSend) {
-                videoStreamToSend.getVideoTracks().forEach(track => {
-                    const sender = pc.addTrack(track, videoStreamToSend);
-                    state.activeVideoSender = sender;
-                });
+                const videoTrack = videoStreamToSend.getVideoTracks().find(t => t.readyState === 'live');
+                if (videoTrack) {
+                    state.activeVideoSender = pc.addTrack(videoTrack, videoStreamToSend);
+                    const status = document.getElementById('webrtc-stats-status');
+                    if (status) status.textContent = `ارسال دوربین: ${videoTrack.label || videoTrack.kind} | ${videoTrack.readyState} | ${videoTrack.getSettings?.().width || '?'}×${videoTrack.getSettings?.().height || '?'}`;
+                } else {
+                    updateConnectionBadge('ready', 'ترک ویدیوی زنده پیدا نشد؛ دوربین را دوباره فعال کن.');
+                }
+            } else {
+                updateConnectionBadge('ready', 'استریم دوربین برای ارسال آماده نیست.');
             }
             // The phone-camera microphone is sent only when camera audio mode is explicitly selected.
             if (state.remoteAudioMode === 'camera') {
@@ -2115,24 +2121,8 @@
                 }
             };
 
-            // Prefer Hardware H.264 codec over software VP8 to eliminate encoding lag on mobile
-            try {
-                if (RTCRtpSender.getCapabilities) {
-                    const caps = RTCRtpSender.getCapabilities('video');
-                    if (caps && caps.codecs) {
-                        const h264Codecs = caps.codecs.filter(c => c.mimeType.toLowerCase() === 'video/h264');
-                        const otherCodecs = caps.codecs.filter(c => c.mimeType.toLowerCase() !== 'video/h264');
-                        if (h264Codecs.length > 0 && pc.getTransceivers) {
-                            pc.getTransceivers().forEach(t => {
-                                if (t.sender && t.sender.track && t.sender.track.kind === 'video' && t.setCodecPreferences) {
-                                    t.setCodecPreferences([...h264Codecs, ...otherCodecs]);
-                                }
-                            });
-                        }
-                    }
-                }
-            } catch (e) {}
-
+            // Let WebRTC negotiate a mutually supported codec. Forcing H.264 first can
+            // break Firefox-to-Chromium interop on some Android builds.
             const offer = await pc.createOffer({
                 offerToReceiveAudio: false,
                 offerToReceiveVideo: false
@@ -2282,25 +2272,29 @@
             const firefoxReceiverStream = new MediaStream();
             pc.ontrack = (event) => {
                 configureReceiverPlayout(pc);
-                let incomingStream = event.streams && event.streams[0];
-                if (!incomingStream) {
-                    incomingStream = firefoxReceiverStream;
-                    if (!incomingStream.getTracks().some(t => t.id === event.track.id)) {
-                        try { incomingStream.addTrack(event.track); } catch (e) {}
+                // Use a stable receiver stream. Firefox can emit streamless tracks and can
+                // deliver video/audio in separate ontrack events.
+                const incomingStream = firefoxReceiverStream;
+                const suppliedStream = event.streams && event.streams[0];
+                const tracksToAdd = suppliedStream ? suppliedStream.getTracks() : [event.track];
+                tracksToAdd.forEach(track => {
+                    if (!incomingStream.getTracks().some(t => t.id === track.id)) {
+                        try { incomingStream.addTrack(track); } catch (e) {}
                     }
-                } else {
-                    // Some browsers can expose tracks in separate ontrack events; keep the stream complete.
-                    event.streams[0].getTracks().forEach(track => {
-                        if (!incomingStream.getTracks().some(t => t.id === track.id)) {
-                            try { incomingStream.addTrack(track); } catch (e) {}
-                        }
-                    });
+                });
+                if (event.track && !incomingStream.getTracks().some(t => t.id === event.track.id)) {
+                    try { incomingStream.addTrack(event.track); } catch (e) {}
                 }
                 attachRemoteCamera1Stream(incomingStream);
                 const status = document.getElementById('webrtc-stats-status');
                 if (status) {
                     const kinds = incomingStream.getTracks().map(t => `${t.kind}:${t.readyState}`).join(', ');
-                    status.textContent = `WebRTC دریافت شد (${navigator.userAgent.includes('Firefox') ? 'Firefox' : 'مرورگر'}): ${kinds || 'بدون ترک'}`;
+                    status.textContent = `ترک WebRTC: ${event.track?.kind || 'نامشخص'}؛ ${kinds || 'بدون ترک'}؛ ${event.track?.muted ? 'منتظر داده' : 'ترک فعال'}`;
+                }
+                if (event.track) {
+                    event.track.onunmute = () => {
+                        try { v1PlayRemoteCamera(); } catch (e) {}
+                    };
                 }
             };
 
@@ -2326,33 +2320,55 @@
             publishMqttSignal('webrtc-answer', { sdp: pc.localDescription });
         }
 
-        function attachRemoteCamera1Stream(stream) {
+        function v1PlayRemoteCamera() {
             const v1 = document.getElementById('hidden-cam1-video');
-            state.remoteCam1Stream = stream;
-            v1.muted = true; // Never play remote audio through the hidden video element.
-            v1.autoplay = true;
-            v1.playsInline = true;
-
-            // Reassign/retry playback when a track arrives later (common with streamless ontrack).
-            if (v1.srcObject !== stream) v1.srcObject = stream;
-            const playPromise = v1.play();
-            if (playPromise && typeof playPromise.catch === 'function') {
-                playPromise.catch(err => {
+            if (!v1) return;
+            if (v1.paused) {
+                const p = v1.play();
+                if (p && typeof p.catch === 'function') p.catch(err => {
                     const status = document.getElementById('webrtc-stats-status');
-                    if (status) status.textContent = `دریافت ترک انجام شد اما پخش ویدیو شروع نشد: ${err.name || err.message}. روی صفحه یک‌بار لمس کن.`;
+                    if (status) status.textContent = `پخش فریم شروع نشد: ${err.name || 'play error'}؛ یک‌بار صفحه را لمس کن.`;
                 });
             }
-            if (typeof v1.requestVideoFrameCallback === 'function') startAVSyncEngine(v1);
-            v1.onloadedmetadata = () => {
-                v1.play().catch(() => {});
-                if (typeof v1.requestVideoFrameCallback === 'function') startAVSyncEngine(v1);
-            };
-            v1.onplaying = () => {
-                const status = document.getElementById('webrtc-stats-status');
-                if (status) status.textContent = `تصویر دوربین دریافت شد: ${v1.videoWidth}×${v1.videoHeight} | readyState ${v1.readyState}`;
-            };
+        }
 
-            // Enforce a single authoritative audio source whenever a stream is attached/re-attached.
+        function attachRemoteCamera1Stream(stream) {
+            const v1 = document.getElementById('hidden-cam1-video');
+            if (!v1 || !stream) return;
+            state.remoteCam1Stream = stream;
+            v1.muted = true;
+            v1.defaultMuted = true;
+            v1.autoplay = true;
+            v1.playsInline = true;
+            v1.setAttribute('playsinline', '');
+            v1.setAttribute('autoplay', '');
+            v1.setAttribute('muted', '');
+            if (v1.srcObject !== stream) v1.srcObject = stream;
+
+            const report = () => {
+                const status = document.getElementById('webrtc-stats-status');
+                const tracks = stream.getTracks().map(t => `${t.kind}:${t.readyState}${t.muted ? ':muted' : ''}`).join(', ');
+                if (status) {
+                    status.textContent = (v1.videoWidth > 0 && v1.videoHeight > 0)
+                        ? `تصویر دوربین دریافت شد: ${v1.videoWidth}×${v1.videoHeight} | readyState ${v1.readyState} | ${tracks}`
+                        : `ترک دریافت شد؛ هنوز فریم نداریم | readyState ${v1.readyState} | ${tracks}`;
+                }
+                updateConnectionBadge('connected', (v1.readyState >= 2 && v1.videoWidth > 0)
+                    ? 'دوربین ۱ تصویر دارد'
+                    : 'WebRTC وصل است؛ منتظر فریم تصویر…');
+            };
+            v1.onloadedmetadata = () => { v1PlayRemoteCamera(); report(); };
+            v1.onloadeddata = report;
+            v1.onplaying = report;
+            v1.onerror = () => {
+                const status = document.getElementById('webrtc-stats-status');
+                if (status) status.textContent = `خطای ویدیوی دریافتی: ${v1.error?.code || 'نامشخص'}`;
+            };
+            v1PlayRemoteCamera();
+            if (typeof v1.requestVideoFrameCallback === 'function') {
+                try { startAVSyncEngine(v1); } catch (e) {}
+            }
+
             if (state.audioSourceMode === 'director') {
                 stream.getAudioTracks().forEach(track => { track.enabled = false; });
                 disconnectMixerChannel('cam1');
@@ -2363,7 +2379,7 @@
                 stream.getAudioTracks().forEach(track => { track.enabled = true; });
                 connectStreamToAudioMixer('cam1', stream);
             }
-            updateConnectionBadge('connected', (v1.readyState >= 2 && v1.videoWidth > 0) ? 'دوربین ۱ تصویر دارد' : 'اتصال برقرار؛ در انتظار فریم تصویر…');
+            report();
             syncRemoteTallyState();
         }
         async function toggleDirectorLocalCam(forceOn = false) {
@@ -3045,88 +3061,163 @@
 
         function toggleRecording() {
             if (state.isRecording) stopProgramRecording();
-            else startProgramRecording();
+            else startProgramRecording().catch(err => {
+                const status = document.getElementById('media-status');
+                if (status) status.textContent = `ضبط شروع نشد: ${err?.message || err}`;
+            });
         }
 
-        function startProgramRecording() {
-            if (state.audioSourceMode === 'director') {
-                const micTrack = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
-                if (!micTrack) {
-                    const status = document.getElementById('director-audio-input-status');
-                    if (status) status.textContent = 'ضبط شروع نشد: میکروفون گوشی کارگردان فعال نیست. برای جلوگیری از ضبط صدای اشتباه، ابتدا میکروفون محلی را فعال کن.';
-                    const route = document.getElementById('audio-route-status');
-                    if (route) route.textContent = 'ضبط قفل است: منبع انتخابی گوشی کارگردان است اما ترک زنده میکروفون محلی وجود ندارد. صدای دوربین به‌عنوان جایگزین استفاده نمی‌شود.';
-                    return;
-                }
-                micTrack.enabled = true;
-                // Reassert source lock immediately before recording.
-                if (state.remoteCam1Stream) state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = false; });
-                disconnectMixerChannel('cam1');
-                connectStreamToAudioMixer('directorMic', state.directorMicStream);
-                if (!state.sourceNodes.directorMic || !state.destNode?.stream?.getAudioTracks?.().length) {
-                    const status = document.getElementById('director-audio-input-status');
-                    if (status) status.textContent = 'ضبط شروع نشد: مسیر میکس میکروفون کارگردان برقرار نیست. میکروفون را دوباره فعال کن.';
-                    return;
-                }
-                updateRecordingAudioSourceStatus();
-            }
-            const cPgm = document.getElementById('canvas-pgm');
-            // 25 FPS hardware-paced stream prevents mobile encoder queue buildup and lag
-            const canvasStream = cPgm.captureStream(25);
-            if (state.destNode && state.destNode.stream.getAudioTracks().length > 0) {
-                canvasStream.addTrack(state.destNode.stream.getAudioTracks()[0]);
-            }
-
-            state.recordedChunks = [];
-            const chosenMime = getBestHardwareMimeType(state.recFormat);
-            state.activeRecMime = chosenMime || 'video/mp4';
-
-            // 2.5 Mbps hardware H.264 is super crisp and causes zero CPU lag on mobile
-            const recOptions = {
-                videoBitsPerSecond: cPgm.height >= 1080 ? 3800000 : 2200000
-            };
-            if (chosenMime) recOptions.mimeType = chosenMime;
-
+        async function startProgramRecording() {
+            const status = document.getElementById('media-status');
+            const setStatus = (msg) => { if (status) status.textContent = msg; };
             try {
-                state.mediaRecorder = new MediaRecorder(canvasStream, recOptions);
+                if (state.isRecording) return;
+                if (typeof MediaRecorder === 'undefined') {
+                    setStatus('ضبط در این مرورگر پشتیبانی نمی‌شود (MediaRecorder موجود نیست).');
+                    return;
+                }
+                const cPgm = document.getElementById('canvas-pgm');
+                if (!cPgm || typeof cPgm.captureStream !== 'function') {
+                    setStatus('ضبط شروع نشد: مرورگر از ضبط Canvas پشتیبانی نمی‌کند.');
+                    return;
+                }
+
+                if (state.audioSourceMode === 'director') {
+                    const micTrack = state.directorMicStream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                    if (!micTrack) {
+                        const audioStatus = document.getElementById('director-audio-input-status');
+                        if (audioStatus) audioStatus.textContent = 'ضبط شروع نشد: میکروفون گوشی کارگردان فعال نیست. ابتدا میکروفون محلی را فعال کن.';
+                        const route = document.getElementById('audio-route-status');
+                        if (route) route.textContent = 'ضبط قفل است: میکروفون زندهٔ گوشی کارگردان وجود ندارد؛ صدای دوربین جایگزین نمی‌شود.';
+                        setStatus('ضبط شروع نشد: میکروفون گوشی کارگردان فعال نیست.');
+                        return;
+                    }
+                    micTrack.enabled = true;
+                    if (state.remoteCam1Stream) state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = false; });
+                    disconnectMixerChannel('cam1');
+                    connectStreamToAudioMixer('directorMic', state.directorMicStream);
+                    if (!state.sourceNodes.directorMic || !state.destNode?.stream?.getAudioTracks?.().length) {
+                        setStatus('ضبط شروع نشد: مسیر میکس میکروفون کارگردان برقرار نیست؛ میکروفون را خاموش و روشن کن.');
+                        return;
+                    }
+                    updateRecordingAudioSourceStatus();
+                }
+
+                if (state.audioCtx && state.audioCtx.state === 'suspended') {
+                    await state.audioCtx.resume();
+                }
+                const canvasStream = cPgm.captureStream(25);
+                const audioTrack = state.destNode?.stream?.getAudioTracks?.().find(t => t.readyState === 'live');
+                if (audioTrack) canvasStream.addTrack(audioTrack);
+
+                if (!canvasStream.getVideoTracks().length) {
+                    canvasStream.getTracks().forEach(t => t.stop());
+                    setStatus('ضبط شروع نشد: ترک ویدیوی خروجی ساخته نشد.');
+                    return;
+                }
+                state.recordedChunks = [];
+                const chosenMime = getBestHardwareMimeType(state.recFormat);
+                state.activeRecMime = chosenMime || '';
+                const recOptions = { videoBitsPerSecond: cPgm.height >= 1080 ? 3800000 : 2200000 };
+                if (chosenMime) recOptions.mimeType = chosenMime;
+
+                let recorder;
+                try {
+                    recorder = new MediaRecorder(canvasStream, recOptions);
+                } catch (firstError) {
+                    // Retry with browser defaults instead of leaving the record button inert.
+                    try { recorder = new MediaRecorder(canvasStream); }
+                    catch (secondError) {
+                        canvasStream.getTracks().forEach(t => t.stop());
+                        throw secondError;
+                    }
+                }
+                state.recordingStream = canvasStream;
+                state.mediaRecorder = recorder;
+                recorder.ondataavailable = (e) => {
+                    if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
+                };
+                recorder.onerror = (e) => {
+                    const err = e.error;
+                    setStatus(`خطای ضبط: ${err?.name || 'MediaRecorder error'}؛ ${err?.message || 'جزئیات در دسترس نیست'}`);
+                };
+                recorder.onstop = () => {
+                    try { saveRecordedVideo(); }
+                    catch (e) { setStatus(`ذخیرهٔ فایل ناموفق بود: ${e.message || e}`); }
+                    if (state.recordingStream) {
+                        state.recordingStream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+                        state.recordingStream = null;
+                    }
+                };
+                recorder.start(1000);
+                state.isRecording = true;
+                document.getElementById('btn-record-label').innerText = `⏹ توقف و ذخیره (${recorder.mimeType?.includes('mp4') ? 'MP4' : 'WebM'})`;
+                setStatus(`ضبط فعال است • ${recorder.mimeType || chosenMime || 'فرمت پیش‌فرض مرورگر'} • برای پایان، توقف و ذخیره را بزن.`);
             } catch (e) {
-                state.mediaRecorder = new MediaRecorder(canvasStream);
+                state.isRecording = false;
+                setStatus(`ضبط شروع نشد: ${e?.name || 'خطا'} — ${e?.message || e}`);
+                const label = document.getElementById('btn-record-label');
+                if (label) label.innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
             }
-
-            state.mediaRecorder.ondataavailable = (e) => {
-                if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
-            };
-            state.mediaRecorder.onstop = saveRecordedVideo;
-            state.mediaRecorder.start(1000);
-            state.isRecording = true;
-
-            const extLabel = state.recFormat.toUpperCase();
-            document.getElementById('btn-record-label').innerText = `⏹ توقف و ذخیره (${extLabel})`;
         }
 
         function stopProgramRecording() {
-            if (state.mediaRecorder && state.isRecording) state.mediaRecorder.stop();
-            state.isRecording = false;
-            document.getElementById('btn-record-label').innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
+            const recorder = state.mediaRecorder;
+            if (!recorder || !state.isRecording) {
+                const status = document.getElementById('media-status');
+                if (status) status.textContent = 'ضبط فعالی برای توقف وجود ندارد.';
+                return;
+            }
+            try {
+                if (recorder.state !== 'inactive') recorder.stop();
+                state.isRecording = false;
+                const label = document.getElementById('btn-record-label');
+                if (label) label.innerText = `در حال نهایی‌سازی و ذخیره…`;
+                const status = document.getElementById('media-status');
+                if (status) status.textContent = 'ضبط متوقف شد؛ در حال نهایی‌سازی فایل…';
+            } catch (e) {
+                state.isRecording = false;
+                const status = document.getElementById('media-status');
+                if (status) status.textContent = `توقف ضبط ناموفق بود: ${e?.message || e}`;
+            }
         }
 
         function saveRecordedVideo() {
-            const actualMime = state.mediaRecorder?.mimeType || state.activeRecMime || state.recordedChunks[0]?.type || 'video/webm';
+            const chunks = state.recordedChunks || [];
+            if (!chunks.length) {
+                const status = document.getElementById('media-status');
+                if (status) status.textContent = 'فایلی ذخیره نشد: مرورگر هیچ داده‌ای از ضبط تحویل نداد.';
+                const label = document.getElementById('btn-record-label');
+                if (label) label.innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
+                return;
+            }
+            const actualMime = state.mediaRecorder?.mimeType || chunks[0]?.type || state.activeRecMime || 'video/webm';
             const isActuallyMp4 = actualMime.toLowerCase().includes('mp4');
             const ext = isActuallyMp4 ? 'mp4' : 'webm';
-            const blob = new Blob(state.recordedChunks, { type: actualMime });
-            if (state.recFormat === 'mp4' && !isActuallyMp4) {
+            const blob = new Blob(chunks, { type: actualMime });
+            if (!blob.size) {
                 const status = document.getElementById('media-status');
-                if (status) status.textContent = 'مرورگر MP4 واقعی را پشتیبانی نکرد؛ فایل با پسوند WebM ذخیره شد تا خراب یا اشتباه نام‌گذاری نشود.';
+                if (status) status.textContent = 'فایل خروجی خالی است؛ یک ضبط کوتاه دیگر آزمایش کن.';
+                return;
             }
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `PRISM_Studio_${Date.now()}.${ext}`;
+            a.style.display = 'none';
             document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 3000);
+            a.remove();
+            const status = document.getElementById('media-status');
+            if (status) {
+                status.textContent = `فایل آماده شد: ${(blob.size / (1024 * 1024)).toFixed(1)} MB • ${ext.toUpperCase()}. اگر دانلود خودکار مسدود شد، دانلودهای مرورگر را بررسی کن.`;
+                if (state.recFormat === 'mp4' && !isActuallyMp4) {
+                    status.textContent += ' این مرورگر MP4 واقعی را نساخت؛ فایل WebM ذخیره شد تا خراب یا اشتباه نام‌گذاری نشود.';
+                }
+            }
+            const label = document.getElementById('btn-record-label');
+            if (label) label.innerText = `ضبط مستر خروجی (${state.recFormat.toUpperCase()})`;
+            setTimeout(() => URL.revokeObjectURL(url), 30000);
         }
 
         function takeProgramSnapshot() {
