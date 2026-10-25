@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v5.0 Hardware-Turbo</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v5.1 Optical-Pro</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -109,7 +109,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v5.0 HW-TURBO</span>
+                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v5.1 OPTICAL-PRO</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -160,7 +160,7 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span id="launcher-version-banner">⚡ نسخه ۵.۰ توربو سخت‌افزاری (v5.0): حذف کامل لگ ضبط طولانی (کاهش ۶۵٪ بار مرورگر) + بوکه سخت‌افزاری سنسور و اتصال مستقیم به اپ دوربین گوشی</span>
+                    <span id="launcher-version-banner">⚡ نسخه ۵.۱ اپتیکال پرو (v5.1): سوییچ هوشمند بین لنزهای اپتیکال گوشی (0.6x / 1x / 2x / 3x) + دکمه Play/Pause زیر PGM + صدای پیش‌فرض از گوشی دوربین</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
@@ -336,22 +336,38 @@
                 <div id="audio-input-status" class="text-[10px] leading-relaxed text-slate-400">این انتخاب فقط در حالت «گوشی دوربین» استفاده می‌شود؛ در حالت پیشنهادی، میکروفون به گوشی کارگردان وصل شود.</div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <!-- Zoom Control -->
-                <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2">
-                    <span class="text-[11px] font-bold text-emerald-400 whitespace-nowrap">🔍 زوم لنز:</span>
-                    <input id="cam-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="scheduleCameraZoom(this.value)" class="flex-1 accent-emerald-500 cursor-pointer">
-                    <span id="cam-zoom-val" class="font-mono text-xs text-white w-9 text-left">1.0x</span>
+                <!-- Optical Lens Switcher & Hardware Zoom Control -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-bold text-emerald-400 whitespace-nowrap">🔭 سوییچ اپتیکال لنزها و زوم:</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="switchOpticalStep(0.6)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-cyan-300 border border-cyan-500/30">0.6x اولترا</button>
+                            <button type="button" onclick="switchOpticalStep(1.0)" class="px-2 py-0.5 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] font-mono text-white font-bold">1x اصلی</button>
+                            <button type="button" onclick="switchOpticalStep(2.0)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-amber-300 border border-amber-500/30">2x تله/پرتره</button>
+                            <button type="button" onclick="switchOpticalStep(3.0)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-purple-300 border border-purple-500/30">3x زوم</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input id="cam-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="scheduleCameraZoom(this.value)" class="flex-1 accent-emerald-500 cursor-pointer">
+                        <span id="cam-zoom-val" class="font-mono text-xs text-white w-9 text-left">1.0x</span>
+                    </div>
                 </div>
 
-                <!-- Hardware Portrait / Native Camera Controls -->
-                <div class="bg-slate-950/80 border border-purple-500/30 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-bold text-purple-300 whitespace-nowrap">📷 پرتره سخت‌افزاری سنسور:</span>
-                    <span id="cam-bokeh-val" class="font-mono text-[11px] text-purple-300">عادی</span>
+                <!-- Hardware Portrait & Native Camera App on Camera 1 Phone -->
+                <div class="bg-slate-950/80 border border-purple-500/30 rounded-xl px-3 py-2 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-bold text-purple-300 whitespace-nowrap">📷 پرتره سنسور و اپ دوربین همین گوشی:</span>
+                        <span id="cam-bokeh-val" class="font-mono text-[11px] text-purple-300">عادی</span>
+                    </div>
                     <input id="cam-bokeh-slider" type="range" min="0" max="20" step="2" value="0" oninput="setCameraBokeh(this.value)" class="hidden">
-                    <div class="flex items-center gap-1">
+                    <div class="flex flex-wrap items-center gap-1">
                         <button type="button" onclick="setCameraBokeh(0)" class="px-2 py-1 rounded bg-slate-800 text-[10px] text-slate-300">عادی</button>
                         <button type="button" onclick="setCameraBokeh(10)" class="px-2 py-1 rounded bg-purple-700 hover:bg-purple-600 text-[10px] text-white font-bold">پرتره سنسور (HW)</button>
-                        <button type="button" onclick="applyOpticalDepthPreset()" class="px-2 py-1 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] text-white font-bold" title="زوم اپتیکال ۲ برابر + فوکوس نزدیک برای بوکه طبیعی لنز">اپتیکال 2x</button>
+                        <button type="button" onclick="applyOpticalDepthPreset()" class="px-2 py-1 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] text-white font-bold">اپتیکال 2x</button>
+                        <label id="cam-native-app-label" class="cursor-pointer px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-[10px] text-white font-bold flex items-center gap-1 shadow">
+                            <span>📲 اپ دوربین اصلی این گوشی</span>
+                            <input type="file" id="cam1-native-camera-input" accept="video/*" capture="environment" class="hidden" onchange="handleCam1NativeVideoCaptured(event)">
+                        </label>
                     </div>
                 </div>
             </div>
@@ -405,7 +421,7 @@
                 </button>
 
                 <button onclick="toggleCam1FitMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition">
-                    <span id="dir-fit-badge">🖼️ قاب: پر کردن صفحه (Cover)</span>
+                    <span id="dir-fit-badge" title="حالت پر کردن کل کادر بدون نوار سیاه اطراف، یا نمایش کامل تصویر بدون برش">🖼️ کادر تصویر: تمام‌صفحه (بدون حاشیه سیاه)</span>
                 </button>
 
                 <button onclick="toggleDirectorLocalCam()" id="btn-dir-localcam" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
@@ -441,7 +457,7 @@
             </div>
             <div class="mt-2 w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2">
                 <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
-                    آماده ضبط مستر (نسخه v5.0 HW-Turbo)؛ سیستم ضد لگ ضبط طولانی فعال است (توقف خودکار رندر اضافی هنگام ضبط برای حذف فشار از روی مرورگر).
+                    آماده ضبط مستر (نسخه v5.1 Optical-Pro)؛ صدا به صورت پیش‌فرض از گوشی دوربین ۱ دریافت می‌شود و زیرنویس به صورت پیش‌فرض خاموش است.
                 </div>
                 <div id="recorded-download-slot" class="hidden shrink-0"></div>
             </div>
@@ -481,11 +497,24 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-source-label" class="font-mono text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded">CAM 1</span>
-                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">1080p FULL-HD</span>
+                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">720p HD PRO</span>
                     </div>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pgm">
                     <canvas id="canvas-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+                </div>
+                <!-- Play / Pause Control Bar Under PGM -->
+                <div class="bg-slate-950/95 border-t border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" id="btn-pgm-play-pause" onclick="togglePgmPlayPause()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition">
+                            <span id="pgm-play-pause-icon">⏸</span>
+                            <span id="pgm-play-pause-label">مکث خروجی / مدیا (Pause)</span>
+                        </button>
+                        <button type="button" id="btn-rec-pause-resume" onclick="togglePauseResumeRecording()" class="hidden bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg items-center gap-1 transition">
+                            <span>⏯ مکث/ادامه ضبط</span>
+                        </button>
+                    </div>
+                    <span id="pgm-playback-status" class="text-[11px] font-mono text-emerald-400">▶ LIVE • در حال پخش زنده</span>
                 </div>
             </div>
         </div>
@@ -548,24 +577,9 @@
                     </div>
                 </div>
 
-                <!-- Transition Bar -->
-                <div class="bg-slate-950/90 border border-slate-800/90 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3">
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button onclick="performCut()" class="flex-1 sm:flex-initial bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-black font-mono text-sm px-5 py-2.5 rounded-lg border-b-4 border-slate-950 transition shadow">
-                            CUT (کات آنی)
-                        </button>
-                        <button onclick="performAutoTransition()" id="btn-auto-trans" class="flex-1 sm:flex-initial bg-red-600 hover:bg-red-500 active:scale-95 text-white font-black font-mono text-sm px-5 py-2.5 rounded-lg border-b-4 border-red-800 transition shadow-lg">
-                            AUTO MIX (میکس نرم)
-                        </button>
-                    </div>
-                    <div class="flex-1 w-full flex items-center gap-2">
-                        <span class="font-mono text-[10px] text-emerald-400">PVW</span>
-                        <input id="tbar-slider" type="range" min="0" max="100" value="0" oninput="handleTBarScrub(this.value)" class="t-bar w-full">
-                        <span class="font-mono text-[10px] text-red-400">PGM</span>
-                    </div>
-                    <button onclick="toggleFTB()" id="btn-ftb" class="w-full sm:w-auto bg-slate-900 hover:bg-black text-slate-300 border border-slate-700 font-mono text-xs px-3 py-2 rounded-lg transition">
-                        FTB (سیاه)
-                    </button>
+                <!-- Instant Cut Info Banner (Transition Bar Removed as Requested) -->
+                <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl px-3 py-2 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>⚡ حالت سوییچ: <strong class="text-emerald-400">کات آنی مستقیم (Instant Cut)</strong> — با زدن هر دکمه قرمز، تصویر بلافاصله روی آنتن می‌رود.</span>
                 </div>
             </div>
 
@@ -615,20 +629,27 @@
                             </div>
                         </div>
 
-                        <!-- Remote Hardware Zoom -->
-                        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 space-y-1">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-slate-300">🔍 زوم اپتیکال / سخت‌افزاری سنسور:</span>
+                        <!-- Remote Optical Lens Switcher & Hardware Zoom -->
+                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-200 font-bold">🔭 سوییچ خودکار لنزهای اپتیکال و زوم:</span>
                                 <span id="remote-zoom-label" class="font-mono text-emerald-400">1.0x</span>
                             </div>
-                            <input type="range" min="1" max="8" step="0.1" value="1" oninput="sendRemoteZoom(this.value)" class="w-full accent-emerald-500">
+                            <div class="grid grid-cols-4 gap-1">
+                                <button type="button" onclick="sendRemoteOpticalStep(0.6)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-cyan-300 border border-cyan-500/30">0.6x اولترا</button>
+                                <button type="button" onclick="sendRemoteOpticalStep(1.0)" class="py-1 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] font-mono text-white font-bold">1.0x اصلی</button>
+                                <button type="button" onclick="sendRemoteOpticalStep(2.0)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-amber-300 border border-amber-500/30">2.0x تله/پرتره</button>
+                                <button type="button" onclick="sendRemoteOpticalStep(3.0)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-purple-300 border border-purple-500/30">3.0x تله‌فوتو</button>
+                            </div>
+                            <input id="remote-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="sendRemoteZoom(this.value)" class="w-full accent-emerald-500 cursor-pointer">
+                            <div class="text-[10px] text-slate-400">با عبور زوم از 2x، برنامه به صورت خودکار لنز فیزیکی تله‌فوتو/پرتره گوشی دوربین ۱ را (در صورت وجود) انتخاب می‌کند.</div>
                         </div>
 
-                        <!-- Hardware Sensor Portrait & Native Camera App Integration -->
+                        <!-- Hardware Sensor Portrait & Remote Camera 1 Native App Trigger -->
                         <div class="bg-slate-950 p-2.5 rounded-lg border border-purple-500/40 space-y-2">
                             <div class="flex justify-between items-center text-xs">
-                                <span class="text-purple-300 font-bold">📷 پرتره سخت‌افزاری و اپ دوربین اصلی گوشی:</span>
-                                <span id="remote-bokeh-label" class="font-mono text-[11px] text-emerald-400">تصویر خالص (بدون افکت مصنوعی)</span>
+                                <span class="text-purple-300 font-bold">📷 پرتره سخت‌افزاری و اپ دوربین گوشی ۱:</span>
+                                <span id="remote-bokeh-label" class="font-mono text-[11px] text-emerald-400">تصویر خالص</span>
                             </div>
                             <input id="remote-bokeh-slider" type="range" min="0" max="20" step="2" value="0" oninput="sendRemoteBokeh(this.value)" class="hidden">
                             <div class="grid grid-cols-3 gap-1.5">
@@ -637,12 +658,11 @@
                                 <button type="button" onclick="sendRemoteOpticalDepth()" class="py-1.5 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] text-white font-bold">بوکه اپتیکال لنز (2x)</button>
                             </div>
                             <div class="pt-1 border-t border-slate-800/80 flex flex-col gap-1.5">
-                                <label class="cursor-pointer w-full py-1.5 px-2.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-400/40 text-indigo-200 text-[11px] font-bold flex items-center justify-center gap-1.5 transition">
-                                    <span>📲 باز کردن اپ دوربین اصلی گوشی (ضبط با پرتره واقعی گوشی و ورود به استودیو)</span>
-                                    <input type="file" id="native-camera-capture-input" accept="video/*" capture="environment" class="hidden" onchange="handleMediaUpload(event)">
-                                </label>
+                                <button type="button" onclick="requestCamera1NativeApp()" class="w-full py-1.5 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 shadow transition">
+                                    <span>📲 باز کردن اپ دوربین اصلی روی «گوشی دوربین ۱»</span>
+                                </button>
                                 <div class="text-[10px] text-slate-400 leading-4">
-                                    نکته فنی: مرورگرها اجازه استریم زنده از داخل «اپ دوربین کارخانه گوشی» را نمی‌دهند، اما با دکمه بالا می‌توانید مستقیم اپ دوربین اصلی گوشی را باز کنید، یا برای استریم زنده از دکمه «بوکه اپتیکال لنز (2x)» و انتخاب لنز Telephoto استفاده کنید.
+                                    با زدن این دکمه، روی صفحه «گوشی دوربین ۱» پنجره باز کردن مستقیم اپ دوربین اصلی همان گوشی ظاهر می‌شود و پس از فیلم‌برداری، تصویرش مستقیم روی استودیو پخش می‌گردد.
                                 </div>
                             </div>
                         </div>
@@ -714,8 +734,8 @@
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-300">زیرنویس تلویزیونی (Lower Third)</span>
-                            <button onclick="toggleLowerThird()" id="btn-toggle-lt" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded-md font-bold">
-                                نمایش روی آنتن: روشن
+                            <button onclick="toggleLowerThird()" id="btn-toggle-lt" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1 rounded-md font-bold">
+                                نمایش روی آنتن: خاموش
                             </button>
                         </div>
                         <input id="lt-title-input" type="text" value="استودیو پخش زنده PRISM" oninput="updateGraphicsText()" placeholder="عنوان اصلی" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
@@ -734,10 +754,10 @@
                         <div class="text-xs font-bold text-emerald-300">🎙️ مسیر صدای ضبط</div>
                         <label for="audio-source-mode" class="block text-[11px] text-slate-300">میکروفون به کدام گوشی وصل است؟</label>
                         <select id="audio-source-mode" onchange="changeAudioSourceMode(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white">
-                            <option value="director" selected>گوشی کارگردان — صدا محلی (پیشنهادی)</option>
-                            <option value="camera">گوشی دوربین — صدا از WebRTC</option>
+                            <option value="camera" selected>گوشی دوربین ۱ — دریافت مستقیم صدا از موبایل دوربین (پیش‌فرض)</option>
+                            <option value="director">گوشی کارگردان — میکروفون همین دستگاه</option>
                         </select>
-                        <div id="audio-route-status" class="text-[11px] leading-relaxed text-slate-300">حالت پیشنهادی: صدای میکروفون از همین گوشی ضبط می‌شود؛ تصویر از گوشی دوربین می‌آید.</div>
+                        <div id="audio-route-status" class="text-[11px] leading-relaxed text-emerald-300">پیش‌فرض فعال: صدا مستقیماً از میکروفون «گوشی دوربین ۱» دریافت و ضبط می‌شود.</div>
                         <div id="webrtc-stats-status" class="text-[10px] leading-relaxed text-slate-400">آمار WebRTC پس از اتصال نمایش داده می‌شود.</div>
                     </div>
                     <div class="rounded-xl border border-blue-700/50 bg-slate-950/70 p-3 space-y-2">
@@ -845,7 +865,7 @@
         };
 
         const state = {
-            appVersion: 5.0,
+            appVersion: 5.1,
             role: 'launcher',
             pinCode: '',
             mqttClient: null,
@@ -869,8 +889,8 @@
             rawAudioTrack: null,
             currentAudioDeviceId: '',
             availableAudioInputs: [],
-            audioSourceMode: 'director',
-            remoteAudioMode: 'director',
+            audioSourceMode: 'camera',
+            remoteAudioMode: 'camera',
             directorMicStream: null,
             directorAudioDeviceId: '',
             directorAudioDelayMs: 1000,
@@ -927,7 +947,7 @@
             mediaPlaylistRunning: false,
             mediaObjectUrls: [],
             reactionOverlay: { x: 0.025, y: 0.66, size: 0.20 },
-            lowerThirdVisible: true,
+            lowerThirdVisible: false,
             ltTitle: 'استودیو پخش زنده PRISM',
             ltSub: 'کارگردانی چند دوربینه بدون لگ و قفل بیداری صفحه',
             tickerVisible: false,
@@ -1056,7 +1076,7 @@
         }
 
         function downloadStandaloneHtml() {
-            const currentVer = Number(state.appVersion || 5.0).toFixed(1);
+            const currentVer = Number(state.appVersion || 5.1).toFixed(1);
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -1106,8 +1126,8 @@
             const badge = document.getElementById('dir-fit-badge');
             if (badge) {
                 badge.innerText = state.cam1FitMode === 'cover'
-                    ? '🖼️ قاب: پر کردن صفحه (Cover)'
-                    : '🖼️ قاب: نمایش کامل (Fit)';
+                    ? '🖼️ کادر تصویر: تمام‌صفحه (بدون حاشیه سیاه)'
+                    : '🖼️ کادر تصویر: نمایش کامل (بدون برش کناره‌ها)';
             }
         }
 
@@ -1603,23 +1623,119 @@
         // ============================================================================
         // 5. PHYSICAL LENS ENUMERATION & HARDWARE CAMERA ENGINE
         // ============================================================================
+        function classifyLensRole(labelStr, index, total) {
+            const l = (labelStr || '').toLowerCase();
+            if (l.includes('front') || l.includes('user') || l.includes('selfie') || l.includes('سلفی')) return 'front';
+            if (l.includes('ultra') || l.includes('0.5') || l.includes('0.6') || l.includes('wide angle')) return 'ultrawide';
+            if (l.includes('tele') || l.includes('zoom') || l.includes('periscope') || l.includes('portrait') || l.includes('2x') || l.includes('3x') || l.includes('5x')) return 'tele';
+            // Many Android phones list back cameras as: camera2 0 (main), camera2 2 (ultrawide), camera2 3 (tele)
+            if (total >= 3 && index === total - 1 && !l.includes('front')) return 'tele';
+            return 'wide';
+        }
+
         async function enumeratePhysicalLenses() {
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                state.availableLenses = videoDevices.map((d, idx) => ({
-                    deviceId: d.deviceId,
-                    label: d.label || `لنز دوربین ${idx + 1}`
-                }));
+                state.availableLenses = videoDevices.map((d, idx) => {
+                    const rawLabel = d.label || `لنز دوربین ${idx + 1}`;
+                    const role = classifyLensRole(rawLabel, idx, videoDevices.length);
+                    const roleBadge = role === 'tele' ? '🔭 تله/پرتره' : (role === 'ultrawide' ? '📐 اولتراواید' : (role === 'front' ? '🤳 سلفی' : '📷 اصلی'));
+                    return {
+                        deviceId: d.deviceId,
+                        label: `${roleBadge} • ${rawLabel}`,
+                        rawLabel,
+                        role
+                    };
+                });
 
                 const selectEl = document.getElementById('cam-lens-select');
                 if (selectEl && state.availableLenses.length > 0) {
                     selectEl.innerHTML = state.availableLenses.map((l) =>
-                        `<option value="${l.deviceId}" ${l.deviceId === state.currentDeviceId ? 'selected' : ''}>📷 ${l.label}</option>`
+                        `<option value="${l.deviceId}" ${l.deviceId === state.currentDeviceId ? 'selected' : ''}>${l.label}</option>`
                     ).join('');
                 }
                 publishMqttSignal('lenses', { lenses: state.availableLenses, current: state.currentDeviceId });
             } catch (e) {}
+        }
+
+        async function switchOpticalStep(targetFactor) {
+            const factor = Number(targetFactor) || 1.0;
+            const backLenses = (state.availableLenses || []).filter(l => l.role !== 'front');
+            let targetLens = null;
+
+            if (factor < 1.0) {
+                targetLens = backLenses.find(l => l.role === 'ultrawide') || backLenses[1] || backLenses[0];
+            } else if (factor >= 2.0) {
+                targetLens = backLenses.find(l => l.role === 'tele') || backLenses[backLenses.length - 1] || backLenses[0];
+            } else {
+                targetLens = backLenses.find(l => l.role === 'wide') || backLenses[0];
+            }
+
+            // If a distinct physical lens exists for this optical tier, switch hardware sensor first!
+            if (targetLens && targetLens.deviceId && targetLens.deviceId !== state.currentDeviceId && backLenses.length > 1) {
+                state.currentDeviceId = targetLens.deviceId;
+                const sel = document.getElementById('cam-lens-select');
+                if (sel) sel.value = targetLens.deviceId;
+                // When switching to physical tele lens (which is already 2x optically), set sensor zoom appropriately
+                const sensorZoom = (targetLens.role === 'tele' && factor >= 2.0) ? Math.max(1.0, factor / 2.0) : Math.max(1.0, factor);
+                await startHardwareCamera({ deviceId: targetLens.deviceId, height: state.currentResHeight });
+                scheduleCameraZoom(sensorZoom);
+                const ind = document.getElementById('cam-zoom-indicator');
+                if (ind) ind.innerText = `LENS: ${targetLens.role.toUpperCase()} (${factor}x OPTICAL)`;
+            } else {
+                scheduleCameraZoom(Math.max(1.0, factor));
+            }
+        }
+
+        function sendRemoteOpticalStep(factor) {
+            const f = Number(factor) || 1.0;
+            const lbl = document.getElementById('remote-zoom-label');
+            if (lbl) lbl.innerText = `${f.toFixed(1)}x`;
+            const sl = document.getElementById('remote-zoom-slider');
+            if (sl) sl.value = Math.max(1, f);
+            if (state.role === 'director' && !state.pinCode && state.directorCam2Stream) {
+                switchOpticalStep(f);
+            }
+            sendRemoteCommand({ type: 'opticalStep', value: f });
+        }
+
+        // Stream video recorded by Camera 1's Native OS Camera App directly into the WebRTC stream to Director!
+        async function handleCam1NativeVideoCaptured(event) {
+            const file = event.target?.files?.[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            const vid = document.getElementById('cam-local-video');
+            if (!vid) return;
+            vid.srcObject = null;
+            vid.src = url;
+            vid.loop = true;
+            vid.muted = false;
+            await vid.play().catch(() => {});
+            const captureFn = vid.captureStream || vid.mozCaptureStream;
+            if (typeof captureFn === 'function') {
+                const fileStream = captureFn.call(vid);
+                const fileVideoTrack = fileStream.getVideoTracks()[0];
+                const fileAudioTrack = fileStream.getAudioTracks()[0];
+                if (fileVideoTrack && state.activeVideoSender) {
+                    try { await state.activeVideoSender.replaceTrack(fileVideoTrack); } catch (e) {}
+                }
+                if (fileAudioTrack && state.activeAudioSender) {
+                    try { await state.activeAudioSender.replaceTrack(fileAudioTrack); } catch (e) {}
+                }
+            }
+            showCameraIntercomToast('ویدیوی اپ دوربین اصلی گوشی در حال ارسال به کارگردان است!');
+        }
+
+        function requestCamera1NativeApp() {
+            if (state.pinCode) {
+                sendRemoteCommand({ type: 'openNativeCameraPrompt' });
+                const diag = document.getElementById('video-diagnostic-visible');
+                if (diag) diag.textContent = '📲 درخواست باز شدن اپ دوربین اصلی به «گوشی دوربین ۱» ارسال شد؛ روی صفحه گوشی دوربین ۱ تایید کنید.';
+            } else {
+                const inp = document.getElementById('cam1-native-camera-input');
+                if (inp) inp.click();
+            }
         }
 
         async function startHardwareCamera(options = {}) {
@@ -1773,13 +1889,32 @@
         }
 
         async function applyLocalCameraZoom(z) {
+            // Auto-switch physical lens between 1x Wide and 2x+ Telephoto when crossing 2.0x threshold if phone exposes multiple back lenses!
+            const backLenses = (state.availableLenses || []).filter(l => l.role !== 'front');
+            const teleLens = backLenses.find(l => l.role === 'tele');
+            const wideLens = backLenses.find(l => l.role === 'wide') || backLenses[0];
+            if (teleLens && wideLens && teleLens.deviceId !== wideLens.deviceId && !state.lensAutoSwitching) {
+                if (z >= 2.0 && state.currentDeviceId === wideLens.deviceId) {
+                    state.lensAutoSwitching = true;
+                    state.currentDeviceId = teleLens.deviceId;
+                    await startHardwareCamera({ deviceId: teleLens.deviceId, height: state.currentResHeight });
+                    state.lensAutoSwitching = false;
+                } else if (z < 1.8 && state.currentDeviceId === teleLens.deviceId) {
+                    state.lensAutoSwitching = true;
+                    state.currentDeviceId = wideLens.deviceId;
+                    await startHardwareCamera({ deviceId: wideLens.deviceId, height: state.currentResHeight });
+                    state.lensAutoSwitching = false;
+                }
+            }
+
+            const activeTrack = state.rawVideoTrack || state.directorCam2Stream?.getVideoTracks?.()[0];
             let usedHardwareZoom = false;
-            if (state.rawVideoTrack && state.rawVideoTrack.getCapabilities) {
+            if (activeTrack && activeTrack.getCapabilities) {
                 try {
-                    const caps = state.rawVideoTrack.getCapabilities();
+                    const caps = activeTrack.getCapabilities();
                     if (caps.zoom) {
                         const clampedZoom = Math.max(caps.zoom.min, Math.min(caps.zoom.max, z));
-                        await state.rawVideoTrack.applyConstraints({
+                        await activeTrack.applyConstraints({
                             advanced: [{ zoom: clampedZoom }]
                         });
                         usedHardwareZoom = true;
@@ -1788,12 +1923,14 @@
             }
 
             const vid = document.getElementById('cam-local-video');
-            if (usedHardwareZoom) {
+            if (vid) {
                 vid.style.transform = 'scale(1)';
-                document.getElementById('cam-zoom-indicator').innerText = `ZOOM: ${z.toFixed(1)}x (OPTICAL/HW)`;
-            } else {
-                vid.style.transform = `scale(${z})`;
-                document.getElementById('cam-zoom-indicator').innerText = `ZOOM: ${z.toFixed(1)}x (DIGITAL HQ)`;
+            }
+            const ind = document.getElementById('cam-zoom-indicator');
+            if (ind) {
+                ind.innerText = usedHardwareZoom
+                    ? `ZOOM: ${z.toFixed(1)}x (OPTICAL/SENSOR HW)`
+                    : `ZOOM: ${z.toFixed(1)}x (LENS SWITCH)`;
             }
         }
 
@@ -2195,6 +2332,12 @@
                 setCameraBokeh(data.value);
             } else if (data.type === 'opticalDepth') {
                 applyOpticalDepthPreset();
+            } else if (data.type === 'opticalStep') {
+                switchOpticalStep(data.value);
+            } else if (data.type === 'openNativeCameraPrompt') {
+                showCameraIntercomToast('📲 کارگردان درخواست باز کردن اپ دوربین اصلی گوشی را داد؛ روی دکمه آبی «اپ دوربین اصلی این گوشی» در پایین صفحه بزنید.');
+                const lbl = document.getElementById('cam-native-app-label');
+                if (lbl) lbl.classList.add('animate-bounce', 'ring-4', 'ring-amber-400');
             } else if (data.type === 'setLens') {
                 changePhysicalLens(data.deviceId);
             } else if (data.type === 'setRes') {
@@ -2568,7 +2711,6 @@
             if (src !== 'media' && state.pgmSource === 'media') stopPlaylist();
             state.pgmSource = src;
             state.transitionProgress = 0;
-            document.getElementById('tbar-slider').value = 0;
             document.getElementById('pgm-source-label').innerText = src.toUpperCase();
             document.querySelectorAll('.pgm-btn').forEach(btn => {
                 const active = btn.getAttribute('data-pgm') === src;
@@ -2589,12 +2731,10 @@
             if (state.isAutoTransitioning) return;
             state.isAutoTransitioning = true;
             const start = performance.now();
-            const slider = document.getElementById('tbar-slider');
 
             function step(now) {
                 const p = Math.min(1, (now - start) / 500);
                 state.transitionProgress = p;
-                slider.value = Math.round(p * 100);
                 if (p < 1) {
                     requestAnimationFrame(step);
                 } else {
@@ -2609,6 +2749,65 @@
             const p = Number(val) / 100;
             state.transitionProgress = p;
             if (p >= 0.99) performCut();
+        }
+
+
+        function togglePgmPlayPause() {
+            const icon = document.getElementById('pgm-play-pause-icon');
+            const label = document.getElementById('pgm-play-pause-label');
+            const status = document.getElementById('pgm-playback-status');
+            const btn = document.getElementById('btn-pgm-play-pause');
+
+            // If PGM is showing Media (or PiP with Media), Play/Pause the Media video/playlist!
+            if (state.pgmSource === 'media' || state.pgmSource === 'pip' || state.mediaPlaylist.length > 0 && state.pgmSource === 'media') {
+                const v = document.getElementById('hidden-media-video');
+                if (v && state.mediaType === 'video') {
+                    if (v.paused) {
+                        state.pgmPaused = false;
+                        state.mediaPlaylistRunning = true;
+                        v.play().catch(() => {});
+                        if (icon) icon.textContent = '⏸';
+                        if (label) label.textContent = 'مکث مدیا (Pause)';
+                        if (status) { status.textContent = '▶ در حال پخش مدیا روی آنتن'; status.className = 'text-[11px] font-mono text-emerald-400'; }
+                        if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+                    } else {
+                        v.pause();
+                        state.mediaPlaylistRunning = false;
+                        if (icon) icon.textContent = '▶';
+                        if (label) label.textContent = 'ادامه پخش مدیا (Play)';
+                        if (status) { status.textContent = '⏸ مدیا متوقف شد (Paused)'; status.className = 'text-[11px] font-mono text-amber-400'; }
+                        if (btn) btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+                    }
+                    return;
+                }
+            }
+
+            // Otherwise, Play / Pause (Freeze-Frame) the live Program Output!
+            state.pgmPaused = !state.pgmPaused;
+            if (state.pgmPaused) {
+                if (icon) icon.textContent = '▶';
+                if (label) label.textContent = 'ادامه پخش زنده (Play)';
+                if (status) { status.textContent = '⏸ تصویر خروجی فریز شد (Paused)'; status.className = 'text-[11px] font-mono text-amber-400'; }
+                if (btn) btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+            } else {
+                if (icon) icon.textContent = '⏸';
+                if (label) label.textContent = 'مکث خروجی / مدیا (Pause)';
+                if (status) { status.textContent = '▶ LIVE • در حال پخش زنده'; status.className = 'text-[11px] font-mono text-emerald-400'; }
+                if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+            }
+        }
+
+        function togglePauseResumeRecording() {
+            const rec = state.mediaRecorder;
+            if (!rec || !state.isRecording) return;
+            const visible = document.getElementById('recording-status-visible');
+            if (rec.state === 'recording' && typeof rec.pause === 'function') {
+                rec.pause();
+                if (visible) visible.textContent = '⏸ ضبط موقتاً متوقف شد (Paused) • برای ادامه روی «⏯ مکث/ادامه ضبط» بزنید.';
+            } else if (rec.state === 'paused' && typeof rec.resume === 'function') {
+                rec.resume();
+                if (visible) visible.textContent = '🔴 ضبط مجدداً ادامه یافت (Recording)…';
+            }
         }
 
         function toggleFTB() {
@@ -2704,9 +2903,11 @@
                     lastFpsTime = timestamp;
                 }
 
-                // Render PGM first (Master Output)
+                // Render PGM first (Master Output) unless paused by user via PGM Play/Pause button
                 ctxPgm.save();
-                drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height, timestamp);
+                if (!state.pgmPaused) {
+                    drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height, timestamp);
+                }
 
                 // Ultra-Light Recording Mode: while recording, pause redundant PVW monitor rendering (update once every 45 frames) to take 50% load off the browser GPU!
                 const pvwModulo = state.isRecording ? 45 : 3;
@@ -3443,6 +3644,8 @@
 
                 state.isRecording = true;
                 state.recordingStartAt = Date.now();
+                const pauseRecBtn = document.getElementById('btn-rec-pause-resume');
+                if (pauseRecBtn) { pauseRecBtn.classList.remove('hidden'); pauseRecBtn.classList.add('inline-flex'); }
                 const btn = document.getElementById('btn-record-pgm');
                 if (btn) {
                     btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-black text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 transition animate-pulse';
@@ -3481,6 +3684,8 @@
                 clearInterval(state.recordingTimer);
                 state.recordingTimer = null;
             }
+            const pauseRecBtn = document.getElementById('btn-rec-pause-resume');
+            if (pauseRecBtn) { pauseRecBtn.classList.add('hidden'); pauseRecBtn.classList.remove('inline-flex'); }
             const btn = document.getElementById('btn-record-pgm');
             if (btn) {
                 btn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition';
@@ -3540,7 +3745,7 @@
             }
             const url = URL.createObjectURL(blob);
             state.lastRecordedBlobUrl = url;
-            const fileName = `PRISM_Studio_v${Number(state.appVersion || 5.0).toFixed(1)}_${Date.now()}.${ext}`;
+            const fileName = `PRISM_Studio_v${Number(state.appVersion || 5.1).toFixed(1)}_${Date.now()}.${ext}`;
 
             const a = document.createElement('a');
             a.href = url;
