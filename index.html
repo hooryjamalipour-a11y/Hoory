@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v5.1 Optical-Pro</title>
+    <title>استودیو کارگردانی زنده | PRISM & LiveDeck Pro v5.2 Studio-Pro</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -109,7 +109,7 @@
             <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-md">
                 <span id="header-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-xs tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v5.1 OPTICAL-PRO</span>
+                <span id="header-version-badge" class="text-[10px] bg-emerald-600 text-white px-1.5 rounded font-mono font-bold">v5.2 STUDIO-PRO</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition flex items-center gap-1">
                 <span>⇄ تغییر نقش</span>
@@ -160,7 +160,7 @@
         <div class="max-w-4xl w-full space-y-5 z-10 my-4">
             <div class="text-center space-y-2">
                 <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span id="launcher-version-banner">⚡ نسخه ۵.۱ اپتیکال پرو (v5.1): سوییچ هوشمند بین لنزهای اپتیکال گوشی (0.6x / 1x / 2x / 3x) + دکمه Play/Pause زیر PGM + صدای پیش‌فرض از گوشی دوربین</span>
+                    <span id="launcher-version-banner">⚡ نسخه ۵.۲ استودیو پرو (v5.2): آماده شدن ویدیو بدون پخش خودکار + کادر دقیق ۴/۱۲ چپ در حالت ۵۰/۵۰ + فیلتر ملایم طبیعی شفافیت پوست و رنگ</span>
                 </div>
                 <h1 class="text-2xl md:text-4xl font-black tracking-tight text-white">
                     استودیوی کارگردانی و سوییچر تلویزیونی زنده
@@ -424,6 +424,10 @@
                     <span id="dir-fit-badge" title="حالت پر کردن کل کادر بدون نوار سیاه اطراف، یا نمایش کامل تصویر بدون برش">🖼️ کادر تصویر: تمام‌صفحه (بدون حاشیه سیاه)</span>
                 </button>
 
+                <button onclick="cycleBeautyEnhancer()" id="btn-beauty-filter" class="text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1.5 rounded-lg font-bold transition" title="فیلتر بسیار ملایم و طبیعی تلویزیونی برای شفافیت پوست، سفیدی دندان و بهبود رنگ بدون حالت مصنوعی">
+                    <span id="dir-beauty-badge">✨ روتوش طبیعی: ملایم (روشن)</span>
+                </button>
+
                 <button onclick="toggleDirectorLocalCam()" id="btn-dir-localcam" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
                     <span>📱 دوربین ۲ (همین گوشی)</span>
                 </button>
@@ -457,7 +461,7 @@
             </div>
             <div class="mt-2 w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2">
                 <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
-                    آماده ضبط مستر (نسخه v5.1 Optical-Pro)؛ صدا به صورت پیش‌فرض از گوشی دوربین ۱ دریافت می‌شود و زیرنویس به صورت پیش‌فرض خاموش است.
+                    آماده ضبط مستر (نسخه v5.2 Studio-Pro)؛ صدا به صورت پیش‌فرض از گوشی دوربین ۱ دریافت می‌شود و زیرنویس به صورت پیش‌فرض خاموش است.
                 </div>
                 <div id="recorded-download-slot" class="hidden shrink-0"></div>
             </div>
@@ -865,7 +869,7 @@
         };
 
         const state = {
-            appVersion: 5.1,
+            appVersion: 5.2,
             role: 'launcher',
             pinCode: '',
             mqttClient: null,
@@ -922,6 +926,8 @@
             cam1Rotation: 0,
             cam1Mirror: false,
             cam1FitMode: 'cover',
+            splitCropStartRatio: 4 / 12, // Starts crop at 4/12 from the left in 50/50 split mode so presenter stays framed
+            beautyEnhancerLevel: 1, // 0 = off, 1 = subtle natural broadcast polish (default), 2 = warm studio
 
             // AI Bokeh (MediaPipe Selfie Segmentation - Optimized Offscreen Buffer)
             bokehBlurPx: 0,
@@ -1076,7 +1082,7 @@
         }
 
         function downloadStandaloneHtml() {
-            const currentVer = Number(state.appVersion || 5.1).toFixed(1);
+            const currentVer = Number(state.appVersion || 5.2).toFixed(1);
             const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -2758,10 +2764,13 @@
             const status = document.getElementById('pgm-playback-status');
             const btn = document.getElementById('btn-pgm-play-pause');
 
-            // If PGM is showing Media (or PiP with Media), Play/Pause the Media video/playlist!
-            if (state.pgmSource === 'media' || state.pgmSource === 'pip' || state.mediaPlaylist.length > 0 && state.pgmSource === 'media') {
-                const v = document.getElementById('hidden-media-video');
-                if (v && state.mediaType === 'video') {
+            // If a media video is loaded and shown on PGM/PVW (media, pip, or split), Play/Pause the Media video!
+            const v = document.getElementById('hidden-media-video');
+            if (v && state.mediaType === 'video' && state.mediaPlaylistIndex >= 0 && (['media', 'pip', 'split'].includes(state.pgmSource) || ['media', 'pip', 'split'].includes(state.pvwSource))) {
+                if (!['media', 'pip', 'split'].includes(state.pgmSource)) {
+                    directCutToProgram('media');
+                }
+                if (v) {
                     if (v.paused) {
                         state.pgmPaused = false;
                         state.mediaPlaylistRunning = true;
@@ -2969,9 +2978,12 @@
                 const mh = state.mediaType === 'video' ? mediaEl.videoHeight : mediaEl.naturalHeight;
                 const isPortraitMedia = mw > 0 && mh > mw * 1.08;
                 if (mw > 0 && mh > 0 && isPortraitMedia) {
-                    // Portrait media + presenter side-by-side; presenter stays on the LEFT.
+                    // Portrait media + presenter side-by-side (50/50); presenter stays on the LEFT with 4/12 left-aligned crop.
                     const split = w * 0.5;
-                    drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, split, h, 'REACTION', state.cam1Rotation, 'cover', state.cam1Mirror);
+                    const v1 = document.getElementById('hidden-cam1-video');
+                    const v2 = document.getElementById('hidden-cam2-video');
+                    const activeCam = (v1 && v1.videoWidth > 0) ? v1 : ((v2 && v2.videoWidth > 0) ? v2 : v1);
+                    drawVideoSmart(ctx, activeCam, 0, 0, split, h, 'REACTION', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio ?? (4 / 12) });
                     drawMediaLayer(ctx, split, 0, w - split, h, ts);
                 } else {
                     drawMediaLayer(ctx, 0, 0, w, h, ts);
@@ -2998,9 +3010,12 @@
                 ctx.restore();
             } else if (sourceType === 'split') {
                 const halfW = w / 2 - 4;
-                drawVideoSmart(ctx, document.getElementById('hidden-cam1-video'), 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror);
-                if (state.directorCam2Stream) {
-                    drawVideoSmart(ctx, document.getElementById('hidden-cam2-video'), halfW + 8, 0, halfW, h, 'CAM 2', 0, 'cover', false);
+                const v1 = document.getElementById('hidden-cam1-video');
+                const v2 = document.getElementById('hidden-cam2-video');
+                const activeCam1 = (v1 && v1.videoWidth > 0) ? v1 : ((v2 && v2.videoWidth > 0) ? v2 : v1);
+                drawVideoSmart(ctx, activeCam1, 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio ?? (4 / 12) });
+                if (state.directorCam2Stream && v1 && v1.videoWidth > 0) {
+                    drawVideoSmart(ctx, v2, halfW + 8, 0, halfW, h, 'CAM 2', 0, 'cover', false, { cropStartRatio: state.splitCropStartRatio ?? (4 / 12) });
                 } else {
                     drawMediaLayer(ctx, halfW + 8, 0, halfW, h, ts);
                 }
@@ -3009,7 +3024,23 @@
             }
         }
 
-        function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 0, fitMode = 'cover', mirror = false) {
+        function cycleBeautyEnhancer() {
+            state.beautyEnhancerLevel = ((state.beautyEnhancerLevel || 0) + 1) % 3;
+            const badge = document.getElementById('dir-beauty-badge');
+            const btn = document.getElementById('btn-beauty-filter');
+            if (state.beautyEnhancerLevel === 1) {
+                if (badge) badge.innerText = '✨ روتوش طبیعی: ملایم (روشن)';
+                if (btn) btn.className = 'text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1.5 rounded-lg font-bold transition';
+            } else if (state.beautyEnhancerLevel === 2) {
+                if (badge) badge.innerText = '✨ روتوش طبیعی: شفاف + رنگ گرم';
+                if (btn) btn.className = 'text-xs bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 px-2.5 py-1.5 rounded-lg font-bold transition';
+            } else {
+                if (badge) badge.innerText = '✨ روتوش طبیعی: خاموش';
+                if (btn) btn.className = 'text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition';
+            }
+        }
+
+        function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 0, fitMode = 'cover', mirror = false, cropOpts = null) {
             if (videoEl && videoEl.srcObject && videoEl.paused) {
                 videoEl.muted = true;
                 videoEl.play().catch(() => {});
@@ -3023,13 +3054,30 @@
                 const effH = isRotated90 ? rawW : rawH;
 
                 ctx.save();
-                if (x !== 0 || y !== 0) {
-                    ctx.beginPath();
-                    ctx.rect(x, y, w, h);
-                    ctx.clip();
+                ctx.beginPath();
+                ctx.rect(x, y, w, h);
+                ctx.clip();
+
+                const scale = (fitMode === 'contain')
+                    ? Math.min(w / effW, h / effH)
+                    : Math.max(w / effW, h / effH);
+
+                const drawW = rawW * scale;
+                const drawH = rawH * scale;
+                const effDrawW = isRotated90 ? drawH : drawW;
+
+                // Horizontal crop offset: in 50/50 split mode, start crop at 4/12 (33.3%) from the left edge of the source frame
+                // rather than centering exclusively on the middle 1/3!
+                let offsetX = 0;
+                if (cropOpts && typeof cropOpts.cropStartRatio === 'number' && effDrawW > w) {
+                    const desiredStartX = effDrawW * cropOpts.cropStartRatio;
+                    const maxStartX = Math.max(0, effDrawW - w);
+                    const actualStartX = Math.max(0, Math.min(maxStartX, desiredStartX));
+                    const centerStartX = (effDrawW - w) / 2;
+                    offsetX = centerStartX - actualStartX;
                 }
 
-                const cx = x + w / 2;
+                const cx = x + w / 2 + offsetX;
                 const cy = y + h / 2;
                 ctx.translate(cx, cy);
 
@@ -3040,15 +3088,26 @@
                     ctx.scale(-1, 1);
                 }
 
-                const scale = (fitMode === 'contain')
-                    ? Math.min(w / effW, h / effH)
-                    : Math.max(w / effW, h / effH);
-
-                const drawW = rawW * scale;
-                const drawH = rawH * scale;
-
                 ctx.imageSmoothingEnabled = true;
-                ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                const isCameraFeed = videoEl.id === 'hidden-cam1-video' || videoEl.id === 'hidden-cam2-video';
+                const beautyLvl = isCameraFeed ? (state.beautyEnhancerLevel ?? 1) : 0;
+
+                if (beautyLvl > 0) {
+                    // Base pass: crisp, clean natural color & subtle brightness lift (whitens teeth & clears shadows without fake look)
+                    ctx.filter = beautyLvl === 2
+                        ? 'brightness(1.05) contrast(1.04) saturate(1.10)'
+                        : 'brightness(1.035) contrast(1.03) saturate(1.07)';
+                    ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+
+                    // Ultra-subtle optical soft-focus highlight diffusion pass (12% opacity) to smooth skin pores while keeping eyes & beard 100% sharp!
+                    ctx.globalAlpha = beautyLvl === 2 ? 0.16 : 0.12;
+                    ctx.filter = 'blur(1.4px) brightness(1.06) saturate(1.04)';
+                    ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                    ctx.globalAlpha = 1.0;
+                    ctx.filter = 'none';
+                } else {
+                    ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                }
                 ctx.restore();
             } else {
                 ctx.fillStyle = '#0f172a';
@@ -3182,7 +3241,7 @@
             state.mediaPlaylist.forEach((item, i) => {
                 const li = document.createElement('li');
                 li.className = 'flex items-center gap-1 bg-slate-900 rounded px-2 py-1 ' + (i === state.mediaPlaylistIndex ? 'border border-emerald-500/70' : 'border border-slate-800');
-                const pick = document.createElement('button'); pick.className = 'text-right text-slate-200 flex-1 truncate'; pick.textContent = `${i + 1}. ${item.type === 'video' ? '🎬' : '🖼️'} ${item.name}`; pick.onclick = () => loadPlaylistItem(i, true);
+                const pick = document.createElement('button'); pick.className = 'text-right text-slate-200 flex-1 truncate'; pick.textContent = `${i + 1}. ${item.type === 'video' ? '🎬' : '🖼️'} ${item.name}`; pick.onclick = () => cueMediaItemToScreen(i);
                 const up = document.createElement('button'); up.textContent = '↑'; up.title = 'انتقال به بالا'; up.className = 'px-1 text-slate-400'; up.disabled = i === 0; up.onclick = () => movePlaylistItem(i, -1);
                 const down = document.createElement('button'); down.textContent = '↓'; down.title = 'انتقال به پایین'; down.className = 'px-1 text-slate-400'; down.disabled = i === state.mediaPlaylist.length - 1; down.onclick = () => movePlaylistItem(i, 1);
                 const del = document.createElement('button'); del.textContent = '×'; del.title = 'حذف'; del.className = 'px-1 text-red-300'; del.onclick = () => removePlaylistItem(i);
@@ -3211,7 +3270,40 @@
             renderMediaPlaylist();
         }
 
-        function loadPlaylistItem(index, autoplay = true) {
+        function syncPgmPlayPauseButtonUI() {
+            const icon = document.getElementById('pgm-play-pause-icon');
+            const label = document.getElementById('pgm-play-pause-label');
+            const status = document.getElementById('pgm-playback-status');
+            const btn = document.getElementById('btn-pgm-play-pause');
+            const v = document.getElementById('hidden-media-video');
+            const mediaShown = ['media', 'pip', 'split'].includes(state.pgmSource) || ['media', 'pip', 'split'].includes(state.pvwSource);
+
+            if (mediaShown && state.mediaType === 'video' && v) {
+                if (v.paused) {
+                    if (icon) icon.textContent = '▶';
+                    if (label) label.textContent = 'پخش ویدیو (Play)';
+                    if (status) { status.textContent = '⏸ ویدیو آماده پخش روی تصویر است (برای شروع دکمه Play را بزنید)'; status.className = 'text-[11px] font-mono text-amber-400'; }
+                    if (btn) btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+                } else {
+                    if (icon) icon.textContent = '⏸';
+                    if (label) label.textContent = 'مکث ویدیو (Pause)';
+                    if (status) { status.textContent = '▶ در حال پخش ویدیو روی تصویر'; status.className = 'text-[11px] font-mono text-emerald-400'; }
+                    if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+                }
+            }
+        }
+
+        function cueMediaItemToScreen(index) {
+            loadPlaylistItem(index, false);
+            // Put media directly onto screen (PGM & PVW) without playing so user sees the first frame and starts playback via the button under PGM!
+            if (!['media', 'pip', 'split'].includes(state.pgmSource)) {
+                directCutToProgram('media');
+            }
+            selectPreviewSource('media');
+            syncPgmPlayPauseButtonUI();
+        }
+
+        function loadPlaylistItem(index, autoplay = false) {
             if (index < 0 || index >= state.mediaPlaylist.length) return;
             if (state.imageAdvanceTimer) { clearTimeout(state.imageAdvanceTimer); state.imageAdvanceTimer = null; }
             const item = state.mediaPlaylist[index];
@@ -3219,21 +3311,43 @@
             const video = document.getElementById('hidden-media-video');
             const img = document.getElementById('hidden-media-img');
             if (item.type === 'video') {
-                if (video.src !== item.url) { video.pause(); video.src = item.url; video.load(); }
+                video.pause();
+                state.mediaPlaylistRunning = Boolean(autoplay);
+                if (video.src !== item.url) {
+                    video.src = item.url;
+                    video.load();
+                }
                 img.removeAttribute('src');
                 connectMediaElementToAudioMixer(video);
+                // When cued (not autoplaying), seek slightly to 0.05s once metadata loads so the first video frame renders on the monitor immediately while paused!
+                video.onloadeddata = () => {
+                    if (!autoplay && video.paused && video.currentTime === 0) {
+                        try { video.currentTime = 0.01; } catch (e) {}
+                    }
+                    syncPgmPlayPauseButtonUI();
+                };
                 video.onended = () => {
-                    if (!state.mediaPlaylistRunning) return;
+                    if (!state.mediaPlaylistRunning) {
+                        syncPgmPlayPauseButtonUI();
+                        return;
+                    }
                     const mode = state.mediaPlaylistMode || document.getElementById('playlist-mode')?.value || 'sequence';
                     if (mode === 'sequence' && state.mediaPlaylistIndex < state.mediaPlaylist.length - 1) loadPlaylistItem(state.mediaPlaylistIndex + 1, true);
                     else stopPlaylist();
+                    syncPgmPlayPauseButtonUI();
                 };
-                if (autoplay) video.play().catch(err => { const status = document.getElementById('media-status'); if (status) status.textContent = 'برای شروع پخش، دکمه پخش را بزنید.'; });
-                else video.pause();
+                if (autoplay) {
+                    video.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => {
+                        const status = document.getElementById('media-status');
+                        if (status) status.textContent = 'برای شروع پخش، دکمه پخش زیر مانیتور را بزنید.';
+                        syncPgmPlayPauseButtonUI();
+                    });
+                } else {
+                    video.pause();
+                }
             } else {
                 video.pause(); video.removeAttribute('src'); video.load(); img.src = item.url;
                 if (state.mediaPlaylistRunning && autoplay && (document.getElementById('playlist-mode')?.value || 'sequence') === 'sequence') {
-                    // Still images advance after a short, predictable display interval.
                     state.imageAdvanceTimer = setTimeout(() => {
                         if (state.mediaPlaylistRunning && state.mediaPlaylistIndex < state.mediaPlaylist.length - 1) loadPlaylistItem(state.mediaPlaylistIndex + 1, true);
                         else stopPlaylist();
@@ -3241,8 +3355,12 @@
                 }
             }
             document.getElementById('media-filename').textContent = item.name;
-            document.getElementById('media-status').textContent = `${index + 1} از ${state.mediaPlaylist.length} • ${item.type === 'video' ? 'ویدیو' : 'عکس'}`;
-            renderMediaPlaylist(); selectPreviewSource('media');
+            document.getElementById('media-status').textContent = autoplay
+                ? `در حال پخش • ${index + 1} از ${state.mediaPlaylist.length} • ${item.type === 'video' ? 'ویدیو' : 'عکس'}`
+                : `آماده روی تصویر (متوقف) • برای پخش دکمه زیر مانیتور را بزنید`;
+            renderMediaPlaylist();
+            selectPreviewSource('media');
+            syncPgmPlayPauseButtonUI();
         }
 
         function playPlaylist() {
@@ -3745,7 +3863,7 @@
             }
             const url = URL.createObjectURL(blob);
             state.lastRecordedBlobUrl = url;
-            const fileName = `PRISM_Studio_v${Number(state.appVersion || 5.1).toFixed(1)}_${Date.now()}.${ext}`;
+            const fileName = `PRISM_Studio_v${Number(state.appVersion || 5.2).toFixed(1)}_${Date.now()}.${ext}`;
 
             const a = document.createElement('a');
             a.href = url;
