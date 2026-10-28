@@ -217,9 +217,9 @@
                     <option value="">شناسایی لنزها...</option>
                 </select>
                 <select id="cam-res-select" onchange="changeCameraResolution(this.value)" class="bg-slate-950 border border-slate-700 text-emerald-300 font-mono text-[10px] rounded-lg px-1.5 py-1 outline-none">
-                    <option value="2160" selected>4K / Max Sensor (حداکثر شفافیت)</option>
-                    <option value="1080">1080p FHD</option>
-                    <option value="720">720p HD</option>
+                    <option value="1080" selected>1080p FHD (بهینه و بدون لگ)</option>
+                    <option value="720">720p HD (فوق‌روان)</option>
+                    <option value="2160">4K UHD (سنگین)</option>
                 </select>
             </div>
         </div>
@@ -228,7 +228,6 @@
         <div class="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden">
             <div class="relative w-[70%] max-w-[440px] h-full max-h-[34dvh] bg-studio-900/90 border-2 border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl">
                 <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-contain"></video>
-                <canvas id="cam-screen-crop-canvas" width="1280" height="720" class="hidden w-full h-full object-contain"></canvas>
 
                 <!-- Hardware Status Overlay Inside Compact Frame -->
                 <div class="absolute top-1.5 left-1.5 z-30 bg-black/75 backdrop-blur px-2 py-1 rounded-md border border-white/10 font-mono text-[9px] text-slate-300 space-y-0.5 pointer-events-none">
@@ -293,29 +292,18 @@
                 </div>
             </div>
 
-            <!-- Row 2: Method 2 (Native Mobile Camera App Live Screen Capture + Auto-Crop & Native File Capture) -->
-            <div class="bg-slate-950/90 border border-indigo-500/40 rounded-lg px-2.5 py-1.5 flex flex-col gap-1">
-                <div class="flex flex-wrap items-center justify-between gap-1.5">
-                    <span class="text-[10px] font-bold text-indigo-300">📲 روش ۲: استفاده مستقیم از خودِ اپ دوربین اصلی موبایل (ویدیوی پرتره گوشی):</span>
-                    <div class="flex flex-wrap items-center gap-1">
-                        <button type="button" onclick="startNativeAppScreenShareStream()" id="btn-native-screenshare" class="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold shadow">
-                            📡 استریم زنده از روی اپ دوربین گوشی (Screen Capture)
-                        </button>
-                        <button type="button" onclick="stopNativeAppScreenShareStream()" id="btn-stop-screenshare" class="hidden px-2 py-1 rounded bg-red-600 text-white text-[10px] font-bold">
-                            ⏹ بازگشت به سنسور مستقیم
-                        </button>
-                        <label id="cam-native-app-label" class="cursor-pointer px-2 py-1 rounded bg-blue-700 hover:bg-blue-600 text-[10px] text-white font-bold">
-                            <span>🎥 ضبط در اپ دوربین اصلی</span>
-                            <input type="file" id="cam1-native-camera-input" accept="video/*" capture="environment" class="hidden" onchange="handleCam1NativeVideoCaptured(event)">
-                        </label>
-                    </div>
+            <!-- Row 2: Samsung S24 Color Vivid Boost & Native Camera App Recording -->
+            <div class="bg-slate-950/90 border border-indigo-500/40 rounded-lg px-2.5 py-1.5 flex flex-wrap items-center justify-between gap-1.5">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-amber-300">🎨 تقویت رنگ (مخصوص دوربین سامسونگ S24):</span>
+                    <button type="button" onclick="cycleCameraColorBoost()" id="btn-cam-color-boost" class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 text-[10px] font-bold">
+                        رنگ: عادی (مناسب شیائومی)
+                    </button>
                 </div>
-                <!-- Crop Trim Bar for Native Camera App Screen Share -->
-                <div class="flex items-center gap-2 text-[9px] text-slate-400">
-                    <span class="whitespace-nowrap">برش حاشیه بالا/پایین اپ دوربین:</span>
-                    <input id="cam-crop-slider" type="range" min="0" max="35" step="1" value="18" oninput="updateNativeAppCropPercent(this.value)" class="flex-1 h-1.5 accent-indigo-400 cursor-pointer">
-                    <span id="cam-crop-val" class="font-mono text-indigo-300 w-8 text-left">18%</span>
-                </div>
+                <label id="cam-native-app-label" class="cursor-pointer px-2 py-0.5 rounded bg-blue-700 hover:bg-blue-600 text-[10px] text-white font-bold">
+                    <span>🎥 ضبط ویدیو با اپ دوربین اصلی گوشی</span>
+                    <input type="file" id="cam1-native-camera-input" accept="video/*" capture="environment" class="hidden" onchange="handleCam1NativeVideoCaptured(event)">
+                </label>
             </div>
 
             <!-- Row 3: Quick Hardware Actions + Camera Mic Selector -->
@@ -365,14 +353,19 @@
                     <span>📐 چرخش دوربین ۱:</span>
                     <span id="dir-rot-badge" class="font-mono">270°</span>
                 </button>
+
+                <!-- Color Boost Button for Washed-out Samsung Camera -->
+                <button onclick="cycleDirectorColorBoost()" id="btn-dir-color-boost" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition">
+                    🎨 رنگ دوربین: عادی (شیائومی)
+                </button>
             </div>
 
             <!-- Master Quality, MP4 Record & Snapshot -->
             <div class="flex flex-wrap items-center gap-1.5">
                 <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none">
-                    <option value="1080" selected>🎬 موتور 1080p Full HD (شفافیت کامل • پیش‌فرض)</option>
-                    <option value="720">⚡ موتور 720p HD</option>
-                    <option value="540">🚀 موتور 540p سبک</option>
+                    <option value="720" selected>⚡ موتور 720p HD (ضد لگ ضبط سامسونگ • پیش‌فرض)</option>
+                    <option value="1080">🎬 موتور 1080p Full HD</option>
+                    <option value="540">🚀 موتور 540p فوق‌روان</option>
                 </select>
 
                 <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-lg shadow-red-600/20 flex items-center gap-1.5 transition">
@@ -416,11 +409,11 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-source-label" class="font-mono text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded">CAM 1</span>
-                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">1080p FULL-HD</span>
+                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">720p HD ZERO-LAG</span>
                     </div>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pgm">
-                    <canvas id="canvas-pgm" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
+                    <canvas id="canvas-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
                 </div>
                 <!-- Play / Pause Control Bar Under PGM -->
                 <div class="bg-slate-950/95 border-t border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
@@ -513,10 +506,10 @@
                             </div>
                             <div>
                                 <label class="text-[10px] text-slate-400 block mb-1">کیفیت استریم ارسالی:</label>
-                                <select id="remote-res-select" onchange="changeMixerResolution(this.value); sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
-                                    <option value="2160" selected>4K / Max Sensor (حداکثر شفافیت)</option>
-                                    <option value="1080">1080p Full HD</option>
+                                <select id="remote-res-select" onchange="sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
+                                    <option value="1080" selected>1080p Full HD (بهینه)</option>
                                     <option value="720">720p HD Turbo</option>
+                                    <option value="2160">4K UHD</option>
                                 </select>
                             </div>
                         </div>
@@ -637,7 +630,6 @@
     <!-- Hidden Media Elements for Mixing Engine -->
     <div aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1920px;height:1080px;opacity:0.001;overflow:hidden;pointer-events:none;z-index:-1">
         <video id="hidden-cam1-video" width="1920" height="1080" autoplay playsinline muted style="width:1920px;height:1080px;object-fit:contain;pointer-events:none"></video>
-        <video id="hidden-screen-share-video" width="1920" height="1080" autoplay playsinline muted style="width:1920px;height:1080px;object-fit:contain;pointer-events:none"></video>
         <video id="hidden-media-video" width="1920" height="1080" playsinline preload="metadata" crossorigin="anonymous" style="width:1920px;height:1080px"></video>
         <img id="hidden-media-img" alt="" style="width:auto;height:auto">
     </div>
@@ -693,19 +685,14 @@
             availableLenses: [],
             currentDeviceId: '',
             currentFacingMode: 'environment',
-            currentResHeight: 2160,
+            currentResHeight: 1080,
             currentZoom: 1.0,
             zoomPending: false,
             torchOn: false,
             hwBlurEnabled: false,
             focusMode: 'continuous',
             focusDistance: 0.15,
-
-            // Method 2: Native Camera App Screen-Share Auto-Crop Stream
-            screenShareStream: null,
-            screenCropActive: false,
-            screenCropPercent: 18,
-            screenCropCanvasStream: null,
+            colorBoostLevel: 0, // 0 = Normal (Xiaomi), 1 = Vivid (Samsung S24), 2 = Ultra Vivid
 
             // Orientation & Framing (Default 270 degrees as requested)
             cam1Rotation: 270,
@@ -903,10 +890,10 @@
             for (let i = 0; i < lines.length; i++) {
                 out.push(lines[i]);
                 if (lines[i].startsWith('m=video')) {
-                    out.push('b=AS:15000');
-                    out.push('b=TIAS:15000000');
+                    out.push('b=AS:6000');
+                    out.push('b=TIAS:6000000');
                 } else if (lines[i].startsWith('a=fmtp:') && !lines[i].includes('x-google-start-bitrate')) {
-                    out[out.length - 1] = lines[i] + ';x-google-min-bitrate=4500;x-google-start-bitrate=9000;x-google-max-bitrate=15000';
+                    out[out.length - 1] = lines[i] + ';x-google-min-bitrate=2500;x-google-start-bitrate=4500;x-google-max-bitrate=6500';
                 }
             }
             return out.join('\r\n');
@@ -914,8 +901,8 @@
 
         async function enforceLowLatencyWebRTC(pc) {
             if (!pc) return;
-            const targetVideoBitrate = state.currentResHeight >= 2160 ? 15000000 :
-                                       state.currentResHeight >= 1080 ? 10000000 : 5000000;
+            const targetVideoBitrate = state.currentResHeight >= 2160 ? 9000000 :
+                                       state.currentResHeight >= 1080 ? 6000000 : 3500000;
             for (const sender of pc.getSenders()) {
                 if (!sender.track) continue;
                 if (sender.track.kind === 'video') {
@@ -1190,101 +1177,66 @@
         }
 
         // ============================================================================
-        // 6. METHOD 2: NATIVE ANDROID CAMERA APP LIVE SCREEN SHARE + AUTO-CROP
+        // 6. SAMSUNG S24 COLOR VIVID BOOST & NATIVE CAMERA CAPTURE
         // ============================================================================
-        async function startNativeAppScreenShareStream() {
-            if (!navigator.mediaDevices?.getDisplayMedia) {
-                showCameraIntercomToast('مرورگر شما از اشتراک زنده صفحه پشتیبانی نمی‌کند؛ از دکمه «ضبط در اپ دوربین اصلی» استفاده کنید.');
-                return;
+        function applyColorBoostUI(level) {
+            state.colorBoostLevel = level % 3;
+            const labels = [
+                '🎨 رنگ: عادی (شیائومی)',
+                '🎨 رنگ: زنده (مخصوص سامسونگ S24)',
+                '🎨 رنگ: فوق‌زنده (Ultra Vivid)'
+            ];
+            const camBtn = document.getElementById('btn-cam-color-boost');
+            if (camBtn) {
+                camBtn.innerText = labels[state.colorBoostLevel];
+                camBtn.className = state.colorBoostLevel === 0
+                    ? 'px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 text-[10px] font-bold'
+                    : 'px-2 py-0.5 rounded bg-emerald-600 border border-emerald-400 text-white text-[10px] font-bold';
             }
-            try {
-                const displayStream = await navigator.mediaDevices.getDisplayMedia({
-                    video: { frameRate: { ideal: 30, max: 30 } },
-                    audio: false
-                });
-                state.screenShareStream = displayStream;
-                state.screenCropActive = true;
-
-                const screenVid = document.getElementById('hidden-screen-share-video');
-                screenVid.srcObject = displayStream;
-                await screenVid.play().catch(() => {});
-
-                const cropCanvas = document.getElementById('cam-screen-crop-canvas');
-                const localVid = document.getElementById('cam-local-video');
-                if (localVid) localVid.classList.add('hidden');
-                if (cropCanvas) cropCanvas.classList.remove('hidden');
-
-                document.getElementById('btn-native-screenshare')?.classList.add('hidden');
-                document.getElementById('btn-stop-screenshare')?.classList.remove('hidden');
-
-                startScreenCropLoop();
-
-                const captureFn = cropCanvas.captureStream || cropCanvas.mozCaptureStream;
-                if (typeof captureFn === 'function') {
-                    state.screenCropCanvasStream = captureFn.call(cropCanvas, 30);
-                    const croppedTrack = state.screenCropCanvasStream.getVideoTracks()[0];
-                    if (croppedTrack && state.activeVideoSender) {
-                        await state.activeVideoSender.replaceTrack(croppedTrack);
-                    }
-                }
-
-                displayStream.getVideoTracks()[0].onended = () => {
-                    stopNativeAppScreenShareStream();
-                };
-
-                showCameraIntercomToast('حالا وارد اپ اصلی دوربین گوشی شوید و حالت «ویدیوی پرتره» را روشن کنید!');
-            } catch (err) {
-                showCameraIntercomToast('اشتراک صفحه لغو شد.');
+            const dirBtn = document.getElementById('btn-dir-color-boost');
+            if (dirBtn) {
+                dirBtn.innerText = labels[state.colorBoostLevel];
+                dirBtn.className = state.colorBoostLevel === 0
+                    ? 'text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition'
+                    : 'text-xs bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 px-2.5 py-1.5 rounded-lg font-bold transition';
             }
-        }
-
-        function startScreenCropLoop() {
-            const screenVid = document.getElementById('hidden-screen-share-video');
-            const cropCanvas = document.getElementById('cam-screen-crop-canvas');
-            if (!cropCanvas || !screenVid) return;
-            const ctx = cropCanvas.getContext('2d', { alpha: false });
-
-            function step() {
-                if (!state.screenCropActive || !state.screenShareStream) return;
-                if (screenVid.videoWidth > 0 && screenVid.videoHeight > 0) {
-                    const sw = screenVid.videoWidth;
-                    const sh = screenVid.videoHeight;
-                    const trimRatio = (state.screenCropPercent || 18) / 100;
-                    const sy = Math.round(sh * trimRatio);
-                    const sHeight = Math.max(64, Math.round(sh * (1 - 2 * trimRatio)));
-
-                    if (cropCanvas.width !== sw || cropCanvas.height !== sHeight) {
-                        cropCanvas.width = sw;
-                        cropCanvas.height = sHeight;
-                    }
-                    ctx.drawImage(screenVid, 0, sy, sw, sHeight, 0, 0, cropCanvas.width, cropCanvas.height);
-                }
-                requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-
-        async function stopNativeAppScreenShareStream() {
-            state.screenCropActive = false;
-            if (state.screenShareStream) {
-                state.screenShareStream.getTracks().forEach(t => t.stop());
-                state.screenShareStream = null;
-            }
-            const cropCanvas = document.getElementById('cam-screen-crop-canvas');
             const localVid = document.getElementById('cam-local-video');
-            if (cropCanvas) cropCanvas.classList.add('hidden');
-            if (localVid) localVid.classList.remove('hidden');
-
-            document.getElementById('btn-native-screenshare')?.classList.remove('hidden');
-            document.getElementById('btn-stop-screenshare')?.classList.add('hidden');
-
-            await syncActiveStreamTrackToWebRTC();
+            if (localVid) {
+                localVid.style.filter = state.colorBoostLevel === 1
+                    ? 'saturate(1.42) contrast(1.08) brightness(1.03)'
+                    : (state.colorBoostLevel === 2 ? 'saturate(1.65) contrast(1.12) brightness(1.04)' : 'none');
+            }
         }
 
-        function updateNativeAppCropPercent(val) {
-            state.screenCropPercent = Math.max(0, Math.min(40, parseInt(val, 10) || 18));
-            const lbl = document.getElementById('cam-crop-val');
-            if (lbl) lbl.innerText = `${state.screenCropPercent}%`;
+        async function applyHardwareSensorSaturation(level) {
+            const track = state.rawVideoTrack;
+            if (!track || !track.getCapabilities) return;
+            try {
+                const caps = track.getCapabilities();
+                const adv = {};
+                if (caps.saturation && typeof caps.saturation.max === 'number') {
+                    const minS = caps.saturation.min ?? 0;
+                    const maxS = caps.saturation.max ?? 100;
+                    const midS = (minS + maxS) / 2;
+                    adv.saturation = level === 0 ? midS : (level === 1 ? midS + (maxS - midS) * 0.55 : maxS * 0.9);
+                }
+                if (Object.keys(adv).length > 0) {
+                    await track.applyConstraints({ advanced: [adv] });
+                }
+            } catch (e) {}
+        }
+
+        function cycleCameraColorBoost() {
+            const next = (state.colorBoostLevel + 1) % 3;
+            applyColorBoostUI(next);
+            applyHardwareSensorSaturation(next);
+            publishMqttSignal('cam-color', { level: next });
+        }
+
+        function cycleDirectorColorBoost() {
+            const next = (state.colorBoostLevel + 1) % 3;
+            applyColorBoostUI(next);
+            sendRemoteCommand({ type: 'colorBoost', level: next });
         }
 
         async function handleCam1NativeVideoCaptured(event) {
@@ -1386,14 +1338,11 @@
                     if (caps.focusMode && caps.focusMode.includes('continuous')) adv.focusMode = 'continuous';
                     if (caps.exposureMode && caps.exposureMode.includes('continuous')) adv.exposureMode = 'continuous';
                     if (caps.whiteBalanceMode && caps.whiteBalanceMode.includes('continuous')) adv.whiteBalanceMode = 'continuous';
-                    if (caps.sharpness && typeof caps.sharpness.max === 'number') {
-                        adv.sharpness = caps.sharpness.min + (caps.sharpness.max - caps.sharpness.min) * 0.85;
-                    }
-                    if (caps.contrast && typeof caps.contrast.max === 'number') {
-                        adv.contrast = caps.contrast.min + (caps.contrast.max - caps.contrast.min) * 0.60;
-                    }
                     if (Object.keys(adv).length > 0) {
                         await state.rawVideoTrack.applyConstraints({ advanced: [adv] });
+                    }
+                    if (state.colorBoostLevel > 0) {
+                        await applyHardwareSensorSaturation(state.colorBoostLevel);
                     }
                     if (caps.zoom) {
                         const zSlider = document.getElementById('cam-zoom-slider');
@@ -1511,9 +1460,7 @@
         }
 
         async function syncActiveStreamTrackToWebRTC() {
-            const videoTrackToUse = (state.screenCropActive && state.screenCropCanvasStream)
-                ? state.screenCropCanvasStream.getVideoTracks()[0]
-                : state.rawVideoTrack;
+            const videoTrackToUse = state.rawVideoTrack;
             if (state.activeVideoSender && videoTrackToUse) {
                 try { await state.activeVideoSender.replaceTrack(videoTrackToUse); } catch (e) {}
             }
@@ -1646,11 +1593,6 @@
 
         function cleanupConnections() {
             stopCamera1AVSyncEngine();
-            state.screenCropActive = false;
-            if (state.screenShareStream) {
-                state.screenShareStream.getTracks().forEach(t => t.stop());
-                state.screenShareStream = null;
-            }
             if (state.heartbeatTimer) { clearInterval(state.heartbeatTimer); state.heartbeatTimer = null; }
             if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} state.rtcPeerConn = null; }
             if (state.mqttClient) { try { state.mqttClient.end(true); } catch (e) {} state.mqttClient = null; }
@@ -1759,9 +1701,7 @@
             state.activeVideoSender = null;
             state.activeAudioSender = null;
 
-            const videoTrack = (state.screenCropActive && state.screenCropCanvasStream)
-                ? state.screenCropCanvasStream.getVideoTracks()[0]
-                : state.localCamStream?.getVideoTracks().find(t => t.readyState === 'live');
+            const videoTrack = state.localCamStream?.getVideoTracks().find(t => t.readyState === 'live');
 
             if (videoTrack && state.localCamStream) {
                 state.activeVideoSender = pc.addTrack(videoTrack, state.localCamStream);
@@ -1810,6 +1750,9 @@
                 setHardwareManualFocusDistance(data.value);
             } else if (data.type === 'hwBlurToggle') {
                 toggleHardwareBackgroundBlur();
+            } else if (data.type === 'colorBoost') {
+                applyColorBoostUI(data.level || 0);
+                applyHardwareSensorSaturation(data.level || 0);
             } else if (data.type === 'setLens') {
                 changePhysicalLens(data.deviceId);
             } else if (data.type === 'setRes') {
@@ -1922,6 +1865,8 @@
                 populateRemoteLensesDropdown(data.lenses, data.current);
             } else if (topic.endsWith('/cam-rotate')) {
                 setCam1Rotation(data.rotation ?? 270);
+            } else if (topic.endsWith('/cam-color')) {
+                applyColorBoostUI(data.level || 0);
             } else if (topic.endsWith('/webrtc-offer')) {
                 await handleIncomingCameraOffer(data.sdp);
             } else if (topic.endsWith('/ice-cam')) {
@@ -2314,9 +2259,16 @@
                     ctx.scale(-1, 1);
                 }
 
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
+                const isCam1 = videoEl.id === 'hidden-cam1-video';
+                if (isCam1 && state.colorBoostLevel > 0) {
+                    ctx.filter = state.colorBoostLevel === 1
+                        ? 'saturate(1.42) contrast(1.08) brightness(1.03)'
+                        : 'saturate(1.65) contrast(1.12) brightness(1.04)';
+                }
                 ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                if (isCam1 && state.colorBoostLevel > 0) {
+                    ctx.filter = 'none';
+                }
                 ctx.restore();
             } else {
                 ctx.fillStyle = '#0f172a';
@@ -2679,11 +2631,11 @@
         }
 
         function getMp4CandidateMimeTypes(hasAudio = true) {
+            // Prioritize Baseline/Main H.264 profiles (avc1.42E01E / avc1.4d401f) which use zero-lag hardware encoding on Samsung Exynos
             const candidates = hasAudio ? [
-                'video/mp4;codecs="avc1.640028, mp4a.40.2"',
-                'video/mp4;codecs="avc1.4d401f, mp4a.40.2"',
                 'video/mp4;codecs="avc1.42E01E, mp4a.40.2"',
                 'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+                'video/mp4;codecs="avc1.4d401f, mp4a.40.2"',
                 'video/mp4;codecs=avc1,mp4a.40.2',
                 'video/mp4;codecs=h264,aac',
                 'video/mp4;codecs=h264,opus',
@@ -2692,7 +2644,6 @@
                 'video/webm;codecs=vp8,opus',
                 'video/webm'
             ] : [
-                'video/mp4;codecs=avc1.640028',
                 'video/mp4;codecs=avc1.42E01E',
                 'video/mp4;codecs=avc1',
                 'video/mp4;codecs=h264',
@@ -2854,11 +2805,8 @@
                     state.mediaRecorder = null;
                 };
 
-                try {
-                    recorder.start(2000);
-                } catch (startErr) {
-                    recorder.start();
-                }
+                // Calling start() without short timeslices prevents periodic Blob allocation stalls on Samsung Android
+                recorder.start();
 
                 state.isRecording = true;
                 state.recordingStartAt = Date.now();
