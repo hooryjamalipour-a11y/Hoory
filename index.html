@@ -217,9 +217,9 @@
                     <option value="">شناسایی لنزها...</option>
                 </select>
                 <select id="cam-res-select" onchange="changeCameraResolution(this.value)" class="bg-slate-950 border border-slate-700 text-emerald-300 font-mono text-[10px] rounded-lg px-1.5 py-1 outline-none">
-                    <option value="1080" selected>1080p FHD</option>
+                    <option value="2160" selected>4K / Max Sensor (حداکثر شفافیت)</option>
+                    <option value="1080">1080p FHD</option>
                     <option value="720">720p HD</option>
-                    <option value="480">480p Fast</option>
                 </select>
             </div>
         </div>
@@ -370,8 +370,8 @@
             <!-- Master Quality, MP4 Record & Snapshot -->
             <div class="flex flex-wrap items-center gap-1.5">
                 <select id="pgm-quality-select" onchange="changeMixerResolution(this.value)" class="bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs px-2 py-1.5 rounded-lg outline-none">
-                    <option value="720" selected>⚡ موتور 720p HD (ضد لگ • پیشنهادی)</option>
-                    <option value="1080">🎬 موتور 1080p Full HD</option>
+                    <option value="1080" selected>🎬 موتور 1080p Full HD (شفافیت کامل • پیش‌فرض)</option>
+                    <option value="720">⚡ موتور 720p HD</option>
                     <option value="540">🚀 موتور 540p سبک</option>
                 </select>
 
@@ -416,11 +416,11 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-source-label" class="font-mono text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded">CAM 1</span>
-                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">720p HD</span>
+                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">1080p FULL-HD</span>
                     </div>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pgm">
-                    <canvas id="canvas-pgm" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+                    <canvas id="canvas-pgm" width="1920" height="1080" class="w-full h-full object-contain"></canvas>
                 </div>
                 <!-- Play / Pause Control Bar Under PGM -->
                 <div class="bg-slate-950/95 border-t border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
@@ -514,9 +514,9 @@
                             <div>
                                 <label class="text-[10px] text-slate-400 block mb-1">کیفیت استریم ارسالی:</label>
                                 <select id="remote-res-select" onchange="changeMixerResolution(this.value); sendRemoteCommand({type:'setRes', height: Number(this.value)})" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-emerald-400 font-mono outline-none">
-                                    <option value="1080" selected>1080p Full HD</option>
+                                    <option value="2160" selected>4K / Max Sensor (حداکثر شفافیت)</option>
+                                    <option value="1080">1080p Full HD</option>
                                     <option value="720">720p HD Turbo</option>
-                                    <option value="480">480p Fast</option>
                                 </select>
                             </div>
                         </div>
@@ -693,7 +693,7 @@
             availableLenses: [],
             currentDeviceId: '',
             currentFacingMode: 'environment',
-            currentResHeight: 1080,
+            currentResHeight: 2160,
             currentZoom: 1.0,
             zoomPending: false,
             torchOn: false,
@@ -710,7 +710,7 @@
             // Orientation & Framing (Default 270 degrees as requested)
             cam1Rotation: 270,
             cam1Mirror: false,
-            splitCropStartRatio: 4 / 12,
+            splitCropStartRatio: 0, // Start at 0 (leftmost 1/3 of camera) in 50/50 split mode
 
             // Director Mixer State (PGM only, Camera 1 Audio Always On & Auto-Synced)
             remoteCam1Stream: null,
@@ -896,10 +896,26 @@
         // ============================================================================
         // 4. WEBRTC LOW-LATENCY & CAMERA 1 AUDIO SYNC ENGINE
         // ============================================================================
+        function boostSdpVideoBitrate(sdpStr) {
+            if (!sdpStr) return sdpStr;
+            let lines = sdpStr.split('\r\n');
+            let out = [];
+            for (let i = 0; i < lines.length; i++) {
+                out.push(lines[i]);
+                if (lines[i].startsWith('m=video')) {
+                    out.push('b=AS:15000');
+                    out.push('b=TIAS:15000000');
+                } else if (lines[i].startsWith('a=fmtp:') && !lines[i].includes('x-google-start-bitrate')) {
+                    out[out.length - 1] = lines[i] + ';x-google-min-bitrate=4500;x-google-start-bitrate=9000;x-google-max-bitrate=15000';
+                }
+            }
+            return out.join('\r\n');
+        }
+
         async function enforceLowLatencyWebRTC(pc) {
             if (!pc) return;
-            const targetVideoBitrate = state.currentResHeight >= 1080 ? 8500000 :
-                                       state.currentResHeight >= 720 ? 4500000 : 2000000;
+            const targetVideoBitrate = state.currentResHeight >= 2160 ? 15000000 :
+                                       state.currentResHeight >= 1080 ? 10000000 : 5000000;
             for (const sender of pc.getSenders()) {
                 if (!sender.track) continue;
                 if (sender.track.kind === 'video') {
@@ -1309,8 +1325,8 @@
             }
 
             const videoConstraints = {
-                width: { ideal: widthIdeal },
-                height: { ideal: heightIdeal },
+                width: { min: 1280, ideal: widthIdeal, max: 3840 },
+                height: { min: 720, ideal: heightIdeal, max: 2160 },
                 frameRate: { ideal: 30, max: 30 }
             };
 
@@ -1369,6 +1385,13 @@
                     const adv = {};
                     if (caps.focusMode && caps.focusMode.includes('continuous')) adv.focusMode = 'continuous';
                     if (caps.exposureMode && caps.exposureMode.includes('continuous')) adv.exposureMode = 'continuous';
+                    if (caps.whiteBalanceMode && caps.whiteBalanceMode.includes('continuous')) adv.whiteBalanceMode = 'continuous';
+                    if (caps.sharpness && typeof caps.sharpness.max === 'number') {
+                        adv.sharpness = caps.sharpness.min + (caps.sharpness.max - caps.sharpness.min) * 0.85;
+                    }
+                    if (caps.contrast && typeof caps.contrast.max === 'number') {
+                        adv.contrast = caps.contrast.min + (caps.contrast.max - caps.contrast.min) * 0.60;
+                    }
                     if (Object.keys(adv).length > 0) {
                         await state.rawVideoTrack.applyConstraints({ advanced: [adv] });
                     }
@@ -1767,6 +1790,7 @@
                 offerToReceiveAudio: false,
                 offerToReceiveVideo: false
             });
+            offer.sdp = boostSdpVideoBitrate(offer.sdp);
             await pc.setLocalDescription(offer);
             publishMqttSignal('webrtc-offer', { sdp: pc.localDescription });
         }
@@ -1858,7 +1882,8 @@
         }
 
         function changeMixerResolution(resHeight) {
-            const h = Number(resHeight) || 720;
+            const rawReq = Number(resHeight) || 1080;
+            const h = rawReq > 1080 ? 1080 : rawReq;
             const w = Math.round(h * (16 / 9));
             state.currentResHeight = h;
             const cPgm = document.getElementById('canvas-pgm');
@@ -1959,6 +1984,7 @@
             state.remoteDescReady = true;
             await flushPendingIceCandidates();
             const answer = await pc.createAnswer();
+            answer.sdp = boostSdpVideoBitrate(answer.sdp);
             await pc.setLocalDescription(answer);
             publishMqttSignal('webrtc-answer', { sdp: pc.localDescription });
         }
@@ -2198,7 +2224,7 @@
                 const isPortraitMedia = mw > 0 && mh > mw * 1.08;
                 if (mw > 0 && mh > 0 && isPortraitMedia) {
                     const split = w * 0.5;
-                    drawVideoSmart(ctx, v1, 0, 0, split, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio });
+                    drawVideoSmart(ctx, v1, 0, 0, split, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio, fullWidth: w });
                     drawMediaLayer(ctx, split, 0, w - split, h);
                 } else {
                     drawMediaLayer(ctx, 0, 0, w, h);
@@ -2229,7 +2255,7 @@
                 ctx.restore();
             } else if (sourceType === 'split') {
                 const halfW = w / 2 - 4;
-                drawVideoSmart(ctx, v1, 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio });
+                drawVideoSmart(ctx, v1, 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio, fullWidth: w });
                 drawMediaLayer(ctx, halfW + 8, 0, halfW, h);
             } else if (sourceType === 'slate') {
                 ctx.fillStyle = '#060913';
@@ -2259,9 +2285,10 @@
                 ctx.rect(x, y, w, h);
                 ctx.clip();
 
+                const refW = (cropOpts && cropOpts.fullWidth) ? cropOpts.fullWidth : w;
                 const scale = (fitMode === 'contain')
-                    ? Math.min(w / effW, h / effH)
-                    : Math.max(w / effW, h / effH);
+                    ? Math.min(refW / effW, h / effH)
+                    : Math.max(refW / effW, h / effH);
 
                 const drawW = rawW * scale;
                 const drawH = rawH * scale;
@@ -2288,6 +2315,7 @@
                 }
 
                 ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(videoEl, -drawW / 2, -drawH / 2, drawW, drawH);
                 ctx.restore();
             } else {
