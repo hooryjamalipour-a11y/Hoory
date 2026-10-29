@@ -419,8 +419,8 @@
                 <div class="bg-slate-950/95 border-t border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-1.5">
                         <button type="button" id="btn-pgm-play-pause" onclick="togglePgmPlayPause()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition">
-                            <span id="pgm-play-pause-icon">⏸</span>
-                            <span id="pgm-play-pause-label">مکث خروجی / مدیا (Pause)</span>
+                            <span id="pgm-play-pause-icon">⏯</span>
+                            <span id="pgm-play-pause-label">پخش / مکث ویدیو (Play/Pause)</span>
                         </button>
                         <button type="button" id="btn-rec-pause-resume" onclick="togglePauseResumeRecording()" class="hidden bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg items-center gap-1 transition">
                             <span>⏯ مکث/ادامه ضبط</span>
@@ -442,24 +442,32 @@
                         <span class="text-[10px] font-mono text-red-400">کات آنی</span>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-2 gap-2" id="pgm-buttons-grid">
-                        <button onclick="directCutToProgram('cam1')" data-pgm="cam1" class="pgm-btn py-3 px-2 rounded-xl font-bold text-xs border-2 border-red-500 bg-red-500/20 text-white transition flex flex-col items-center gap-1">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2" id="pgm-buttons-grid">
+                        <button onclick="directCutToProgram('cam1')" data-pgm="cam1" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border-2 border-red-500 bg-red-500/20 text-white transition flex flex-col items-center gap-1">
                             <span>📹 CAM 1</span>
                             <span class="text-[10px] text-red-200">دوربین تمام‌صفحه</span>
                         </button>
-                        <button onclick="directCutToProgram('media')" data-pgm="media" class="pgm-btn py-3 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
+                        <button onclick="directCutToProgram('media')" data-pgm="media" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
                             <span>🎬 MEDIA</span>
                             <span class="text-[10px] text-slate-400">پخش فیلم/عکس</span>
                         </button>
-                        <button onclick="directCutToProgram('pip')" data-pgm="pip" class="pgm-btn py-3 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
+                        <button onclick="directCutToProgram('pip')" data-pgm="pip" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
                             <span>🖼️ PiP</span>
-                            <span class="text-[10px] text-slate-400">تصویر در تصویر</span>
+                            <span class="text-[10px] text-slate-400">مربع عادی (۱/۳ چپ)</span>
                         </button>
-                        <button onclick="directCutToProgram('split')" data-pgm="split" class="pgm-btn py-3 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
-                            <span>◫ SPLIT</span>
+                        <button onclick="directCutToProgram('pip_lg')" data-pgm="pip_lg" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
+                            <span>🔲 PiP +25%</span>
+                            <span class="text-[10px] text-slate-400">مربع بزرگ (برش ۲/۱۲)</span>
+                        </button>
+                        <button onclick="directCutToProgram('split')" data-pgm="split" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
+                            <span>◫ SPLIT 50:50</span>
                             <span class="text-[10px] text-slate-400">دو قاب ۵۰/۵۰</span>
                         </button>
-                        <button onclick="directCutToProgram('slate')" data-pgm="slate" class="pgm-btn py-3 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1 col-span-2 sm:col-span-1 lg:col-span-2">
+                        <button onclick="directCutToProgram('split23')" data-pgm="split23" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1">
+                            <span>◧ SPLIT 2/3</span>
+                            <span class="text-[10px] text-slate-400">۲/۳ دوربین + ۱/۳ ویدیو</span>
+                        </button>
+                        <button onclick="directCutToProgram('slate')" data-pgm="slate" class="pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1 col-span-2">
                             <span>⏸️ SLATE • کارت انتظار</span>
                         </button>
                     </div>
@@ -1992,62 +2000,60 @@
         // 12. DIRECT PROGRAM SWITCHER & REMOTE COMMANDS
         // ============================================================================
         function directCutToProgram(src) {
-            if (src !== 'media' && state.pgmSource === 'media') {
-                stopPlaylist();
-            }
             state.pgmSource = src;
             const lbl = document.getElementById('pgm-source-label');
             if (lbl) lbl.innerText = src.toUpperCase();
             document.querySelectorAll('.pgm-btn').forEach(btn => {
                 const active = btn.getAttribute('data-pgm') === src;
                 const isSlate = btn.getAttribute('data-pgm') === 'slate';
-                const spanClass = isSlate ? ' col-span-2 sm:col-span-1 lg:col-span-2' : '';
+                const spanClass = isSlate ? ' col-span-2' : '';
                 btn.className = (active
-                    ? 'pgm-btn py-3 px-2 rounded-xl font-bold text-xs border-2 border-red-500 bg-red-500/20 text-white transition flex flex-col items-center gap-1'
-                    : 'pgm-btn py-3 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1') + spanClass;
+                    ? 'pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border-2 border-red-500 bg-red-500/20 text-white transition flex flex-col items-center gap-1'
+                    : 'pgm-btn py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-700 bg-slate-800/80 text-slate-300 transition flex flex-col items-center gap-1') + spanClass;
             });
             syncRemoteTallyState();
             syncPgmPlayPauseButtonUI();
         }
 
+        // Always controls the Media Video (Play/Pause) in ALL scenes; NEVER freezes the live camera!
         function togglePgmPlayPause() {
-            const icon = document.getElementById('pgm-play-pause-icon');
-            const label = document.getElementById('pgm-play-pause-label');
-            const status = document.getElementById('pgm-playback-status');
-            const btn = document.getElementById('btn-pgm-play-pause');
-
+            state.pgmPaused = false;
             const v = document.getElementById('hidden-media-video');
-            if (v && state.mediaType === 'video' && state.mediaPlaylistIndex >= 0 && ['media', 'pip', 'split'].includes(state.pgmSource)) {
-                if (v.paused) {
-                    state.pgmPaused = false;
-                    state.mediaPlaylistRunning = true;
-                    v.play().catch(() => {});
-                    if (icon) icon.textContent = '⏸';
-                    if (label) label.textContent = 'مکث مدیا (Pause)';
-                    if (status) { status.textContent = '▶ در حال پخش مدیا روی آنتن'; status.className = 'text-[11px] font-mono text-emerald-400'; }
-                    if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
-                } else {
-                    v.pause();
-                    state.mediaPlaylistRunning = false;
-                    if (icon) icon.textContent = '▶';
-                    if (label) label.textContent = 'ادامه پخش مدیا (Play)';
-                    if (status) { status.textContent = '⏸ مدیا متوقف شد (Paused)'; status.className = 'text-[11px] font-mono text-amber-400'; }
-                    if (btn) btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+            const status = document.getElementById('pgm-playback-status');
+
+            if (!state.mediaPlaylist.length) {
+                if (status) {
+                    status.textContent = '⚠️ ابتدا یک ویدیو در بخش «پخش فیلم و عکس» اضافه کنید';
+                    status.className = 'text-[11px] font-mono text-amber-400';
                 }
                 return;
             }
 
-            state.pgmPaused = !state.pgmPaused;
-            if (state.pgmPaused) {
-                if (icon) icon.textContent = '▶';
-                if (label) label.textContent = 'ادامه پخش زنده (Play)';
-                if (status) { status.textContent = '⏸ تصویر خروجی فریز شد (Paused)'; status.className = 'text-[11px] font-mono text-amber-400'; }
-                if (btn) btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
-            } else {
-                if (icon) icon.textContent = '⏸';
-                if (label) label.textContent = 'مکث خروجی / مدیا (Pause)';
-                if (status) { status.textContent = '▶ LIVE • در حال پخش زنده'; status.className = 'text-[11px] font-mono text-emerald-400'; }
-                if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
+            if (state.mediaPlaylistIndex < 0) {
+                loadPlaylistItem(0, true);
+                syncPgmPlayPauseButtonUI();
+                return;
+            }
+
+            if (state.mediaType === 'image') {
+                if (state.mediaPlaylistRunning) {
+                    stopPlaylist();
+                } else {
+                    playPlaylist();
+                }
+                syncPgmPlayPauseButtonUI();
+                return;
+            }
+
+            if (v) {
+                if (v.paused) {
+                    state.mediaPlaylistRunning = true;
+                    v.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => syncPgmPlayPauseButtonUI());
+                } else {
+                    v.pause();
+                    state.mediaPlaylistRunning = false;
+                    syncPgmPlayPauseButtonUI();
+                }
             }
         }
 
@@ -2075,7 +2081,7 @@
         }
 
         function syncRemoteTallyState() {
-            const pgmUsesCam1 = ['cam1', 'pip', 'split', 'media'].includes(state.pgmSource);
+            const pgmUsesCam1 = ['cam1', 'pip', 'pip_lg', 'split', 'split23', 'media'].includes(state.pgmSource);
             sendRemoteCommand({ type: 'tally', state: pgmUsesCam1 ? 'pgm' : 'idle' });
         }
 
@@ -2090,11 +2096,11 @@
             canvas.dataset.dragInstalled = '1';
             let dragging = false, last = null;
             canvas.addEventListener('pointerdown', e => {
-                if (!['media', 'pip'].includes(state.pgmSource)) return;
+                if (!['media', 'pip', 'pip_lg'].includes(state.pgmSource)) return;
                 const r = canvas.getBoundingClientRect();
                 const x = (e.clientX - r.left) / r.width;
                 const y = (e.clientY - r.top) / r.height;
-                const size = state.reactionOverlay.size || 0.20;
+                const size = state.pgmSource === 'pip_lg' ? 0.25 : (state.reactionOverlay.size || 0.20);
                 if (x >= state.reactionOverlay.x && x <= state.reactionOverlay.x + size && y >= state.reactionOverlay.y && y <= state.reactionOverlay.y + size) {
                     dragging = true;
                     last = { x: e.clientX, y: e.clientY };
@@ -2104,8 +2110,9 @@
             canvas.addEventListener('pointermove', e => {
                 if (!dragging || !last) return;
                 const r = canvas.getBoundingClientRect();
-                state.reactionOverlay.x = Math.max(0, Math.min(0.80, state.reactionOverlay.x + (e.clientX - last.x) / r.width));
-                state.reactionOverlay.y = Math.max(0, Math.min(0.80, state.reactionOverlay.y + (e.clientY - last.y) / r.height));
+                const size = state.pgmSource === 'pip_lg' ? 0.25 : (state.reactionOverlay.size || 0.20);
+                state.reactionOverlay.x = Math.max(0, Math.min(1 - size, state.reactionOverlay.x + (e.clientX - last.x) / r.width));
+                state.reactionOverlay.y = Math.max(0, Math.min(1 - size, state.reactionOverlay.y + (e.clientY - last.y) / r.height));
                 last = { x: e.clientX, y: e.clientY };
             });
             const end = () => { dragging = false; last = null; };
@@ -2179,7 +2186,7 @@
                     ctx.save();
                     ctx.fillStyle = '#000000';
                     ctx.fillRect(px - 3, py - 3, size + 6, size + 6);
-                    drawVideoSmart(ctx, v1, px, py, size, size, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror);
+                    drawVideoSmart(ctx, v1, px, py, size, size, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: 0, fullWidth: size * (16 / 9) });
                     ctx.strokeStyle = '#e2e8f0';
                     ctx.lineWidth = Math.max(1, w * 0.002);
                     ctx.strokeRect(px, py, size, size);
@@ -2187,14 +2194,28 @@
                 }
             } else if (sourceType === 'pip') {
                 drawMediaLayer(ctx, 0, 0, w, h);
-                const pw = Math.min(w * 0.20, h * 0.34), ph = pw;
+                const pw = Math.min(w * 0.20, h * 0.36), ph = pw;
                 const px = Math.max(w * 0.02, Math.min(w - pw - w * 0.02, w * state.reactionOverlay.x));
                 const py = Math.max(h * 0.02, Math.min(h - ph - h * 0.02, h * state.reactionOverlay.y));
                 ctx.save();
                 ctx.fillStyle = '#000000';
                 ctx.fillRect(px - 3, py - 3, pw + 6, ph + 6);
-                drawVideoSmart(ctx, v1, px, py, pw, ph, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror);
+                drawVideoSmart(ctx, v1, px, py, pw, ph, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: 0, fullWidth: pw * (16 / 9) });
                 ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = Math.max(2, w * 0.003);
+                ctx.strokeRect(px, py, pw, ph);
+                ctx.restore();
+            } else if (sourceType === 'pip_lg') {
+                // 25% larger square (0.20 * 1.25 = 0.25 of width) + camera divided into 12 parts, skipping 2 units on the left (2/12)
+                drawMediaLayer(ctx, 0, 0, w, h);
+                const pw = Math.min(w * 0.25, h * 0.45), ph = pw;
+                const px = Math.max(w * 0.02, Math.min(w - pw - w * 0.02, w * state.reactionOverlay.x));
+                const py = Math.max(h * 0.02, Math.min(h - ph - h * 0.02, h * state.reactionOverlay.y));
+                ctx.save();
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(px - 3, py - 3, pw + 6, ph + 6);
+                drawVideoSmart(ctx, v1, px, py, pw, ph, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: 2 / 12, fullWidth: pw * (16 / 9) });
+                ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = Math.max(2, w * 0.003);
                 ctx.strokeRect(px, py, pw, ph);
                 ctx.restore();
@@ -2202,6 +2223,13 @@
                 const halfW = w / 2 - 4;
                 drawVideoSmart(ctx, v1, 0, 0, halfW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio, fullWidth: w });
                 drawMediaLayer(ctx, halfW + 8, 0, halfW, h);
+            } else if (sourceType === 'split23') {
+                // 2/3 Camera on the left + 1/3 vertical video on the right
+                const camW = Math.round((w * 2) / 3) - 3;
+                const mediaX = camW + 6;
+                const mediaW = w - mediaX;
+                drawVideoSmart(ctx, v1, 0, 0, camW, h, 'CAM 1', state.cam1Rotation, 'cover', state.cam1Mirror, { cropStartRatio: state.splitCropStartRatio, fullWidth: w });
+                drawMediaLayer(ctx, mediaX, 0, mediaW, h);
             } else if (sourceType === 'slate') {
                 ctx.fillStyle = '#060913';
                 ctx.fillRect(0, 0, w, h);
@@ -2387,26 +2415,30 @@
             const status = document.getElementById('pgm-playback-status');
             const btn = document.getElementById('btn-pgm-play-pause');
             const v = document.getElementById('hidden-media-video');
-            const mediaShown = ['media', 'pip', 'split'].includes(state.pgmSource);
 
-            if (mediaShown && state.mediaType === 'video' && v) {
+            if (state.mediaType === 'video' && v && state.mediaPlaylistIndex >= 0) {
                 if (v.paused) {
                     if (icon) icon.textContent = '▶';
                     if (label) label.textContent = 'پخش ویدیو (Play)';
-                    if (status) { status.textContent = '⏸ ویدیو آماده پخش است (دکمه Play را بزنید)'; status.className = 'text-[11px] font-mono text-amber-400'; }
+                    if (status) { status.textContent = '⏸ ویدیو در حالت مکث است (تصویر دوربین زنده است)'; status.className = 'text-[11px] font-mono text-amber-400'; }
                     if (btn) btn.className = 'bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
                 } else {
                     if (icon) icon.textContent = '⏸';
                     if (label) label.textContent = 'مکث ویدیو (Pause)';
-                    if (status) { status.textContent = '▶ در حال پخش ویدیو روی آنتن'; status.className = 'text-[11px] font-mono text-emerald-400'; }
+                    if (status) { status.textContent = '▶ در حال پخش ویدیو'; status.className = 'text-[11px] font-mono text-emerald-400'; }
                     if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
                 }
+            } else {
+                if (icon) icon.textContent = '⏯';
+                if (label) label.textContent = 'پخش / مکث ویدیو (Play/Pause)';
+                if (status) { status.textContent = '▶ LIVE • دوربین زنده فعال است'; status.className = 'text-[11px] font-mono text-emerald-400'; }
+                if (btn) btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow transition';
             }
         }
 
         function cueMediaItemToScreen(index) {
             loadPlaylistItem(index, false);
-            if (!['media', 'pip', 'split'].includes(state.pgmSource)) {
+            if (!['media', 'pip', 'pip_lg', 'split', 'split23'].includes(state.pgmSource)) {
                 directCutToProgram('media');
             }
             syncPgmPlayPauseButtonUI();
@@ -2462,7 +2494,7 @@
                 };
 
                 if (autoplay) {
-                    if (!['media', 'pip', 'split'].includes(state.pgmSource)) {
+                    if (!['media', 'pip', 'pip_lg', 'split', 'split23'].includes(state.pgmSource)) {
                         directCutToProgram('media');
                     }
                     video.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => {
@@ -2536,7 +2568,7 @@
             if (state.mediaType === 'image') { playPlaylist(); return; }
             if (v.paused) {
                 state.mediaPlaylistRunning = true;
-                if (!['media', 'pip', 'split'].includes(state.pgmSource)) directCutToProgram('media');
+                if (!['media', 'pip', 'pip_lg', 'split', 'split23'].includes(state.pgmSource)) directCutToProgram('media');
                 v.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => {});
             } else {
                 v.pause();
