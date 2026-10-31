@@ -16,9 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- MQTT.js + QRCode -->
+    <!-- MQTT.js + QRCode + MediaPipe Selfie Segmentation (Real Portrait Bokeh) -->
     <script src="https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
 
     <script>
         tailwind.config = {
@@ -217,9 +218,8 @@
                     <option value="">شناسایی لنزها...</option>
                 </select>
                 <select id="cam-res-select" onchange="changeCameraResolution(this.value)" class="bg-slate-950 border border-slate-700 text-emerald-300 font-mono text-[10px] rounded-lg px-1.5 py-1 outline-none">
-                    <option value="1080" selected>1080p FHD (بهینه و بدون لگ)</option>
-                    <option value="720">720p HD (فوق‌روان)</option>
-                    <option value="2160">4K UHD (سنگین)</option>
+                    <option value="720" selected>720p HD (بدون دیلی • پیشنهادی)</option>
+                    <option value="1080">1080p FHD</option>
                 </select>
             </div>
         </div>
@@ -228,6 +228,7 @@
         <div class="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden">
             <div class="relative w-[70%] max-w-[440px] h-full max-h-[34dvh] bg-studio-900/90 border-2 border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl">
                 <video id="cam-local-video" autoplay playsinline muted class="w-full h-full object-contain"></video>
+                <canvas id="cam-bokeh-canvas" width="1280" height="720" class="hidden w-full h-full object-contain"></canvas>
 
                 <!-- Hardware Status Overlay Inside Compact Frame -->
                 <div class="absolute top-1.5 left-1.5 z-30 bg-black/75 backdrop-blur px-2 py-1 rounded-md border border-white/10 font-mono text-[9px] text-slate-300 space-y-0.5 pointer-events-none">
@@ -274,19 +275,20 @@
                     </div>
                 </div>
 
-                <!-- Method 1: Hardware Sensor Portrait & Manual Lens Focus Distance -->
+                <!-- Real Portrait Bokeh (Sharp Subject + Blurred Background) & Lens Focus -->
                 <div class="bg-slate-950/90 border border-purple-500/40 rounded-lg px-2.5 py-1.5 space-y-1">
                     <div class="flex items-center justify-between gap-1">
-                        <span class="text-[10px] font-bold text-purple-300">🎯 روش ۱: بوکه و فوکوس سخت‌افزاری سنسور:</span>
+                        <span class="text-[10px] font-bold text-purple-300">🎭 حالت پرتره و بوکه (سوژه شفاف + پس‌زمینه تار):</span>
                         <div class="flex items-center gap-1">
-                            <button type="button" onclick="setHardwareFocusMode('continuous')" class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-slate-200">فوکوس خودکار</button>
-                            <button type="button" onclick="applyOpticalDepthPreset()" class="px-1.5 py-0.5 rounded bg-emerald-700 text-[9px] text-white font-bold">اپتیکال 2x</button>
-                            <button type="button" onclick="toggleHardwareBackgroundBlur()" id="btn-hw-blur" class="px-1.5 py-0.5 rounded bg-purple-700 text-[9px] text-white font-bold">پرتره درایور HW</button>
+                            <button type="button" onclick="setPortraitBokehLevel(0)" id="btn-bokeh-0" class="px-1.5 py-0.5 rounded bg-emerald-600 text-[9px] text-white font-bold">خاموش</button>
+                            <button type="button" onclick="setPortraitBokehLevel(8)" id="btn-bokeh-8" class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-purple-300 border border-purple-500/40 font-bold">پرتره ملایم</button>
+                            <button type="button" onclick="setPortraitBokehLevel(15)" id="btn-bokeh-15" class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-purple-300 border border-purple-500/40 font-bold">بوکه قوی</button>
+                            <button type="button" onclick="toggleHardwareBackgroundBlur()" id="btn-hw-blur" class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-slate-300">HW</button>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-[9px] text-slate-400 whitespace-nowrap">فاصله فوکوس لنز:</span>
-                        <input id="cam-focus-slider" type="range" min="0.05" max="1" step="0.02" value="0.15" oninput="setHardwareManualFocusDistance(this.value)" class="flex-1 h-1.5 accent-purple-500 cursor-pointer">
+                        <button type="button" onclick="setHardwareFocusMode('continuous')" class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-emerald-300 whitespace-nowrap">فوکوس خودکار</button>
+                        <input id="cam-focus-slider" type="range" min="0.05" max="1" step="0.02" value="0.50" oninput="setHardwareManualFocusDistance(this.value)" class="flex-1 h-1.5 accent-purple-500 cursor-pointer">
                         <span id="cam-focus-val" class="font-mono text-[10px] text-purple-300 w-10 text-left">AUTO</span>
                     </div>
                 </div>
@@ -357,6 +359,11 @@
                 <!-- Color Boost Button for Washed-out Samsung Camera -->
                 <button onclick="cycleDirectorColorBoost()" id="btn-dir-color-boost" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition">
                     🎨 رنگ دوربین: عادی (شیائومی)
+                </button>
+
+                <!-- Reaction Sync Compensation (Fixes laugh/reaction delay relative to media video) -->
+                <button onclick="cycleReactionSyncDelay()" id="btn-reaction-sync" class="text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1.5 rounded-lg font-bold transition" title="جبران تاخیر رسیدن تصویر دوربین نسبت به ویدیوی در حال پخش">
+                    ⚡ جبران دیلی ری‌اکشن: 450ms (روشن)
                 </button>
             </div>
 
@@ -537,21 +544,22 @@
                             <input id="remote-zoom-slider" type="range" min="1" max="8" step="0.1" value="1" oninput="sendRemoteZoom(this.value)" class="w-full accent-emerald-500 cursor-pointer">
                         </div>
 
-                        <!-- Remote Hardware Bokeh & Focus Control -->
+                        <!-- Remote Real Portrait Bokeh (Sharp Subject + Blurred Background) & Focus Control -->
                         <div class="bg-slate-950 p-2.5 rounded-lg border border-purple-500/40 space-y-1.5">
                             <div class="flex justify-between items-center text-xs">
-                                <span class="text-purple-300 font-bold">🎯 کنترل بوکه سخت‌افزاری و فوکوس لنز گوشی ۱:</span>
-                                <span id="remote-bokeh-label" class="font-mono text-[10px] text-emerald-400">آماده</span>
+                                <span class="text-purple-300 font-bold">🎭 بوکه پرتره دوربین ۱ (سوژه کاملاً واضح + پس‌زمینه تار):</span>
+                                <span id="remote-bokeh-label" class="font-mono text-[10px] text-emerald-400">عادی (خاموش)</span>
                             </div>
-                            <div class="grid grid-cols-3 gap-1.5">
-                                <button type="button" onclick="sendRemoteCommand({type:'focusMode', mode:'continuous'})" class="py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-200 font-bold">فوکوس خودکار</button>
-                                <button type="button" onclick="sendRemoteOpticalDepth()" class="py-1.5 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] text-white font-bold">بوکه اپتیکال لنز (2x)</button>
-                                <button type="button" onclick="sendRemoteCommand({type:'hwBlurToggle'})" class="py-1.5 rounded bg-purple-700 hover:bg-purple-600 text-[10px] text-white font-bold">پرتره سخت‌افزاری HW</button>
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <button type="button" onclick="sendRemotePortraitBokeh(0)" class="py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-200 font-bold">خاموش (عادی)</button>
+                                <button type="button" onclick="sendRemotePortraitBokeh(8)" class="py-1.5 rounded bg-purple-700 hover:bg-purple-600 text-[10px] text-white font-bold">پرتره طبیعی</button>
+                                <button type="button" onclick="sendRemotePortraitBokeh(15)" class="py-1.5 rounded bg-indigo-700 hover:bg-indigo-600 text-[10px] text-white font-bold">بوکه قوی</button>
+                                <button type="button" onclick="sendRemoteOpticalDepth()" class="py-1.5 rounded bg-emerald-700 hover:bg-emerald-600 text-[10px] text-white font-bold">زوم 2x پرتره</button>
                             </div>
                             <div class="flex items-center gap-2 pt-1">
-                                <span class="text-[10px] text-slate-400 whitespace-nowrap">فاصله فوکوس دستی لنز:</span>
-                                <input id="remote-focus-slider" type="range" min="0.05" max="1" step="0.02" value="0.15" oninput="sendRemoteFocusDistance(this.value)" class="flex-1 accent-purple-500 cursor-pointer">
-                                <span id="remote-focus-val" class="font-mono text-[10px] text-purple-300 w-10 text-left">0.15m</span>
+                                <button type="button" onclick="sendRemoteCommand({type:'focusMode', mode:'continuous'})" class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-emerald-300 whitespace-nowrap">فوکوس خودکار</button>
+                                <input id="remote-focus-slider" type="range" min="0.05" max="1" step="0.02" value="0.50" oninput="sendRemoteFocusDistance(this.value)" class="flex-1 accent-purple-500 cursor-pointer">
+                                <span id="remote-focus-val" class="font-mono text-[10px] text-purple-300 w-10 text-left">AUTO</span>
                             </div>
                         </div>
 
@@ -588,6 +596,14 @@
                             </label>
                         </div>
                         <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 space-y-2">
+                            <!-- Live Zero-Delay Presenter Monitor for Media Video -->
+                            <div class="flex items-center gap-2 bg-slate-900/90 border border-emerald-500/30 rounded-lg p-1.5">
+                                <video id="presenter-media-monitor" muted playsinline class="w-28 h-16 bg-black rounded object-contain shrink-0 border border-slate-700"></video>
+                                <div class="text-[10px] text-slate-300 leading-relaxed">
+                                    <div class="font-bold text-emerald-400">👁️ مانیتور بدون تاخیر مجری (برای ری‌اکشن دقیق)</div>
+                                    <div>صدا و تصویر ویدیو را از اینجا بدون تاخیر ببینید؛ خروجی ضبط به اندازه <span id="sync-ms-label" class="font-mono text-amber-300">450ms</span> با خنده و ری‌اکشن دوربین ۱ هماهنگ می‌شود.</div>
+                                </div>
+                            </div>
                             <div class="flex items-center justify-between gap-2">
                                 <div class="truncate pr-1 min-w-0">
                                     <div id="media-filename" class="text-xs font-bold text-slate-200 truncate">فهرست پخش خالی است</div>
@@ -693,14 +709,21 @@
             availableLenses: [],
             currentDeviceId: '',
             currentFacingMode: 'environment',
-            currentResHeight: 1080,
+            currentResHeight: 720,
             currentZoom: 1.0,
             zoomPending: false,
             torchOn: false,
             hwBlurEnabled: false,
             focusMode: 'continuous',
-            focusDistance: 0.15,
-            colorBoostLevel: 0, // 0 = Normal (Xiaomi), 1 = Vivid (Samsung S24), 2 = Ultra Vivid
+            focusDistance: 0.50,
+            colorBoostLevel: 0,
+            bokehBlurPx: 0,
+            selfieSegmentation: null,
+            bokehCanvasStream: null,
+            bokehLoopActive: false,
+            reactionSyncDelayMs: 450,
+            mediaDelayNode: null,
+            mediaFrameQueue: [],
 
             // Orientation & Framing (Default 270 degrees as requested)
             cam1Rotation: 270,
@@ -898,10 +921,8 @@
             for (let i = 0; i < lines.length; i++) {
                 out.push(lines[i]);
                 if (lines[i].startsWith('m=video')) {
-                    out.push('b=AS:6000');
-                    out.push('b=TIAS:6000000');
-                } else if (lines[i].startsWith('a=fmtp:') && !lines[i].includes('x-google-start-bitrate')) {
-                    out[out.length - 1] = lines[i] + ';x-google-min-bitrate=2500;x-google-start-bitrate=4500;x-google-max-bitrate=6500';
+                    out.push('b=AS:2800');
+                    out.push('b=TIAS:2800000');
                 }
             }
             return out.join('\r\n');
@@ -909,20 +930,19 @@
 
         async function enforceLowLatencyWebRTC(pc) {
             if (!pc) return;
-            const targetVideoBitrate = state.currentResHeight >= 2160 ? 9000000 :
-                                       state.currentResHeight >= 1080 ? 6000000 : 3500000;
+            const targetVideoBitrate = state.currentResHeight >= 1080 ? 3200000 : 2200000;
             for (const sender of pc.getSenders()) {
                 if (!sender.track) continue;
                 if (sender.track.kind === 'video') {
                     state.activeVideoSender = sender;
                     try {
-                        if ('contentHint' in sender.track) sender.track.contentHint = 'detail';
+                        if ('contentHint' in sender.track) sender.track.contentHint = 'motion';
                         const params = sender.getParameters() || {};
                         if (!params.encodings || !params.encodings.length) params.encodings = [{}];
                         params.encodings[0].maxBitrate = targetVideoBitrate;
                         params.encodings[0].maxFramerate = 30;
                         params.encodings[0].scaleResolutionDownBy = 1.0;
-                        params.degradationPreference = 'maintain-resolution';
+                        params.degradationPreference = 'maintain-framerate';
                         await sender.setParameters(params);
                     } catch (e) {}
                 } else if (sender.track.kind === 'audio') {
@@ -930,20 +950,21 @@
                     try {
                         const params = sender.getParameters() || {};
                         if (!params.encodings || !params.encodings.length) params.encodings = [{}];
-                        params.encodings[0].maxBitrate = 128000;
+                        params.encodings[0].maxBitrate = 96000;
                         await sender.setParameters(params);
                     } catch (e) {}
                 }
             }
         }
 
+        // Zero jitter-buffer playout delay so Camera 1 frames display the exact millisecond they arrive
         function configureReceiverPlayout(pc) {
             if (!pc || !pc.getReceivers) return;
             try {
                 pc.getReceivers().forEach(receiver => {
                     if (receiver.track && (receiver.track.kind === 'audio' || receiver.track.kind === 'video')) {
-                        if ('playoutDelayHint' in receiver) receiver.playoutDelayHint = 0.04;
-                        if ('jitterBufferTarget' in receiver) receiver.jitterBufferTarget = 40;
+                        if ('playoutDelayHint' in receiver) receiver.playoutDelayHint = 0;
+                        if ('jitterBufferTarget' in receiver) receiver.jitterBufferTarget = 0;
                     }
                 });
             } catch (e) {}
@@ -1166,15 +1187,126 @@
 
         async function applyOpticalDepthPreset() {
             await switchOpticalStep(2.0);
-            await setHardwareManualFocusDistance(0.12);
+            await setHardwareFocusMode('continuous');
             const remLbl = document.getElementById('remote-bokeh-label');
-            if (remLbl) remLbl.innerText = 'اپتیکال 2x + فوکوس نزدیک فعال شد';
+            if (remLbl) remLbl.innerText = 'لنز 2x پرتره با فوکوس خودکار فعال شد';
         }
 
         function sendRemoteOpticalDepth() {
             sendRemoteCommand({ type: 'opticalDepth' });
             const remLbl = document.getElementById('remote-bokeh-label');
-            if (remLbl) remLbl.innerText = 'بوکه اپتیکال 2x فعال شد';
+            if (remLbl) remLbl.innerText = 'زوم 2x پرتره (فوکوس خودکار)';
+        }
+
+        function sendRemotePortraitBokeh(blurPx) {
+            sendRemoteCommand({ type: 'portraitBokeh', value: Number(blurPx) || 0 });
+            const remLbl = document.getElementById('remote-bokeh-label');
+            if (remLbl) {
+                remLbl.innerText = blurPx > 0 ? `پرتره فعال (تاری پس‌زمینه: ${blurPx}px)` : 'عادی (خاموش)';
+            }
+        }
+
+        async function setPortraitBokehLevel(blurPx) {
+            const px = Number(blurPx) || 0;
+            state.bokehBlurPx = px;
+            [0, 8, 15].forEach(lvl => {
+                const b = document.getElementById(`btn-bokeh-${lvl}`);
+                if (b) {
+                    b.className = (lvl === px)
+                        ? 'px-1.5 py-0.5 rounded bg-emerald-600 text-[9px] text-white font-bold'
+                        : 'px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-purple-300 border border-purple-500/40 font-bold';
+                }
+            });
+            const ind = document.getElementById('cam-bokeh-indicator');
+            if (ind) ind.innerText = px > 0 ? `BOKEH: ${px}px (SHARP FACE)` : 'BOKEH: OFF';
+
+            const vidEl = document.getElementById('cam-local-video');
+            const bokehCanvas = document.getElementById('cam-bokeh-canvas');
+
+            if (px <= 0) {
+                state.bokehLoopActive = false;
+                if (bokehCanvas) bokehCanvas.classList.add('hidden');
+                if (vidEl) vidEl.classList.remove('hidden');
+                await syncActiveStreamTrackToWebRTC();
+                return;
+            }
+
+            // Keep lens in continuous autofocus so the face is 100% sharp while MediaPipe blurs ONLY the background
+            await setHardwareFocusMode('continuous');
+
+            if (typeof SelfieSegmentation === 'undefined') {
+                showCameraIntercomToast('ماژول پرتره در حال بارگذاری است؛ چند ثانیه دیگر امتحان کنید.');
+                return;
+            }
+
+            if (!state.selfieSegmentation) {
+                const seg = new SelfieSegmentation({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+                });
+                seg.setOptions({ modelSelection: 1 });
+                seg.onResults(renderPortraitBokehFrame);
+                state.selfieSegmentation = seg;
+            }
+
+            if (vidEl && bokehCanvas) {
+                const vw = vidEl.videoWidth || 1280;
+                const vh = vidEl.videoHeight || 720;
+                if (bokehCanvas.width !== vw || bokehCanvas.height !== vh) {
+                    bokehCanvas.width = vw;
+                    bokehCanvas.height = vh;
+                }
+                vidEl.classList.add('hidden');
+                bokehCanvas.classList.remove('hidden');
+
+                const captureFn = bokehCanvas.captureStream || bokehCanvas.mozCaptureStream;
+                if (typeof captureFn === 'function') {
+                    state.bokehCanvasStream = captureFn.call(bokehCanvas, 30);
+                }
+            }
+
+            if (!state.bokehLoopActive) {
+                state.bokehLoopActive = true;
+                pumpPortraitBokehFrames();
+            }
+            await syncActiveStreamTrackToWebRTC();
+        }
+
+        function renderPortraitBokehFrame(results) {
+            const canvas = document.getElementById('cam-bokeh-canvas');
+            if (!canvas || !state.bokehLoopActive) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.save();
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Draw segmentation mask of the person
+            ctx.drawImage(results.segmentationMask, 0, 0, w, h);
+
+            // 2. Keep the person 100% sharp and untouched inside the mask
+            ctx.globalCompositeOperation = 'source-in';
+            ctx.drawImage(results.image, 0, 0, w, h);
+
+            // 3. Draw blurred background ONLY behind the person
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.filter = `blur(${state.bokehBlurPx}px)`;
+            ctx.drawImage(results.image, 0, 0, w, h);
+            ctx.filter = 'none';
+
+            ctx.restore();
+        }
+
+        async function pumpPortraitBokehFrames() {
+            const vid = document.getElementById('cam-local-video');
+            while (state.bokehLoopActive && state.role === 'camera') {
+                if (vid && vid.readyState >= 2 && state.selfieSegmentation) {
+                    try {
+                        await state.selfieSegmentation.send({ image: vid });
+                    } catch (e) {}
+                }
+                await new Promise(r => requestAnimationFrame(r));
+            }
         }
 
         function sendRemoteFocusDistance(val) {
@@ -1468,7 +1600,9 @@
         }
 
         async function syncActiveStreamTrackToWebRTC() {
-            const videoTrackToUse = state.rawVideoTrack;
+            const videoTrackToUse = (state.bokehBlurPx > 0 && state.bokehCanvasStream)
+                ? state.bokehCanvasStream.getVideoTracks()[0]
+                : state.rawVideoTrack;
             if (state.activeVideoSender && videoTrackToUse) {
                 try { await state.activeVideoSender.replaceTrack(videoTrackToUse); } catch (e) {}
             }
@@ -1709,7 +1843,9 @@
             state.activeVideoSender = null;
             state.activeAudioSender = null;
 
-            const videoTrack = state.localCamStream?.getVideoTracks().find(t => t.readyState === 'live');
+            const videoTrack = (state.bokehBlurPx > 0 && state.bokehCanvasStream)
+                ? state.bokehCanvasStream.getVideoTracks()[0]
+                : state.localCamStream?.getVideoTracks().find(t => t.readyState === 'live');
 
             if (videoTrack && state.localCamStream) {
                 state.activeVideoSender = pc.addTrack(videoTrack, state.localCamStream);
@@ -1750,6 +1886,8 @@
                 scheduleCameraZoom(data.value);
             } else if (data.type === 'opticalDepth') {
                 applyOpticalDepthPreset();
+            } else if (data.type === 'portraitBokeh') {
+                setPortraitBokehLevel(data.value || 0);
             } else if (data.type === 'opticalStep') {
                 switchOpticalStep(data.value);
             } else if (data.type === 'focusMode') {
@@ -2245,9 +2383,9 @@
                 videoEl.muted = true;
                 videoEl.play().catch(() => {});
             }
-            if (videoEl && videoEl.videoWidth > 0 && videoEl.videoHeight > 0) {
-                const rawW = videoEl.videoWidth;
-                const rawH = videoEl.videoHeight;
+            const rawW = videoEl ? (videoEl.videoWidth || videoEl.width || 0) : 0;
+            const rawH = videoEl ? (videoEl.videoHeight || videoEl.height || 0) : 0;
+            if (videoEl && rawW > 0 && rawH > 0) {
                 const isRotated90 = (rotationDeg === 90 || rotationDeg === 270);
 
                 const effW = isRotated90 ? rawH : rawW;
@@ -2308,9 +2446,68 @@
             }
         }
 
+        function cycleReactionSyncDelay() {
+            const steps = [0, 300, 450, 700, 1000];
+            const idx = steps.indexOf(state.reactionSyncDelayMs);
+            state.reactionSyncDelayMs = steps[(idx + 1) % steps.length];
+            state.mediaFrameQueue = [];
+            if (state.mediaDelayNode && state.audioCtx) {
+                state.mediaDelayNode.delayTime.setTargetAtTime(state.reactionSyncDelayMs / 1000, state.audioCtx.currentTime, 0.05);
+            }
+            const btn = document.getElementById('btn-reaction-sync');
+            if (btn) {
+                btn.textContent = state.reactionSyncDelayMs > 0
+                    ? `⚡ جبران دیلی ری‌اکشن: ${state.reactionSyncDelayMs}ms (روشن)`
+                    : '⚡ جبران دیلی ری‌اکشن: خاموش (0ms)';
+                btn.className = state.reactionSyncDelayMs > 0
+                    ? 'text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1.5 rounded-lg font-bold transition'
+                    : 'text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg font-bold transition';
+            }
+            const lbl = document.getElementById('sync-ms-label');
+            if (lbl) lbl.textContent = `${state.reactionSyncDelayMs}ms`;
+        }
+
+        function getSyncedMediaVideoDrawable(videoEl) {
+            if (!videoEl || videoEl.readyState < 2 || !videoEl.videoWidth) return videoEl;
+            const delayMs = state.reactionSyncDelayMs || 0;
+            if (delayMs <= 0 || videoEl.paused) {
+                state.mediaFrameQueue = [];
+                return videoEl;
+            }
+            const now = performance.now();
+            // Capture current media frame into a lightweight reusable canvas ring buffer
+            const poolSize = 40;
+            if (!state.mediaCanvasPool) {
+                state.mediaCanvasPool = Array.from({ length: poolSize }, () => {
+                    const c = document.createElement('canvas');
+                    c.width = 640;
+                    c.height = 360;
+                    return c;
+                });
+                state.mediaPoolIdx = 0;
+            }
+            const bufCanvas = state.mediaCanvasPool[state.mediaPoolIdx];
+            state.mediaPoolIdx = (state.mediaPoolIdx + 1) % poolSize;
+            const vw = Math.min(854, videoEl.videoWidth);
+            const vh = Math.round(vw * (videoEl.videoHeight / videoEl.videoWidth));
+            if (bufCanvas.width !== vw || bufCanvas.height !== vh) {
+                bufCanvas.width = vw;
+                bufCanvas.height = vh;
+            }
+            bufCanvas.getContext('2d', { alpha: false }).drawImage(videoEl, 0, 0, vw, vh);
+            state.mediaFrameQueue.push({ ts: now, canvas: bufCanvas, videoWidth: vw, videoHeight: vh });
+
+            while (state.mediaFrameQueue.length > 1 && (now - state.mediaFrameQueue[0].ts) >= delayMs) {
+                state.mediaFrameQueue.shift();
+            }
+            return state.mediaFrameQueue[0]?.canvas || videoEl;
+        }
+
         function drawMediaLayer(ctx, x, y, w, h) {
             if (state.mediaType === 'video') {
-                drawVideoSmart(ctx, document.getElementById('hidden-media-video'), x, y, w, h, 'MEDIA', 0, 'contain', false);
+                const rawVid = document.getElementById('hidden-media-video');
+                const drawable = getSyncedMediaVideoDrawable(rawVid);
+                drawVideoSmart(ctx, drawable, x, y, w, h, 'MEDIA', 0, 'contain', false);
             } else if (state.mediaType === 'image') {
                 const img = document.getElementById('hidden-media-img');
                 if (img && img.complete && img.naturalWidth > 0) {
@@ -2459,6 +2656,10 @@
                 if (video.src !== item.url) {
                     video.src = item.url;
                     video.load();
+                }
+                const presMon = document.getElementById('presenter-media-monitor');
+                if (presMon && video.captureStream) {
+                    try { presMon.srcObject = video.captureStream(); presMon.play().catch(() => {}); } catch (e) {}
                 }
                 img.removeAttribute('src');
                 connectMediaElementToAudioMixer(video);
@@ -2654,9 +2855,15 @@
                 const src = state.audioCtx.createMediaElementSource(videoEl);
                 const gain = state.audioCtx.createGain();
                 gain.gain.value = 0.95;
+                const delayNode = state.audioCtx.createDelay(2.5);
+                delayNode.delayTime.value = (state.reactionSyncDelayMs || 0) / 1000;
                 src.connect(gain);
-                gain.connect(state.destNode);
+                // Speaker plays immediately (0ms) so presenter reacts in real-time
                 gain.connect(state.audioCtx.destination);
+                // Recorded master stream (destNode) receives delayed media audio so it aligns with Camera 1 reaction!
+                gain.connect(delayNode);
+                delayNode.connect(state.destNode);
+                state.mediaDelayNode = delayNode;
                 state.gainNodes['media'] = gain;
                 state.gainNodes['mediaEl'] = true;
             } catch (e) {}
