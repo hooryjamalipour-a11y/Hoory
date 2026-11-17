@@ -8,6 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.2</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <style>
         :root {
@@ -815,41 +817,53 @@
         </div>
     </section>
 
-    <!-- ================= OFFLINE / SERVERLESS DIRECT WEBRTC MODAL ================= -->
+    <!-- ================= OFFLINE / SERVERLESS DIRECT WEBRTC MODAL (QR CODE) ================= -->
     <div id="offline-pairing-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3">
-        <div class="bg-studio-900 border border-amber-500/50 rounded-2xl max-w-xl w-full p-4 space-y-3 shadow-2xl overflow-y-auto" style="max-height:90dvh;">
+        <div class="bg-studio-900 border border-amber-500/50 rounded-2xl max-w-xl w-full p-4 space-y-3 shadow-2xl overflow-y-auto" style="max-height:92dvh;">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 class="text-sm font-bold text-amber-300" style="margin:0;">📶 اتصال مستقیم آفلاین (بدون نیاز به سرور PeerJS)</h3>
+                <h3 class="text-sm font-bold text-amber-300" style="margin:0;">📶 اتصال مستقیم آفلاین با QR کد (بدون سرور)</h3>
                 <button onclick="closeOfflinePairingModal()" class="bg-slate-800 text-slate-300 px-2-5 py-1 rounded-lg text-xs">بستن ×</button>
             </div>
             <p class="text-[11px] text-slate-300 leading-relaxed">
-                هر وقت سرور ابری خطای <strong class="text-red-300 font-mono">server error</strong> داد یا اینترنت قطع بود، دو گوشی را به یک هات‌اسپات وصل کنید و با این ۲ مرحله بدون هیچ سروری تصویر و صدا را مستقیم وصل کنید:
+                دو گوشی را به یک هات‌اسپات وصل کنید. با اسکن ۲ QR کد، بدون نیاز به اینترنت و سرور به هم وصل می‌شوید:
             </p>
 
+            <!-- Live QR Scanner Box (shared) -->
+            <div id="off-qr-scanner-wrap" class="hidden bg-black border-2 border-cyan-500/60 rounded-xl p-2 space-y-2 text-center">
+                <div class="text-xs font-bold text-cyan-300">📷 دوربین را روی QR کد گوشی مقابل بگیرید...</div>
+                <video id="off-qr-video" autoplay playsinline muted class="w-full rounded-lg bg-slate-950" style="max-height:220px;object-fit:cover;"></video>
+                <canvas id="off-qr-canvas" class="hidden"></canvas>
+                <button onclick="stopQrScanner()" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-lg">لغو اسکن</button>
+            </div>
+
             <!-- Director side offline steps -->
-            <div id="offline-dir-box" class="hidden space-y-2.5">
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-1-5">
-                    <div class="text-xs font-bold text-blue-300">گام ۱ (در گوشی کارگردان): ساخت کد درخواست</div>
-                    <button onclick="offlineDirectorCreateOffer()" class="bg-blue-600 text-white text-xs font-bold px-3 py-1-5 rounded-lg">۱. ساخت کد درخواست و کپی</button>
-                    <textarea id="off-dir-offer" readonly rows="3" placeholder="کد درخواست اینجا ساخته میشود..." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] font-mono text-emerald-300 outline-none"></textarea>
+            <div id="offline-dir-box" class="hidden space-y-2-5">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2 text-center">
+                    <div class="text-xs font-bold text-blue-300 text-right">گام ۱ (در گوشی کارگردان): ساخت QR کد اتصال</div>
+                    <button onclick="offlineDirectorCreateOffer()" class="w-full bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg">۱. ساخت QR کد درخواست</button>
+                    <div id="off-dir-qr" class="hidden flex justify-center p-2 bg-white rounded-xl mx-auto" style="width:fit-content;"></div>
+                    <textarea id="off-dir-offer" readonly rows="2" placeholder="متن کد (اختیاری)..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-emerald-300 outline-none"></textarea>
                 </div>
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-1-5">
-                    <div class="text-xs font-bold text-emerald-300">گام ۲ (در گوشی کارگردان): کد پاسخ دوربین را اینجا پیست کنید</div>
-                    <textarea id="off-dir-answer" rows="3" placeholder="کد پاسخ گرفته شده از گوشی دوربین را اینجا جایگذاری کنید..." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] font-mono text-white outline-none"></textarea>
-                    <button onclick="offlineDirectorApplyAnswer()" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1-5 rounded-lg">۲. اتصال نهایی به دوربین</button>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2">
+                    <div class="text-xs font-bold text-emerald-300">گام ۲ (در گوشی کارگردان): اسکن QR کد پاسخ از گوشی دوربین</div>
+                    <button onclick="startQrScanner('director')" class="w-full bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg">📷 ۲. اسکن QR کد پاسخ دوربین</button>
+                    <textarea id="off-dir-answer" rows="2" placeholder="یا کد پاسخ را اینجا پیست کنید..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-white outline-none"></textarea>
+                    <button onclick="offlineDirectorApplyAnswer()" class="bg-slate-800 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1 rounded-lg">اتصال با متن</button>
                 </div>
             </div>
 
             <!-- Camera side offline steps -->
-            <div id="offline-cam-box" class="hidden space-y-2.5">
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-1-5">
-                    <div class="text-xs font-bold text-blue-300">گام ۱ (در گوشی دوربین): کد درخواست کارگردان را اینجا پیست کنید</div>
-                    <textarea id="off-cam-offer" rows="3" placeholder="کد درخواست گوشی کارگردان را اینجا پیست کنید..." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] font-mono text-white outline-none"></textarea>
-                    <button onclick="offlineCameraAcceptOffer()" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1-5 rounded-lg">۱. ساخت کد پاسخ دوربین و کپی</button>
+            <div id="offline-cam-box" class="hidden space-y-2-5">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2">
+                    <div class="text-xs font-bold text-blue-300">گام ۱ (در گوشی دوربین): اسکن QR کد گوشی کارگردان</div>
+                    <button onclick="startQrScanner('camera')" class="w-full bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg">📷 ۱. اسکن QR کد کارگردان</button>
+                    <textarea id="off-cam-offer" rows="2" placeholder="یا متن کد کارگردان را اینجا پیست کنید..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-white outline-none"></textarea>
+                    <button onclick="offlineCameraAcceptOffer()" class="bg-slate-800 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1 rounded-lg">ساخت پاسخ از متن</button>
                 </div>
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-1-5">
-                    <div class="text-xs font-bold text-emerald-300">گام ۲: این کد پاسخ را برای گوشی کارگردان بفرستید</div>
-                    <textarea id="off-cam-answer" readonly rows="3" placeholder="کد پاسخ اینجا ساخته میشود..." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] font-mono text-amber-300 outline-none"></textarea>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2 text-center">
+                    <div class="text-xs font-bold text-emerald-300 text-right">گام ۲: این QR کد را با گوشی کارگردان اسکن کنید</div>
+                    <div id="off-cam-qr" class="hidden flex justify-center p-2 bg-white rounded-xl mx-auto" style="width:fit-content;"></div>
+                    <textarea id="off-cam-answer" readonly rows="2" placeholder="کد پاسخ اینجا ساخته میشود..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-amber-300 outline-none"></textarea>
                 </div>
             </div>
 
@@ -2027,8 +2041,11 @@
         }
 
         // ============================================================================
-        // 9B. SERVERLESS / OFFLINE DIRECT WEBRTC PAIRING (ZERO-SERVER FALLBACK)
+        // 9B. SERVERLESS / OFFLINE DIRECT WEBRTC PAIRING (QR CODE + SCANNER)
         // ============================================================================
+        let qrScannerStream = null;
+        let qrScannerTimer = null;
+
         function openOfflinePairingModal() {
             ensureAudioContextRunning();
             const modal = document.getElementById('offline-pairing-modal');
@@ -2043,8 +2060,124 @@
         }
 
         function closeOfflinePairingModal() {
+            stopQrScanner();
             const modal = document.getElementById('offline-pairing-modal');
             if (modal) modal.classList.add('hidden');
+        }
+
+        function compactSdpForQr(sdp) {
+            if (!sdp) return sdp;
+            return sdp.split('\r\n').filter(line => {
+                if (!line) return false;
+                if (line.startsWith('a=extmap:')) return false;
+                if (line.startsWith('a=msid-semantic:')) return false;
+                return true;
+            }).join('\r\n') + '\r\n';
+        }
+
+        function renderQrCodeToElement(containerId, text) {
+            const box = document.getElementById(containerId);
+            if (!box) return;
+            box.innerHTML = '';
+            if (typeof qrcode !== 'function') {
+                box.classList.remove('hidden');
+                box.innerHTML = '<div style="color:#000;font-size:11px;padding:8px;">کتابخانه QR لود نشد؛ از کادر متن پایین استفاده کنید.</div>';
+                return;
+            }
+            try {
+                const qr = qrcode(0, 'L');
+                qr.addData(text);
+                qr.make();
+                box.innerHTML = qr.createSvgTag(4, 2);
+                const svg = box.querySelector('svg');
+                if (svg) {
+                    svg.style.width = '230px';
+                    svg.style.height = '230px';
+                    svg.style.maxWidth = '100%';
+                }
+                box.classList.remove('hidden');
+            } catch (e) {
+                box.classList.remove('hidden');
+                box.innerHTML = '<div style="color:#000;font-size:11px;padding:8px;">کد برای QR طولانی است؛ از کادر متن استفاده کنید.</div>';
+            }
+        }
+
+        function stopQrScanner() {
+            if (qrScannerTimer) { cancelAnimationFrame(qrScannerTimer); qrScannerTimer = null; }
+            const wrap = document.getElementById('off-qr-scanner-wrap');
+            if (wrap) wrap.classList.add('hidden');
+            const vid = document.getElementById('off-qr-video');
+            if (vid) vid.srcObject = null;
+            if (qrScannerStream) {
+                qrScannerStream.getTracks().forEach(t => t.stop());
+                qrScannerStream = null;
+            }
+        }
+
+        async function startQrScanner(targetSide) {
+            stopQrScanner();
+            const wrap = document.getElementById('off-qr-scanner-wrap');
+            const vid = document.getElementById('off-qr-video');
+            const canvas = document.getElementById('off-qr-canvas');
+            const st = document.getElementById('offline-modal-status');
+            if (!wrap || !vid || !canvas) return;
+
+            try {
+                let stream = null;
+                if (targetSide === 'camera' && state.localCamStream && state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
+                    stream = state.localCamStream;
+                } else {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+                    qrScannerStream = stream;
+                }
+                vid.srcObject = stream;
+                await vid.play().catch(() => {});
+                wrap.classList.remove('hidden');
+                if (st) st.textContent = '📷 دوربین اسکن روشن است؛ آن را مقابل QR کد نگه دارید.';
+
+                const detector = ('BarcodeDetector' in window) ? new window.BarcodeDetector({ formats: ['qr_code'] }) : null;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                let busy = false;
+
+                const scanFrame = async () => {
+                    if (wrap.classList.contains('hidden')) return;
+                    if (!busy && vid.readyState >= 2 && vid.videoWidth > 0) {
+                        busy = true;
+                        let foundText = '';
+                        try {
+                            if (detector) {
+                                const codes = await detector.detect(vid);
+                                if (codes && codes.length > 0 && codes[0].rawValue) foundText = codes[0].rawValue;
+                            }
+                            if (!foundText && typeof jsQR === 'function' && ctx) {
+                                canvas.width = vid.videoWidth;
+                                canvas.height = vid.videoHeight;
+                                ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+                                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                                const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+                                if (code && code.data) foundText = code.data;
+                            }
+                        } catch (e) {}
+                        busy = false;
+
+                        if (foundText) {
+                            stopQrScanner();
+                            if (targetSide === 'camera') {
+                                document.getElementById('off-cam-offer').value = foundText;
+                                offlineCameraAcceptOffer();
+                            } else {
+                                document.getElementById('off-dir-answer').value = foundText;
+                                offlineDirectorApplyAnswer();
+                            }
+                            return;
+                        }
+                    }
+                    qrScannerTimer = requestAnimationFrame(scanFrame);
+                };
+                qrScannerTimer = requestAnimationFrame(scanFrame);
+            } catch (err) {
+                if (st) st.textContent = `❌ خطا در باز کردن دوربین اسکن: ${err.message}`;
+            }
         }
 
         function waitIceComplete(pc) {
@@ -2057,7 +2190,7 @@
                     }
                 };
                 pc.addEventListener('icegatheringstatechange', done);
-                setTimeout(resolve, 2000);
+                setTimeout(resolve, 1800);
             });
         }
 
@@ -2108,12 +2241,14 @@
                 const offer = await pc.createOffer();
                 offer.sdp = boostSdpForHotspot720p(offer.sdp);
                 await pc.setLocalDescription(offer);
-                if (st) st.textContent = '⏳ در حال ساخت کد درخواست...';
+                if (st) st.textContent = '⏳ در حال ساخت QR کد درخواست...';
                 await waitIceComplete(pc);
-                const payload = btoa(unescape(encodeURIComponent(JSON.stringify(pc.localDescription))));
+                const payloadObj = { type: pc.localDescription.type, sdp: compactSdpForQr(pc.localDescription.sdp) };
+                const payload = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj))));
                 out.value = payload;
+                renderQrCodeToElement('off-dir-qr', payload);
                 await copyTextSafe(payload);
-                if (st) st.textContent = '✅ کد درخواست ساخته و کپی شد! آن را به گوشی دوربین بفرستید.';
+                if (st) st.textContent = '✅ QR کد آماده شد! حالا با گوشی دوربین اسکن کنید و سپس دکمه گام ۲ را بزنید.';
             } catch (err) {
                 if (st) st.textContent = `❌ خطا: ${err.message}`;
             }
@@ -2123,7 +2258,7 @@
             const st = document.getElementById('offline-modal-status');
             const raw = (document.getElementById('off-dir-answer')?.value || '').trim();
             if (!raw || !state.rtcPeerConn) {
-                if (st) st.textContent = '⚠️ ابتدا گام ۱ را بزنید و کد پاسخ را وارد کنید.';
+                if (st) st.textContent = '⚠️ ابتدا گام ۱ را بزنید و QR کد پاسخ را اسکن کنید.';
                 return;
             }
             try {
@@ -2140,7 +2275,7 @@
             const raw = (document.getElementById('off-cam-offer')?.value || '').trim();
             const out = document.getElementById('off-cam-answer');
             if (!raw) {
-                if (st) st.textContent = '⚠️ ابتدا کد درخواست کارگردان را پیست کنید.';
+                if (st) st.textContent = '⚠️ ابتدا QR کد کارگردان را اسکن کنید.';
                 return;
             }
             try {
@@ -2176,12 +2311,14 @@
                 const answer = await pc.createAnswer();
                 answer.sdp = boostSdpForHotspot720p(answer.sdp);
                 await pc.setLocalDescription(answer);
-                if (st) st.textContent = '⏳ در حال ساخت کد پاسخ...';
+                if (st) st.textContent = '⏳ در حال ساخت QR کد پاسخ...';
                 await waitIceComplete(pc);
-                const payload = btoa(unescape(encodeURIComponent(JSON.stringify(pc.localDescription))));
+                const payloadObj = { type: pc.localDescription.type, sdp: compactSdpForQr(pc.localDescription.sdp) };
+                const payload = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj))));
                 out.value = payload;
+                renderQrCodeToElement('off-cam-qr', payload);
                 await copyTextSafe(payload);
-                if (st) st.textContent = '✅ کد پاسخ ساخته و کپی شد! آن را در گوشی کارگردان پیست کنید.';
+                if (st) st.textContent = '✅ QR کد پاسخ ساخته شد! حالا آن را با گوشی کارگردان اسکن کنید.';
             } catch (err) {
                 if (st) st.textContent = `❌ خطا: ${err.message}`;
             }
