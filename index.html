@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.7</title>
+    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.8</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -328,7 +328,7 @@
             <div class="flex items-center gap-1-5 bg-red-500/10 border border-red-500/30 px-2 py-0-5 rounded-md">
                 <span id="header-pulse" class="dot-md bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-[11px] tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.7</span>
+                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.8</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-[11px] bg-slate-800 text-slate-300 px-2 py-0-5 rounded border border-slate-700 transition">
                 ⇄ تغییر نقش
@@ -368,7 +368,7 @@
                     <span>📡 اتصال فوری با کد 0000 + اتصال مستقیم آفلاین (بدون سرور) • ضبط قطعی صدای مجری و ویدیو</span>
                 </div>
                 <h1 class="text-2xl font-black text-white" style="margin:0.5rem 0;">
-                    استودیوی کارگردانی و سوییچر زنده (نسخه v7.7)
+                    استودیوی کارگردانی و سوییچر زنده (نسخه v7.8)
                 </h1>
                 <p class="text-slate-400 text-xs max-w-xl mx-auto leading-relaxed">
                     صدای مجری و صدای ویدیوها با نشانگر زنده (VU Meter) مستقیماً در فایل خروجی ضبط میشوند. اگر سرور PeerJS خطا داد، از دکمه «اتصال آفلاین بدون سرور» روی هات‌اسپات استفاده کنید.
@@ -884,7 +884,7 @@
         <img id="hidden-media-img" alt="" style="width:auto;height:auto">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v7.7 CONTINUOUS A/V SYNC) ================= -->
+    <!-- ================= APPLICATION LOGIC (v7.8 AUDIO ROUTING FIX) ================= -->
     <script>
         const RTC_CONFIG = {
             iceServers: [
@@ -896,7 +896,7 @@
         };
 
         const state = {
-            appVersion: 7.5,
+            appVersion: 7.8,
             role: 'launcher',
             roomPin: '0000',
             peer: null,
@@ -991,6 +991,8 @@
             dummyCallAudioCtx: null,
             gains: { cam1: 0.45, media: 1.35 },
             sourceNodes: {},
+            sourceInputStreams: {},
+            cam1AudioTrack: null,
             gainNodes: {},
             delayNodes: {},
             analysers: {},
@@ -1011,6 +1013,7 @@
 
         // A MediaElementAudioSourceNode can be created only once per HTMLMediaElement.
         const mediaElementAudioSourceMap = new WeakMap();
+        const remoteAudioStreamWatchers = new WeakSet();
 
         function syncRoomPinInputs(val) {
             const clean = (val || '').trim() || '0000';
@@ -1025,7 +1028,7 @@
 
         function getCameraPeerId(pin) {
             const p = (pin || state.roomPin || '0000').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-            return `prism77-cam-${p || '0000'}`;
+            return `prism78-cam-${p || '0000'}`;
         }
 
         function ensureAudioContextRunning() {
@@ -1117,7 +1120,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'PRISM_LiveDeck_v7.7_CONTINUOUS_AV_SYNC.html';
+            a.download = 'PRISM_LiveDeck_v7.8_AUDIO_RECORDING_FIXED.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2602,10 +2605,11 @@
         function v1PlayRemoteCamera() {
             const v1 = document.getElementById('hidden-cam1-video');
             if (!v1) return;
-            // Audio is routed from this same media element into WebAudio; it is not played by a second sink.
-            v1.muted = false;
-            v1.defaultMuted = false;
-            v1.volume = 1;
+            // CRITICAL: never monitor the remote presenter through the director phone speakers.
+            // The remote audio track is routed separately into the recording mixer only.
+            v1.muted = true;
+            v1.defaultMuted = true;
+            v1.volume = 0;
             if (v1.paused) v1.play().catch(() => {});
         }
 
@@ -2636,16 +2640,44 @@
             state.mediaLatencySlope = 0;
             state.mediaLatencyPrevMs = null;
             state.mediaLatencyPrevAt = 0;
-            v1.muted = false;
-            v1.defaultMuted = false;
-            v1.volume = 1;
+            // Keep the remote video element muted permanently on the director phone.
+            // This prevents hearing the presenter's delayed self-monitoring/echo.
+            v1.muted = true;
+            v1.defaultMuted = true;
+            v1.volume = 0;
             v1.autoplay = true;
             v1.playsInline = true;
             if (v1.srcObject !== stream) v1.srcObject = stream;
 
-            // The remote audio and video now share one HTMLMediaElement clock before audio enters the mixer.
+            // Route the remote microphone track directly to the recording bus.
+            // Do NOT route it to AudioContext.destination (director loudspeakers).
             initWebAudioMixer();
-            connectMediaElementToAudioMixer(v1, 'cam1', false);
+            const presenterAudioConnected = connectRemoteAudioTrackToMixer(stream);
+            const audioDiag = document.getElementById('recording-status-visible');
+            if (!presenterAudioConnected && audioDiag) {
+                audioDiag.textContent = '⚠️ تصویر دوربین وصل است، اما ترک صدای مجری هنوز به میکسر ضبط متصل نشده است.';
+            }
+            // Some WebRTC implementations expose the audio track slightly after the video track.
+            // Re-check when a track is added/unmuted instead of leaving the recorder permanently silent.
+            if (!remoteAudioStreamWatchers.has(stream) && typeof stream.addEventListener === 'function') {
+                remoteAudioStreamWatchers.add(stream);
+                stream.addEventListener('addtrack', (ev) => {
+                    if (ev.track?.kind === 'audio') {
+                        ev.track.enabled = true;
+                        const ok = connectRemoteAudioTrackToMixer(stream);
+                        const status = document.getElementById('recording-status-visible');
+                        if (status) status.textContent = ok
+                            ? '✅ ترک صدای مجری به مسیر ضبط متصل شد؛ مانیتورینگ بلندگوی کارگردان خاموش است.'
+                            : '⚠️ ترک صدای مجری اضافه شد، اما اتصال آن به میکسر ضبط ناموفق بود.';
+                    }
+                });
+            }
+            stream.getAudioTracks().forEach(track => {
+                track.enabled = true;
+                if (typeof track.addEventListener === 'function') {
+                    track.addEventListener('unmute', () => connectRemoteAudioTrackToMixer(stream), { once: true });
+                }
+            });
 
             const report = () => {
                 const visibleDiag = document.getElementById('video-diagnostic-visible');
@@ -2656,13 +2688,12 @@
                         : `دریافت ترک دوربین ۱ (${tracks})...`;
                 }
             };
-            v1.onloadedmetadata = () => { v1PlayRemoteCamera(); report(); };
+            v1.onloadedmetadata = () => { v1.muted = true; v1.defaultMuted = true; v1.volume = 0; v1PlayRemoteCamera(); report(); };
             v1.onloadeddata = report;
             v1.onplaying = report;
             v1PlayRemoteCamera();
             startAvSyncWatchdog(v1);
 
-            stream.getAudioTracks().forEach(track => { track.enabled = true; });
             report();
             syncRemoteTallyState();
         }
@@ -3284,17 +3315,21 @@
         // 13. WEBAUDIO MIXER, VU METERS & GUARANTEED-AUDIO RECORDER
         // ============================================================================
         function initWebAudioMixer() {
-            if (state.audioCtx) {
-                ensureAudioContextRunning();
-                return;
-            }
             try {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                // Balanced avoids the very small/variable interactive buffer target during long master recordings.
-                state.audioCtx = new AudioContextClass({ latencyHint: 'interactive' });
-                state.destNode = state.audioCtx.createMediaStreamDestination();
+                if (!AudioContextClass) throw new Error('Web Audio API در این مرورگر پشتیبانی نمی‌شود.');
+                if (!state.audioCtx || state.audioCtx.state === 'closed') {
+                    // Use one persistent context for all recording channels.
+                    state.audioCtx = new AudioContextClass({ latencyHint: 'interactive' });
+                    state.destNode = null;
+                }
+                if (!state.destNode) state.destNode = state.audioCtx.createMediaStreamDestination();
                 ensureAudioContextRunning();
-            } catch (e) {}
+                return !!(state.audioCtx && state.destNode);
+            } catch (e) {
+                console.error('PRISM audio mixer init failed:', e);
+                return false;
+            }
         }
 
         function setVolumeBalance(ch, valPercent) {
@@ -3314,9 +3349,57 @@
             try { if (state.gainNodes[channel]) state.gainNodes[channel].disconnect(); } catch (e) {}
             try { if (state.analysers[channel]) state.analysers[channel].disconnect(); } catch (e) {}
             delete state.sourceNodes[channel];
+            delete state.sourceInputStreams[channel];
             delete state.delayNodes[channel];
             delete state.gainNodes[channel];
             delete state.analysers[channel];
+            if (channel === 'cam1') state.cam1AudioTrack = null;
+        }
+
+        function connectRemoteAudioTrackToMixer(remoteStream) {
+            if (!remoteStream || typeof remoteStream.getAudioTracks !== 'function') return false;
+            if (!initWebAudioMixer() || !state.audioCtx || !state.destNode) return false;
+            const track = remoteStream.getAudioTracks().find(t => t && t.readyState === 'live');
+            if (!track) return false;
+
+            // Reuse the existing source only while the same live track is active.
+            if (state.cam1AudioTrack === track && state.sourceNodes.cam1 && state.gainNodes.cam1) {
+                track.enabled = true;
+                return true;
+            }
+
+            disconnectMixerChannel('cam1');
+            try {
+                track.enabled = true;
+                const audioOnlyStream = new MediaStream([track]);
+                const source = state.audioCtx.createMediaStreamSource(audioOnlyStream);
+                const delay = state.audioCtx.createDelay(0.75);
+                const gain = state.audioCtx.createGain();
+                const analyser = state.audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                delay.delayTime.value = Math.max(0, Math.min(0.5, (state.cam1AudioCompMs || 0) / 1000));
+                gain.gain.value = state.gains.cam1 ?? 0.45;
+
+                source.connect(delay);
+                delay.connect(gain);
+                gain.connect(analyser);
+                gain.connect(state.destNode);
+                // Intentionally NO connection to state.audioCtx.destination:
+                // director must not hear their own microphone through the phone speaker.
+
+                state.sourceNodes.cam1 = source;
+                state.sourceInputStreams.cam1 = audioOnlyStream;
+                state.cam1AudioTrack = track;
+                state.delayNodes.cam1 = delay;
+                state.gainNodes.cam1 = gain;
+                state.analysers.cam1 = analyser;
+                startVuMeterLoop();
+                return true;
+            } catch (e) {
+                console.error('PRISM presenter audio routing failed:', e);
+                disconnectMixerChannel('cam1');
+                return false;
+            }
         }
 
         function connectMediaElementToAudioMixer(videoEl, channel = 'media', monitorToSpeakers = (channel === 'media')) {
@@ -3449,14 +3532,22 @@
                 const ctxPgm = cPgm.getContext('2d', { alpha: false });
                 if (ctxPgm) drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height);
 
-                initWebAudioMixer();
-                if (state.audioCtx && state.audioCtx.state === 'suspended') {
-                    await state.audioCtx.resume().catch(() => {});
+                if (!initWebAudioMixer() || !state.audioCtx || !state.destNode) {
+                    throw new Error('میکسر صدای ضبط ساخته نشد. صفحه کارگردان را تازه‌سازی و دوباره متصل کنید.');
+                }
+                if (state.audioCtx.state !== 'running') await state.audioCtx.resume();
+                if (state.audioCtx.state !== 'running') {
+                    throw new Error('موتور صدا فعال نشد؛ یک بار صفحه را لمس کنید و دوباره ضبط را بزنید.');
                 }
                 if (state.remoteCam1Stream) {
                     state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = true; });
                     const camVideoEl = document.getElementById('hidden-cam1-video');
-                    if (camVideoEl) connectMediaElementToAudioMixer(camVideoEl, 'cam1', false);
+                    if (camVideoEl) {
+                        camVideoEl.muted = true;
+                        camVideoEl.defaultMuted = true;
+                        camVideoEl.volume = 0;
+                    }
+                    connectRemoteAudioTrackToMixer(state.remoteCam1Stream);
                 }
                 const mediaVideoEl = document.getElementById('hidden-media-video');
                 if (mediaVideoEl) connectMediaElementToAudioMixer(mediaVideoEl, 'media', true);
@@ -3493,11 +3584,18 @@
                 // FIX: ALWAYS include destNode's live audio track so both presenter & media audio record even if started mid-recording!
                 const combinedTracks = [videoTrack];
                 const mixedAudioTrack = state.destNode?.stream?.getAudioTracks?.().find(t => t.readyState === 'live');
-                if (mixedAudioTrack) combinedTracks.push(mixedAudioTrack);
+                const presenterAudioReady = !!(state.cam1AudioTrack && state.cam1AudioTrack.readyState === 'live' && state.sourceNodes.cam1);
+                const mediaVideoForAudio = document.getElementById('hidden-media-video');
+                const mediaAudioReady = !!(state.mediaType === 'video' && mediaVideoForAudio && !mediaVideoForAudio.paused &&
+                    mediaVideoForAudio.readyState >= 2 && state.sourceNodes.media);
+                if (!mixedAudioTrack || (!presenterAudioReady && !mediaAudioReady)) {
+                    throw new Error('ورودی صدای زنده پیدا نشد. اتصال میکروفون مجری یا پخش ویدیوی دارای صدا را بررسی کنید؛ برای جلوگیری از فایل بی‌صدا ضبط شروع نشد.');
+                }
+                combinedTracks.push(mixedAudioTrack);
                 const recordingStream = new MediaStream(combinedTracks);
 
                 state.recordedChunks = [];
-                const candidates = getMp4CandidateMimeTypes(!!mixedAudioTrack);
+                const candidates = getMp4CandidateMimeTypes(true);
                 const targetVideoBps = 2800000;
                 let recorder = null;
                 let chosenMime = '';
@@ -3552,7 +3650,7 @@
                     const lbl = document.getElementById('btn-record-label');
                     if (lbl) lbl.innerText = `⏹ توقف و ذخیره (${mm}:${ss})`;
                 }, 500);
-                setStatus(`🔴 در حال ضبط مستر با میکس صدای هم‌زمان (${mixedAudioTrack ? 'صدا وصل است' : 'بدون ترک صدا'}) • پایش A/V بدون دستکاری جریان فعال است.`);
+                setStatus(`🔴 ضبط مستر فعال است • مسیر صوتی: ${presenterAudioReady ? 'میکروفون مجری وصل' : 'صدای مدیا وصل'} • صدای مجری روی بلندگوی کارگردان پخش نمی‌شود.`);
             } catch (e) {
                 state.isRecording = false;
                 setStatus(`ضبط شروع نشد: ${e?.message || e}`);
