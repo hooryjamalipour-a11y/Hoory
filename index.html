@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.8</title>
+    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.9</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -328,7 +328,7 @@
             <div class="flex items-center gap-1-5 bg-red-500/10 border border-red-500/30 px-2 py-0-5 rounded-md">
                 <span id="header-pulse" class="dot-md bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-[11px] tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.8</span>
+                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.9</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-[11px] bg-slate-800 text-slate-300 px-2 py-0-5 rounded border border-slate-700 transition">
                 ⇄ تغییر نقش
@@ -368,7 +368,7 @@
                     <span>📡 اتصال فوری با کد 0000 + اتصال مستقیم آفلاین (بدون سرور) • ضبط قطعی صدای مجری و ویدیو</span>
                 </div>
                 <h1 class="text-2xl font-black text-white" style="margin:0.5rem 0;">
-                    استودیوی کارگردانی و سوییچر زنده (نسخه v7.8)
+                    استودیوی کارگردانی و سوییچر زنده (نسخه v7.9)
                 </h1>
                 <p class="text-slate-400 text-xs max-w-xl mx-auto leading-relaxed">
                     صدای مجری و صدای ویدیوها با نشانگر زنده (VU Meter) مستقیماً در فایل خروجی ضبط میشوند. اگر سرور PeerJS خطا داد، از دکمه «اتصال آفلاین بدون سرور» روی هات‌اسپات استفاده کنید.
@@ -645,8 +645,8 @@
                         </div>
                         <div class="flex items-center gap-1-5">
                             <span class="text-emerald-300 font-bold">🎙️ صدای مجری:</span>
-                            <input type="range" min="0" max="150" value="45" oninput="setVolumeBalance('cam1', this.value)" style="width:4.5rem;" class="cursor-pointer">
-                            <span id="vol-cam1-lbl" class="font-mono text-emerald-300" style="width:2.2rem;">45%</span>
+                            <input id="vol-cam1-slider" type="range" min="0" max="150" value="100" oninput="setVolumeBalance('cam1', this.value)" style="width:4.5rem;" class="cursor-pointer">
+                            <span id="vol-cam1-lbl" class="font-mono text-emerald-300" style="width:2.2rem;">100%</span>
                             <div class="vu-bar-wrap"><div id="vu-cam1" class="vu-bar-fill"></div></div>
                         </div>
                     </div>
@@ -803,7 +803,12 @@
                                     </label>
                                     <span id="camera-latency-label" class="font-mono text-[9px] text-slate-400">تأخیر دوربین: در حال اندازه‌گیری فریم</span>
                                 </div>
-                                <div class="text-[9px] leading-relaxed text-slate-400">تأخیر دستی، اصلاح دلخواه توست؛ هم‌ترازی خودکار در صورت پشتیبانی مرورگر از زمان ثبت فریم WebRTC، تأخیر واقعی رسیدن تصویر را می‌سنجد؛ در غیر این صورت از RTT/2 و بافر/پردازش، تخمین تقریبی می‌سازد. این مقدار با همگام‌سازی داخلی صدای و تصویر دوربین متفاوت است.</div>
+                                <div class="flex items-center justify-between gap-2 pt-1 border-t border-cyan-500/20">
+                                    <label for="media-audio-sync-slider" class="text-[10px] font-bold text-amber-300">🎚️ تنظیم دقیق سینک صدا و تصویر ویدیو:</label>
+                                    <span id="media-audio-sync-label" class="font-mono text-[10px] text-amber-200">۰ ms</span>
+                                </div>
+                                <input id="media-audio-sync-slider" type="range" min="0" max="400" step="10" value="0" oninput="setMediaAudioSyncDelay(this.value)" class="w-full cursor-pointer">
+                                <div class="text-[9px] leading-relaxed text-slate-400">نرخ پخش ویدیو برای قفل ماندن صدا و تصویر همیشه روی 1.0x ثابت است؛ در صورت نیاز می‌توانید با اسلایدر بالا تأخیر صدای مدیا را دستی تنظیم کنید.</div>
                             </div>
                             <div class="flex flex-wrap gap-1-5 items-center">
                                 <label class="text-[10px] text-slate-400">حالت پخش:</label>
@@ -877,10 +882,10 @@
         </div>
     </div>
 
-    <!-- Hidden Media Elements -->
-    <div aria-hidden="true" style="position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.001;overflow:hidden;pointer-events:none;z-index:-1">
-        <video id="hidden-cam1-video" width="1280" height="720" autoplay playsinline style="width:1280px;height:720px;object-fit:contain;pointer-events:none"></video>
-        <video id="hidden-media-video" width="1280" height="720" playsinline preload="metadata" style="width:1280px;height:720px"></video>
+    <!-- Hidden Media Elements (opacity 0.02 & z-index 1 prevents Android Chromium from throttling/freezing hidden video decoders) -->
+    <div aria-hidden="true" style="position:fixed;right:0;bottom:0;width:32px;height:18px;opacity:0.02;overflow:hidden;pointer-events:none;z-index:1">
+        <video id="hidden-cam1-video" width="1280" height="720" autoplay playsinline style="width:32px;height:18px;object-fit:contain;pointer-events:none"></video>
+        <video id="hidden-media-video" width="1280" height="720" playsinline preload="auto" style="width:32px;height:18px"></video>
         <img id="hidden-media-img" alt="" style="width:auto;height:auto">
     </div>
 
@@ -896,7 +901,7 @@
         };
 
         const state = {
-            appVersion: 7.8,
+            appVersion: 7.9,
             role: 'launcher',
             roomPin: '0000',
             peer: null,
@@ -983,13 +988,15 @@
             imageAdvanceTimer: null,
             mediaStartDelayMs: 0,
             mediaStartTimer: null,
+            mediaAudioSyncMs: 0,
+            lastKeyFrameReqAt: 0,
             reactionOverlay: { x: 0.025, y: 0.66, size: 0.20 },
 
             // WebAudio Mixer & VU Analyzers
             audioCtx: null,
             destNode: null,
             dummyCallAudioCtx: null,
-            gains: { cam1: 0.45, media: 1.35 },
+            gains: { cam1: 1.0, media: 1.35 },
             sourceNodes: {},
             sourceInputStreams: {},
             cam1AudioTrack: null,
@@ -1028,7 +1035,7 @@
 
         function getCameraPeerId(pin) {
             const p = (pin || state.roomPin || '0000').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-            return `prism78-cam-${p || '0000'}`;
+            return `prism79-cam-${p || '0000'}`;
         }
 
         function ensureAudioContextRunning() {
@@ -1120,7 +1127,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'PRISM_LiveDeck_v7.8_AUDIO_RECORDING_FIXED.html';
+            a.download = 'PRISM_LiveDeck_v7.9.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1281,24 +1288,11 @@
         }
 
         function getCam1VisualSource(liveVideoEl) {
-            const delayMs = Math.max(0, Number(state.cam1VideoDelayMs) || 0);
-            if (delayMs <= 20) {
-                if (state.cam1FrameCaptureActive || state.cam1DisplayedFrame || state.cam1FrameQueue.length) stopCam1VideoFrameCapture(true);
-                return liveVideoEl;
+            // Always draw directly from the live WebRTC video element; JS ImageBitmap buffering causes frame freezes on mobile GPUs.
+            if (state.cam1FrameCaptureActive || state.cam1DisplayedFrame || state.cam1FrameQueue.length) {
+                stopCam1VideoFrameCapture(true);
             }
-            if (!startCam1VideoFrameCapture(liveVideoEl)) return liveVideoEl;
-            const targetTime = performance.now() - delayMs;
-            let chosen = null;
-            while (state.cam1FrameQueue.length && state.cam1FrameQueue[0].time <= targetTime) {
-                const candidate = state.cam1FrameQueue.shift();
-                if (chosen) { try { chosen.bitmap.close?.(); } catch (e) {} }
-                chosen = candidate;
-            }
-            if (chosen) {
-                try { state.cam1DisplayedFrame?.close?.(); } catch (e) {}
-                state.cam1DisplayedFrame = chosen.bitmap;
-            }
-            return state.cam1DisplayedFrame || liveVideoEl;
+            return liveVideoEl;
         }
 
         function rampValue(current, target, maxStep = 45) {
@@ -1308,34 +1302,25 @@
         }
 
         function applyCam1AvCompensation(driftMs) {
-            // Positive audio-video source-time skew means audio is ahead: delay audio.
-            // Negative skew means video is ahead: buffer only the compositor's camera frames.
+            // Positive audio-video skew means audio is ahead: smoothly delay audio via WebAudio DelayNode.
+            // Never freeze or buffer live camera video frames in JS.
             const abs = Math.abs(driftMs);
-            let desiredAudio = 0, desiredVideo = 0;
-            const canBufferVideo = typeof createImageBitmap === 'function' &&
-                typeof HTMLVideoElement !== 'undefined' &&
-                typeof HTMLVideoElement.prototype.requestVideoFrameCallback === 'function';
+            let desiredAudio = 0;
             state.cam1VideoCompUnavailable = false;
-            if (abs > 42) {
-                const correction = Math.min(450, abs - 28);
-                if (driftMs > 0) desiredAudio = correction;
-                else if (canBufferVideo) desiredVideo = correction;
-                else state.cam1VideoCompUnavailable = true;
+            if (abs > 42 && driftMs > 0) {
+                desiredAudio = Math.min(450, abs - 28);
             }
             state.cam1AudioCompMs = rampValue(state.cam1AudioCompMs, desiredAudio, 45);
-            state.cam1VideoCompMs = rampValue(state.cam1VideoCompMs, desiredVideo, 45);
-            state.cam1VideoDelayMs = state.cam1VideoCompMs;
+            state.cam1VideoCompMs = 0;
+            state.cam1VideoDelayMs = 0;
             setChannelDelayMs('cam1', state.cam1AudioCompMs);
-            if (state.cam1VideoDelayMs > 20) startCam1VideoFrameCapture(document.getElementById('hidden-cam1-video'));
-            else if (state.cam1FrameCaptureActive) stopCam1VideoFrameCapture(true);
         }
 
         function updateMediaClockRate() {
             const mediaVideo = document.getElementById('hidden-media-video');
-            if (state.autoMediaSyncEnabled && state.mediaType === 'video' && mediaVideo && !mediaVideo.paused) {
-                const rate = Math.max(0.995, Math.min(1.005, 1 - state.mediaLatencySlope));
-                state.mediaClockRate = Math.abs(rate - 1) < 0.00015 ? 1 : rate;
-                try { mediaVideo.playbackRate = state.mediaClockRate; } catch (e) {}
+            state.mediaClockRate = 1;
+            if (mediaVideo && mediaVideo.playbackRate !== 1) {
+                try { mediaVideo.playbackRate = 1; } catch (e) {}
             }
             const label = document.getElementById('camera-latency-label');
             if (label) {
@@ -1500,6 +1485,14 @@
                 const audioTs = Number(audioStat?.estimatedPlayoutTimestamp);
                 const videoTs = Number(videoStat?.estimatedPlayoutTimestamp);
                 const frameAgeMs = state.lastVideoFrameTs ? Math.round(performance.now() - state.lastVideoFrameTs) : null;
+                const v1El = document.getElementById('hidden-cam1-video');
+                if (v1El && v1El.srcObject && v1El.paused) {
+                    v1El.play().catch(() => {});
+                }
+                if (frameAgeMs !== null && frameAgeMs > 1500 && performance.now() - state.lastKeyFrameReqAt > 2500) {
+                    state.lastKeyFrameReqAt = performance.now();
+                    sendRemoteCommand({ type: 'requestKeyFrame' });
+                }
                 let rawDriftMs = null;
                 let driftSource = '';
                 if (Number.isFinite(audioTs) && audioTs > 0 && Number.isFinite(videoTs) && videoTs > 0) {
@@ -1771,7 +1764,14 @@
                     const audioSettings = state.rawAudioTrack.getSettings ? state.rawAudioTrack.getSettings() : {};
                     if (audioSettings.deviceId) state.currentAudioDeviceId = audioSettings.deviceId;
                 }
-                if (state.rawVideoTrack && 'contentHint' in state.rawVideoTrack) state.rawVideoTrack.contentHint = 'motion';
+                if (state.rawVideoTrack) {
+                    if ('contentHint' in state.rawVideoTrack) state.rawVideoTrack.contentHint = 'motion';
+                    state.rawVideoTrack.onended = () => {
+                        if (state.role === 'camera') {
+                            setTimeout(() => startHardwareCamera(), 300);
+                        }
+                    };
+                }
 
                 const settings = state.rawVideoTrack.getSettings();
                 if (settings.deviceId) state.currentDeviceId = settings.deviceId;
@@ -2297,7 +2297,15 @@
             else if (data.type === 'intercom') showCameraIntercomToast(data.text);
             else if (data.type === 'requestKeyFrame') {
                 if (state.activeVideoSender && state.rawVideoTrack) {
-                    state.activeVideoSender.replaceTrack(state.rawVideoTrack).catch(() => {});
+                    try {
+                        const params = state.activeVideoSender.getParameters() || {};
+                        if (!params.encodings || !params.encodings.length) params.encodings = [{}];
+                        params.encodings[0].maxBitrate = 2800000;
+                        state.activeVideoSender.setParameters(params).then(() => {
+                            params.encodings[0].maxBitrate = 3000000;
+                            return state.activeVideoSender.setParameters(params);
+                        }).catch(() => {});
+                    } catch (e) {}
                 }
             }
         }
@@ -2842,7 +2850,7 @@
 
             function renderLoop(timestamp) {
                 if (state.role !== 'director') { compositorRunning = false; return; }
-                const minFrameInterval = state.isRecording ? (1000 / 30) : 20;
+                const minFrameInterval = state.isRecording ? 27 : 12;
                 if (timestamp - lastRenderTime < minFrameInterval) { requestAnimationFrame(renderLoop); return; }
                 lastRenderTime = timestamp;
 
@@ -2940,8 +2948,11 @@
 
         function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 270, fitMode = 'cover', mirror = false, cropOpts = null) {
             if (videoEl && videoEl.srcObject && videoEl.paused) {
-                // Do not mute this element: its audio is the same clocked source routed to the master mixer.
-                videoEl.play().catch(() => {});
+                const nowMs = performance.now();
+                if (!videoEl._lastPlayAttemptAt || nowMs - videoEl._lastPlayAttemptAt > 400) {
+                    videoEl._lastPlayAttemptAt = nowMs;
+                    videoEl.play().catch(() => {});
+                }
             }
             const sourceWidth = videoEl?.videoWidth || videoEl?.naturalWidth || videoEl?.displayWidth || videoEl?.width || 0;
             const sourceHeight = videoEl?.videoHeight || videoEl?.naturalHeight || videoEl?.displayHeight || videoEl?.height || 0;
@@ -3143,6 +3154,16 @@
             if (slider && Number(slider.value) !== ms) slider.value = String(ms);
         }
 
+        function setMediaAudioSyncDelay(value) {
+            const ms = Math.max(0, Math.min(400, Math.round(Number(value) || 0)));
+            state.mediaAudioSyncMs = ms;
+            const label = document.getElementById('media-audio-sync-label');
+            if (label) label.textContent = `${ms.toLocaleString('fa-IR')} ms`;
+            const slider = document.getElementById('media-audio-sync-slider');
+            if (slider && Number(slider.value) !== ms) slider.value = String(ms);
+            setChannelDelayMs('media', ms);
+        }
+
         function cancelScheduledMediaStart() {
             if (state.mediaStartTimer !== null) {
                 clearTimeout(state.mediaStartTimer);
@@ -3157,10 +3178,19 @@
             const autoCamDelay = (applyReactionDelay && state.autoMediaSyncEnabled && state.cameraLatencySamples >= 2)
                 ? Math.round(state.estimatedCameraLatencyMs) : 0;
             const delayMs = applyReactionDelay ? Math.min(2500, state.mediaStartDelayMs + autoCamDelay) : 0;
-            const playNow = () => {
+            const playNow = async () => {
                 state.mediaStartTimer = null;
                 if (!state.mediaPlaylistRunning || state.mediaType !== 'video') return;
-                try { videoEl.playbackRate = state.autoMediaSyncEnabled ? state.mediaClockRate : 1; } catch (e) {}
+                initWebAudioMixer();
+                if (state.audioCtx && state.audioCtx.state !== 'running') {
+                    try { await state.audioCtx.resume(); } catch (e) {}
+                }
+                connectMediaElementToAudioMixer(videoEl, 'media', true);
+                setChannelDelayMs('media', state.mediaAudioSyncMs || 0);
+                try {
+                    videoEl.playbackRate = 1;
+                    if ('preservesPitch' in videoEl) videoEl.preservesPitch = true;
+                } catch (e) {}
                 videoEl.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => syncPgmPlayPauseButtonUI());
             };
             if (delayMs > 0) {
@@ -3378,7 +3408,7 @@
                 const analyser = state.audioCtx.createAnalyser();
                 analyser.fftSize = 256;
                 delay.delayTime.value = Math.max(0, Math.min(0.5, (state.cam1AudioCompMs || 0) / 1000));
-                gain.gain.value = state.gains.cam1 ?? 0.45;
+                gain.gain.value = state.gains.cam1 ?? 1.0;
 
                 source.connect(delay);
                 delay.connect(gain);
@@ -3419,8 +3449,8 @@
                 const gain = state.audioCtx.createGain();
                 const analyser = state.audioCtx.createAnalyser();
                 analyser.fftSize = 256;
-                delay.delayTime.value = channel === 'cam1' ? (state.cam1AudioCompMs || 0) / 1000 : 0;
-                gain.gain.value = state.gains[channel] ?? (channel === 'media' ? 1.35 : 0.45);
+                delay.delayTime.value = channel === 'cam1' ? (state.cam1AudioCompMs || 0) / 1000 : ((state.mediaAudioSyncMs || 0) / 1000);
+                gain.gain.value = state.gains[channel] ?? (channel === 'media' ? 1.35 : 1.0);
                 source.connect(delay);
                 delay.connect(gain);
                 gain.connect(analyser);
