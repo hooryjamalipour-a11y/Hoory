@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.3</title>
+    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.7</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -328,7 +328,7 @@
             <div class="flex items-center gap-1-5 bg-red-500/10 border border-red-500/30 px-2 py-0-5 rounded-md">
                 <span id="header-pulse" class="dot-md bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-[11px] tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.2</span>
+                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.7</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-[11px] bg-slate-800 text-slate-300 px-2 py-0-5 rounded border border-slate-700 transition">
                 ⇄ تغییر نقش
@@ -368,7 +368,7 @@
                     <span>📡 اتصال فوری با کد 0000 + اتصال مستقیم آفلاین (بدون سرور) • ضبط قطعی صدای مجری و ویدیو</span>
                 </div>
                 <h1 class="text-2xl font-black text-white" style="margin:0.5rem 0;">
-                    استودیوی کارگردانی و سوییچر زنده (نسخه اصلاح‌شده v7.2)
+                    استودیوی کارگردانی و سوییچر زنده (نسخه v7.7)
                 </h1>
                 <p class="text-slate-400 text-xs max-w-xl mx-auto leading-relaxed">
                     صدای مجری و صدای ویدیوها با نشانگر زنده (VU Meter) مستقیماً در فایل خروجی ضبط میشوند. اگر سرور PeerJS خطا داد، از دکمه «اتصال آفلاین بدون سرور» روی هات‌اسپات استفاده کنید.
@@ -440,13 +440,10 @@
                 </div>
 
                 <div class="flex items-center gap-1-5">
-                    <span class="text-[10px] text-emerald-300 font-bold">کد دوربین:</span>
-                    <input id="cam-room-pin" type="text" value="0000" maxlength="12" oninput="syncRoomPinInputs(this.value)" class="bg-slate-950 border border-emerald-500/50 rounded px-2 py-0-5 text-center font-mono font-bold text-xs text-emerald-300 outline-none" style="width:4.5rem;">
-                    <button type="button" onclick="registerCameraWithPin()" class="text-[10px] bg-emerald-600 text-white px-2-5 py-1 rounded-lg font-bold">
-                        🔄 ثبت مجدد
-                    </button>
-                    <button type="button" onclick="openOfflinePairingModal()" class="text-[10px] bg-amber-600 text-white px-2 py-1 rounded-lg font-bold">
-                        📶 آفلاین بدون سرور
+                    <span class="text-[10px] text-emerald-300 font-bold">کد:</span>
+                    <input id="cam-room-pin" type="text" value="0000" maxlength="12" oninput="syncRoomPinInputs(this.value)" class="bg-slate-950 border border-emerald-500/50 rounded px-2 py-0-5 text-center font-mono font-bold text-xs text-emerald-300 outline-none" style="width:5.5rem;">
+                    <button type="button" onclick="generate10DigitPinAndShowQr()" class="text-[10px] bg-amber-500 text-black px-2-5 py-1 rounded-lg font-black">
+                        📲 کد ۱۰ رقمی / QR
                     </button>
                 </div>
 
@@ -458,7 +455,7 @@
                 </div>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <div id="cam-pair-status" class="text-[10px] text-emerald-300 font-medium">در حال آماده‌سازی دوربین روی کد 0000...</div>
+                <div id="cam-pair-status" class="text-[10px] text-emerald-300 font-medium">✅ دوربین روشن و آماده است (در گوشی کارگردان «اتصال به دوربین» را بزنید)</div>
                 <div class="flex items-center gap-1-5 text-[10px] text-emerald-300">
                     <span>🎙️ تست صدای میکروفون:</span>
                     <div class="vu-bar-wrap"><div id="cam-mic-vu" class="vu-bar-fill"></div></div>
@@ -547,12 +544,12 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="flex items-center gap-1-5 bg-slate-950 border border-emerald-500/40 rounded-lg px-2 py-1">
                         <span class="text-xs text-emerald-300 font-bold">🔑 کد:</span>
-                        <input id="dir-room-pin" type="text" value="0000" maxlength="12" oninput="syncRoomPinInputs(this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-0-5 text-center font-mono font-black text-xs text-emerald-300 outline-none" style="width:4.5rem;">
-                        <button onclick="connectDirectorByPin()" id="btn-dir-connect-pin" class="text-xs bg-emerald-600 text-white px-2-5 py-1 rounded-md font-bold transition">
+                        <input id="dir-room-pin" type="text" value="0000" maxlength="12" placeholder="0000 یا ۱۰ رقمی" oninput="syncRoomPinInputs(this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-0-5 text-center font-mono font-black text-xs text-emerald-300 outline-none" style="width:6.2rem;">
+                        <button onclick="connectDirectorByPin()" id="btn-dir-connect-pin" class="text-xs bg-emerald-600 text-white px-3 py-1 rounded-md font-bold transition">
                             📡 اتصال به دوربین
                         </button>
-                        <button onclick="openOfflinePairingModal()" class="text-xs bg-amber-600 text-white px-2 py-1 rounded-md font-bold transition" title="اگر سرور PeerJS خطا داد">
-                            📶 آفلاین بدون سرور
+                        <button onclick="openOfflinePairingModal()" class="text-xs bg-amber-500 text-black px-2-5 py-1 rounded-md font-black transition">
+                            📷 اسکن QR / کد ۱۰ رقمی
                         </button>
                     </div>
 
@@ -582,7 +579,7 @@
             <!-- Status & Download Bar -->
             <div class="w-full flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/80 px-3 py-1-5">
                 <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
-                    آماده ضبط مستر با صدای کامل (مجری + ویدیو) • قبل از ضبط، حرکت نوار سبز صدای مجری و ویدیو را چک کنید.
+                    آماده ضبط مستر با صدای کامل (مجری + ویدیو) • قبل از ضبط، صدای هر دو منبع و وضعیت همگامی واقعی WebRTC را بررسی کنید.
                 </div>
                 <div id="recorded-download-slot" class="hidden shrink-0"></div>
             </div>
@@ -594,16 +591,16 @@
                         وضعیت تصویر: در حال اتصال به دوربین با کد 0000 (چرخش: 270°)
                     </div>
                     <div id="av-sync-badge" class="text-[10px] font-mono px-2 py-0-5 rounded bg-slate-900 border border-slate-700 text-slate-300">
-                        ⏱️ چک ۱ث صدا/تصویر: در انتظار اتصال
+                        ⏱️ سنجش واقعی A/V: در انتظار اتصال
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-1-5">
                     <span id="p2p-route-badge" class="text-[10px] font-mono text-emerald-400">⚡ اتصال مستقیم کد 0000</span>
                     <button type="button" onclick="toggleAutoAvSync()" id="btn-auto-sync-toggle" class="text-[10px] bg-emerald-700/40 text-emerald-200 border border-emerald-500/50 px-2 py-0-5 rounded font-bold transition">
-                        🛡️ چک ۱ ثانیه‌ای: روشن
+                        🛡️ پایش A/V: روشن
                     </button>
                     <button type="button" onclick="manualResyncNow()" class="text-[10px] bg-cyan-600/20 text-cyan-300 border border-cyan-500/40 px-2 py-0-5 rounded font-bold transition">
-                        ⚡ همگامسازی فوری
+                        🔎 اندازه‌گیری A/V
                     </button>
                     <button type="button" onclick="forceRefreshVideoStreams()" class="text-[10px] bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 px-2 py-0-5 rounded font-bold transition">
                         🔄 بازخوانی تصویر
@@ -702,7 +699,7 @@
                 </div>
 
                 <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-[11px] text-slate-400 leading-relaxed">
-                    💡 اگر نوار سبز <strong class="text-emerald-300">صدای مجری</strong> یا <strong class="text-blue-300">صدای ویدیو</strong> حرکت نمیکند، یعنی آن صدا به ضبط نمیرسد. در نسخه v7.2 هر دو مسیر صدا همیشه فعال و قابل مشاهده هستند.
+                    💡 صدای دوربین از همان عنصر ویدیویی دریافت می‌شود تا زمان‌بندی صوت و تصویر یک منبع حفظ شود؛ صدای مدیا نیز از همان پخش‌کننده به میکسر می‌رود.
                 </div>
             </div>
 
@@ -793,6 +790,21 @@
                                     <button onclick="restartMedia()" class="bg-slate-800 text-slate-300 text-xs px-2 py-1-5 rounded">⏮</button>
                                 </div>
                             </div>
+                            <div class="rounded-lg border border-cyan-500/30 bg-cyan-950/30 px-2-5 py-2 space-y-1-5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label for="media-start-delay" class="text-[10px] font-bold text-cyan-300">⏱️ تأخیر شروع مدیا برای تطبیق با تصویر مجری</label>
+                                    <span id="media-delay-label" class="font-mono text-[10px] text-cyan-200">۰ ms</span>
+                                </div>
+                                <input id="media-start-delay" type="range" min="0" max="1500" step="25" value="0" oninput="setMediaStartDelay(this.value)" class="w-full cursor-pointer">
+                                <div class="flex items-center justify-between gap-2 pt-1">
+                                    <label class="flex items-center gap-1-5 text-[10px] text-emerald-300 font-bold">
+                                        <input id="auto-media-sync" type="checkbox" checked onchange="toggleAutoMediaSync(this.checked)">
+                                        هم‌ترازی خودکار شروع کلیپ با تأخیر دوربین
+                                    </label>
+                                    <span id="camera-latency-label" class="font-mono text-[9px] text-slate-400">تأخیر دوربین: در حال اندازه‌گیری فریم</span>
+                                </div>
+                                <div class="text-[9px] leading-relaxed text-slate-400">تأخیر دستی، اصلاح دلخواه توست؛ هم‌ترازی خودکار در صورت پشتیبانی مرورگر از زمان ثبت فریم WebRTC، تأخیر واقعی رسیدن تصویر را می‌سنجد؛ در غیر این صورت از RTT/2 و بافر/پردازش، تخمین تقریبی می‌سازد. این مقدار با همگام‌سازی داخلی صدای و تصویر دوربین متفاوت است.</div>
+                            </div>
                             <div class="flex flex-wrap gap-1-5 items-center">
                                 <label class="text-[10px] text-slate-400">حالت پخش:</label>
                                 <select id="playlist-mode" onchange="state.mediaPlaylistMode = this.value" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-white">
@@ -818,69 +830,61 @@
         </div>
     </section>
 
-    <!-- ================= OFFLINE / SERVERLESS DIRECT WEBRTC MODAL (QR CODE) ================= -->
+    <!-- ================= SIMPLE 10-DIGIT PIN & QR MODAL ================= -->
     <div id="offline-pairing-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3">
-        <div class="bg-studio-900 border border-amber-500/50 rounded-2xl max-w-xl w-full p-4 space-y-3 shadow-2xl overflow-y-auto" style="max-height:92dvh;">
+        <div class="bg-studio-900 border border-amber-500/50 rounded-2xl max-w-md w-full p-4 space-y-3 shadow-2xl overflow-y-auto" style="max-height:92dvh;">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 class="text-sm font-bold text-amber-300" style="margin:0;">📶 اتصال مستقیم آفلاین با QR کد (بدون سرور)</h3>
+                <h3 class="text-sm font-bold text-amber-300" style="margin:0;">📲 اتصال با کد ۱۰ رقمی یا اسکن QR</h3>
                 <button onclick="closeOfflinePairingModal()" class="bg-slate-800 text-slate-300 px-2-5 py-1 rounded-lg text-xs">بستن ×</button>
             </div>
-            <p class="text-[11px] text-slate-300 leading-relaxed">
-                دو گوشی را به یک هات‌اسپات وصل کنید. با اسکن ۲ QR کد، بدون نیاز به اینترنت و سرور به هم وصل می‌شوید:
-            </p>
 
-            <!-- Live QR Scanner Box (shared) -->
-            <div id="off-qr-scanner-wrap" class="hidden bg-black border-2 border-cyan-500/60 rounded-xl p-2 space-y-2 text-center">
-                <div class="text-xs font-bold text-cyan-300">📷 دوربین را روی QR کد گوشی مقابل بگیرید...</div>
-                <video id="off-qr-video" autoplay playsinline muted class="w-full rounded-lg bg-slate-950" style="max-height:220px;object-fit:cover;"></video>
-                <canvas id="off-qr-canvas" class="hidden"></canvas>
-                <button onclick="stopQrScanner()" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-lg">لغو اسکن</button>
+            <!-- Camera side: Shows 10-digit code + tiny crisp QR code -->
+            <div id="offline-cam-box" class="hidden space-y-3 text-center">
+                <div class="text-xs text-slate-300">این کد ۱۰ رقمی را در گوشی کارگردان وارد کنید یا QR زیر را اسکن کنید:</div>
+                <div id="cam-10digit-display" class="font-mono font-black text-2xl tracking-wider text-emerald-300 bg-slate-950 border-2 border-emerald-500/50 rounded-xl py-2 px-3">
+                    0000000000
+                </div>
+                <div id="off-cam-qr" class="flex justify-center p-3 bg-white rounded-2xl mx-auto" style="width:fit-content;"></div>
+                <button onclick="generate10DigitPinAndShowQr()" class="w-full bg-slate-800 text-amber-300 border border-amber-500/40 text-xs font-bold py-2 rounded-xl">
+                    🔄 ساخت کد ۱۰ رقمی جدید
+                </button>
             </div>
 
-            <!-- Director side offline steps -->
-            <div id="offline-dir-box" class="hidden space-y-2-5">
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2 text-center">
-                    <div class="text-xs font-bold text-blue-300 text-right">گام ۱ (در گوشی کارگردان): ساخت QR کد اتصال</div>
-                    <button onclick="offlineDirectorCreateOffer()" class="w-full bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg">۱. ساخت QR کد درخواست</button>
-                    <div id="off-dir-qr" class="hidden flex justify-center p-2 bg-white rounded-xl mx-auto" style="width:fit-content;"></div>
-                    <textarea id="off-dir-offer" readonly rows="2" placeholder="متن کد (اختیاری)..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-emerald-300 outline-none"></textarea>
+            <!-- Director side: Enter 10-digit code OR Scan QR -->
+            <div id="offline-dir-box" class="hidden space-y-3">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2 text-center">
+                    <div class="text-xs font-bold text-emerald-300">روش ۱: وارد کردن کد ۱۰ رقمی دوربین</div>
+                    <input id="dir-10digit-input" type="tel" maxlength="12" placeholder="کد ۱۰ رقمی را وارد کنید" class="w-full bg-slate-900 border border-emerald-500/50 rounded-xl py-2 px-3 text-center font-mono font-black text-lg text-white outline-none">
+                    <button onclick="connectDirectorWith10DigitInput()" class="w-full bg-emerald-600 text-white text-xs font-black py-2-5 rounded-xl">
+                        📡 اتصال فوری با این کد
+                    </button>
                 </div>
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2">
-                    <div class="text-xs font-bold text-emerald-300">گام ۲ (در گوشی کارگردان): اسکن QR کد پاسخ از گوشی دوربین</div>
-                    <button onclick="startQrScanner('director')" class="w-full bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg">📷 ۲. اسکن QR کد پاسخ دوربین</button>
-                    <textarea id="off-dir-answer" rows="2" placeholder="یا کد پاسخ را اینجا پیست کنید..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-white outline-none"></textarea>
-                    <button onclick="offlineDirectorApplyAnswer()" class="bg-slate-800 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1 rounded-lg">اتصال با متن</button>
-                </div>
-            </div>
 
-            <!-- Camera side offline steps -->
-            <div id="offline-cam-box" class="hidden space-y-2-5">
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2">
-                    <div class="text-xs font-bold text-blue-300">گام ۱ (در گوشی دوربین): اسکن QR کد گوشی کارگردان</div>
-                    <button onclick="startQrScanner('camera')" class="w-full bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg">📷 ۱. اسکن QR کد کارگردان</button>
-                    <textarea id="off-cam-offer" rows="2" placeholder="یا متن کد کارگردان را اینجا پیست کنید..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-white outline-none"></textarea>
-                    <button onclick="offlineCameraAcceptOffer()" class="bg-slate-800 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1 rounded-lg">ساخت پاسخ از متن</button>
-                </div>
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2-5 space-y-2 text-center">
-                    <div class="text-xs font-bold text-emerald-300 text-right">گام ۲: این QR کد را با گوشی کارگردان اسکن کنید</div>
-                    <div id="off-cam-qr" class="hidden flex justify-center p-2 bg-white rounded-xl mx-auto" style="width:fit-content;"></div>
-                    <textarea id="off-cam-answer" readonly rows="2" placeholder="کد پاسخ اینجا ساخته میشود..." class="w-full bg-slate-900 border border-slate-700 rounded p-1-5 text-[9px] font-mono text-amber-300 outline-none"></textarea>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2 text-center">
+                    <div class="text-xs font-bold text-cyan-300">روش ۲: اسکن QR کد صفحه دوربین</div>
+                    <button onclick="startQrScanner('director')" class="w-full bg-blue-600 text-white text-xs font-black py-2-5 rounded-xl">
+                        📷 باز کردن دوربین و اسکن QR
+                    </button>
+                    <div id="off-qr-scanner-wrap" class="hidden bg-black border-2 border-cyan-500/60 rounded-xl p-2 space-y-2 text-center">
+                        <video id="off-qr-video" autoplay playsinline muted class="w-full rounded-lg bg-slate-950" style="max-height:200px;object-fit:cover;"></video>
+                        <canvas id="off-qr-canvas" class="hidden"></canvas>
+                        <button onclick="stopQrScanner()" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-lg">بستن دوربین اسکن</button>
+                    </div>
                 </div>
             </div>
 
-            <div id="offline-modal-status" class="text-[11px] font-medium text-cyan-300"></div>
+            <div id="offline-modal-status" class="text-[11px] font-medium text-cyan-300 text-center"></div>
         </div>
     </div>
 
     <!-- Hidden Media Elements -->
     <div aria-hidden="true" style="position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.001;overflow:hidden;pointer-events:none;z-index:-1">
-        <video id="hidden-cam1-video" width="1280" height="720" autoplay playsinline muted style="width:1280px;height:720px;object-fit:contain;pointer-events:none"></video>
-        <audio id="hidden-cam1-audio" autoplay playsinline></audio>
+        <video id="hidden-cam1-video" width="1280" height="720" autoplay playsinline style="width:1280px;height:720px;object-fit:contain;pointer-events:none"></video>
         <video id="hidden-media-video" width="1280" height="720" playsinline preload="metadata" style="width:1280px;height:720px"></video>
         <img id="hidden-media-img" alt="" style="width:auto;height:auto">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v7.2 AUDIO + SERVERLESS FIX) ================= -->
+    <!-- ================= APPLICATION LOGIC (v7.7 CONTINUOUS A/V SYNC) ================= -->
     <script>
         const RTC_CONFIG = {
             iceServers: [
@@ -892,7 +896,7 @@
         };
 
         const state = {
-            appVersion: 7.2,
+            appVersion: 7.5,
             role: 'launcher',
             roomPin: '0000',
             peer: null,
@@ -905,19 +909,41 @@
             activeVideoSender: null,
             activeAudioSender: null,
 
-            // 1-Second A/V Sync Watchdog State
+            // Continuous WebRTC A/V drift monitor + smooth compensation. Never reset live tracks.
             autoAvSyncEnabled: true,
             avSyncTimer: null,
-            prevRtpStats: {
-                videoJbDelay: 0, videoJbEmitted: 0,
-                audioJbDelay: 0, audioJbEmitted: 0,
-                framesDecoded: 0, framesReceived: 0, framesDropped: 0
-            },
+            avSyncCheckInFlight: false,
             lastVideoFrameTs: 0,
-            highDelayStreak: 0,
-            lastHardFlushAt: 0,
-            cam1DelayNode: null,
-            currentAudioDelaySec: 0,
+            lastVideoMediaTime: 0,
+            nativeClockSamples: [],
+            nativeClockBaselineMs: null,
+            nativeAvDriftEmaMs: null,
+            nativeAvDriftAt: 0,
+            nativeAvDriftSamples: 0,
+            nativeClockFallbackEnabled: /Chrome|Chromium|CriOS|EdgA|SamsungBrowser/i.test(navigator.userAgent || ''),
+            activeRemotePc: null,
+            avDriftEmaMs: null,
+            avDriftSign: 0,
+            avDriftStreak: 0,
+            avDriftSamples: 0,
+            cam1AudioCompMs: 0,
+            cam1VideoCompMs: 0,
+            cam1VideoDelayMs: 0,
+            cam1FrameCaptureActive: false,
+            cam1FrameCaptureBusy: false,
+            cam1FrameQueue: [],
+            cam1DisplayedFrame: null,
+            estimatedCameraLatencyMs: 0,
+            cameraLatencySamples: 0,
+            cameraLatencySource: 'none',
+            cameraLatencyLastSampleAt: 0,
+            captureTimeSamples: 0,
+            autoMediaSyncEnabled: true,
+            mediaLatencySlope: 0,
+            mediaLatencyPrevMs: null,
+            mediaLatencyPrevAt: 0,
+            mediaClockRate: 1,
+            cam1VideoCompUnavailable: false,
 
             // WakeLock & Keep-Awake
             wakeLockSentinel: null,
@@ -955,6 +981,8 @@
             mediaPlaylistRunning: false,
             mediaObjectUrls: [],
             imageAdvanceTimer: null,
+            mediaStartDelayMs: 0,
+            mediaStartTimer: null,
             reactionOverlay: { x: 0.025, y: 0.66, size: 0.20 },
 
             // WebAudio Mixer & VU Analyzers
@@ -964,12 +992,13 @@
             gains: { cam1: 0.45, media: 1.35 },
             sourceNodes: {},
             gainNodes: {},
+            delayNodes: {},
             analysers: {},
             camMicAnalyser: null,
             vuLoopRunning: false,
-            mediaElConnected: false,
-            mediaElSourceNode: null,
             mediaRecorder: null,
+            canvasCaptureTrack: null,
+            canvasCaptureManual: false,
             recordedChunks: [],
             isRecording: false,
             activeRecMime: '',
@@ -979,6 +1008,9 @@
             lastRecordedBlobUrl: null,
             lastCtrlCmdTs: 0
         };
+
+        // A MediaElementAudioSourceNode can be created only once per HTMLMediaElement.
+        const mediaElementAudioSourceMap = new WeakMap();
 
         function syncRoomPinInputs(val) {
             const clean = (val || '').trim() || '0000';
@@ -993,7 +1025,7 @@
 
         function getCameraPeerId(pin) {
             const p = (pin || state.roomPin || '0000').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-            return `prism72-cam-${p || '0000'}`;
+            return `prism77-cam-${p || '0000'}`;
         }
 
         function ensureAudioContextRunning() {
@@ -1085,7 +1117,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'PRISM_LiveDeck_v7.2.html';
+            a.download = 'PRISM_LiveDeck_v7.7_CONTINUOUS_AV_SYNC.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1175,166 +1207,358 @@
             }
         }
 
-        function configureReceiverPlayout(pc) {
-            if (!pc || !pc.getReceivers) return;
-            try {
-                pc.getReceivers().forEach(receiver => {
-                    if (receiver.track && (receiver.track.kind === 'audio' || receiver.track.kind === 'video')) {
-                        if ('playoutDelayHint' in receiver) receiver.playoutDelayHint = 0;
-                        if ('jitterBufferTarget' in receiver) receiver.jitterBufferTarget = 0;
-                    }
-                });
-            } catch (e) {}
-        }
-
         function toggleAutoAvSync() {
             state.autoAvSyncEnabled = !state.autoAvSyncEnabled;
             const btn = document.getElementById('btn-auto-sync-toggle');
             if (btn) {
-                btn.textContent = state.autoAvSyncEnabled ? '🛡️ چک ۱ ثانیه‌ای: روشن' : '🛡️ چک ۱ ثانیه‌ای: خاموش';
+                btn.textContent = state.autoAvSyncEnabled ? '🛡️ اصلاح خودکار A/V: روشن' : '🛡️ اصلاح خودکار A/V: خاموش';
                 btn.className = state.autoAvSyncEnabled
                     ? 'text-[10px] bg-emerald-700/40 text-emerald-200 border border-emerald-500/50 px-2 py-0-5 rounded font-bold transition'
                     : 'text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0-5 rounded font-bold transition';
             }
-            if (!state.autoAvSyncEnabled && state.cam1DelayNode && state.audioCtx) {
-                state.currentAudioDelaySec = 0;
-                state.cam1DelayNode.delayTime.setTargetAtTime(0, state.audioCtx.currentTime, 0.05);
+            if (state.avSyncTimer) { clearInterval(state.avSyncTimer); state.avSyncTimer = null; }
+            if (!state.autoAvSyncEnabled) {
+                state.avDriftEmaMs = null;
+                state.avDriftStreak = 0;
+                state.cam1AudioCompMs = 0;
+                state.cam1VideoCompMs = 0;
+                state.cam1VideoDelayMs = 0;
+                state.cam1VideoCompUnavailable = false;
+                setChannelDelayMs('cam1', 0);
+                stopCam1VideoFrameCapture(true);
+            } else if (state.role === 'director' && state.remoteCam1Stream) {
+                startAvSyncWatchdog(document.getElementById('hidden-cam1-video'));
             }
         }
 
-        function flushRemoteVideoBuffer(reason = 'auto') {
-            const now = Date.now();
-            if (reason === 'auto' && now - state.lastHardFlushAt < 3500) return;
-            state.lastHardFlushAt = now;
-            const v1 = document.getElementById('hidden-cam1-video');
-            if (!v1 || !state.remoteCam1Stream) return;
-            try {
-                configureReceiverPlayout(state.rtcPeerConn);
-                v1.srcObject = null;
-                v1.srcObject = state.remoteCam1Stream;
-                v1.muted = true;
-                v1.play().catch(() => {});
-            } catch (e) {}
-            if (state.cam1DelayNode && state.audioCtx) {
-                state.currentAudioDelaySec = 0;
-                state.cam1DelayNode.delayTime.setTargetAtTime(0, state.audioCtx.currentTime, 0.04);
+        function setChannelDelayMs(channel, ms) {
+            const delay = state.delayNodes?.[channel];
+            if (!delay || !state.audioCtx) return;
+            const safeMs = Math.max(0, Math.min(500, Number(ms) || 0));
+            try { delay.delayTime.setTargetAtTime(safeMs / 1000, state.audioCtx.currentTime, 0.25); } catch (e) {}
+        }
+
+        function stopCam1VideoFrameCapture(clearQueue = true) {
+            state.cam1FrameCaptureActive = false;
+            if (clearQueue) {
+                (state.cam1FrameQueue || []).forEach(frame => { try { frame.bitmap?.close?.(); } catch (e) {} });
+                state.cam1FrameQueue = [];
+                try { state.cam1DisplayedFrame?.close?.(); } catch (e) {}
+                state.cam1DisplayedFrame = null;
             }
+        }
+
+        function startCam1VideoFrameCapture(videoEl) {
+            if (state.cam1FrameCaptureActive) return true;
+            if (!videoEl || typeof videoEl.requestVideoFrameCallback !== 'function' || typeof createImageBitmap !== 'function') return false;
+            state.cam1FrameCaptureActive = true;
+            const onFrame = (now, metadata) => {
+                if (!state.cam1FrameCaptureActive || state.role !== 'director' || !videoEl.srcObject) {
+                    state.cam1FrameCaptureActive = false;
+                    return;
+                }
+                if (state.cam1VideoDelayMs > 20 && !state.cam1FrameCaptureBusy) {
+                    state.cam1FrameCaptureBusy = true;
+                    const frameTime = Number(metadata?.presentationTime) || now || performance.now();
+                    createImageBitmap(videoEl).then(bitmap => {
+                        if (!state.cam1FrameCaptureActive) { bitmap.close?.(); return; }
+                        state.cam1FrameQueue.push({ time: frameTime, bitmap });
+                        state.cam1FrameQueue.sort((a, b) => a.time - b.time);
+                        const cutoff = performance.now() - 1200;
+                        while (state.cam1FrameQueue.length > 20 || (state.cam1FrameQueue[0] && state.cam1FrameQueue[0].time < cutoff)) {
+                            const old = state.cam1FrameQueue.shift();
+                            try { old.bitmap.close?.(); } catch (e) {}
+                        }
+                    }).catch(() => {}).finally(() => { state.cam1FrameCaptureBusy = false; });
+                }
+                try { videoEl.requestVideoFrameCallback(onFrame); } catch (e) { state.cam1FrameCaptureActive = false; }
+            };
+            try { videoEl.requestVideoFrameCallback(onFrame); return true; }
+            catch (e) { state.cam1FrameCaptureActive = false; return false; }
+        }
+
+        function getCam1VisualSource(liveVideoEl) {
+            const delayMs = Math.max(0, Number(state.cam1VideoDelayMs) || 0);
+            if (delayMs <= 20) {
+                if (state.cam1FrameCaptureActive || state.cam1DisplayedFrame || state.cam1FrameQueue.length) stopCam1VideoFrameCapture(true);
+                return liveVideoEl;
+            }
+            if (!startCam1VideoFrameCapture(liveVideoEl)) return liveVideoEl;
+            const targetTime = performance.now() - delayMs;
+            let chosen = null;
+            while (state.cam1FrameQueue.length && state.cam1FrameQueue[0].time <= targetTime) {
+                const candidate = state.cam1FrameQueue.shift();
+                if (chosen) { try { chosen.bitmap.close?.(); } catch (e) {} }
+                chosen = candidate;
+            }
+            if (chosen) {
+                try { state.cam1DisplayedFrame?.close?.(); } catch (e) {}
+                state.cam1DisplayedFrame = chosen.bitmap;
+            }
+            return state.cam1DisplayedFrame || liveVideoEl;
+        }
+
+        function rampValue(current, target, maxStep = 45) {
+            const d = target - current;
+            if (Math.abs(d) <= maxStep) return target;
+            return current + Math.sign(d) * maxStep;
+        }
+
+        function applyCam1AvCompensation(driftMs) {
+            // Positive audio-video source-time skew means audio is ahead: delay audio.
+            // Negative skew means video is ahead: buffer only the compositor's camera frames.
+            const abs = Math.abs(driftMs);
+            let desiredAudio = 0, desiredVideo = 0;
+            const canBufferVideo = typeof createImageBitmap === 'function' &&
+                typeof HTMLVideoElement !== 'undefined' &&
+                typeof HTMLVideoElement.prototype.requestVideoFrameCallback === 'function';
+            state.cam1VideoCompUnavailable = false;
+            if (abs > 42) {
+                const correction = Math.min(450, abs - 28);
+                if (driftMs > 0) desiredAudio = correction;
+                else if (canBufferVideo) desiredVideo = correction;
+                else state.cam1VideoCompUnavailable = true;
+            }
+            state.cam1AudioCompMs = rampValue(state.cam1AudioCompMs, desiredAudio, 45);
+            state.cam1VideoCompMs = rampValue(state.cam1VideoCompMs, desiredVideo, 45);
+            state.cam1VideoDelayMs = state.cam1VideoCompMs;
+            setChannelDelayMs('cam1', state.cam1AudioCompMs);
+            if (state.cam1VideoDelayMs > 20) startCam1VideoFrameCapture(document.getElementById('hidden-cam1-video'));
+            else if (state.cam1FrameCaptureActive) stopCam1VideoFrameCapture(true);
+        }
+
+        function updateMediaClockRate() {
+            const mediaVideo = document.getElementById('hidden-media-video');
+            if (state.autoMediaSyncEnabled && state.mediaType === 'video' && mediaVideo && !mediaVideo.paused) {
+                const rate = Math.max(0.995, Math.min(1.005, 1 - state.mediaLatencySlope));
+                state.mediaClockRate = Math.abs(rate - 1) < 0.00015 ? 1 : rate;
+                try { mediaVideo.playbackRate = state.mediaClockRate; } catch (e) {}
+            }
+            const label = document.getElementById('camera-latency-label');
+            if (label) {
+                const rateText = state.autoMediaSyncEnabled ? ` • نرخ ${state.mediaClockRate.toFixed(4)}x` : '';
+                const sourceText = state.cameraLatencySource === 'captureTime' ? 'فریم واقعی' : 'تخمین شبکه';
+                label.textContent = `تأخیر دوربین ≈ ${Math.round(state.estimatedCameraLatencyMs)}ms (${sourceText})${rateText}`;
+            }
+        }
+
+        function recordCameraLatencySample(sampleMs, source = 'captureTime') {
+            const estimate = Math.max(0, Math.min(2500, Number(sampleMs) || 0));
+            const now = performance.now();
+            state.estimatedCameraLatencyMs = state.cameraLatencySamples === 0
+                ? estimate : (state.estimatedCameraLatencyMs * 0.82 + estimate * 0.18);
+            state.cameraLatencySamples++;
+            state.cameraLatencySource = source;
+            state.cameraLatencyLastSampleAt = now;
+            if (source === 'captureTime') state.captureTimeSamples++;
+
+            if (state.mediaLatencyPrevMs !== null && state.mediaLatencyPrevAt > 0) {
+                const dt = now - state.mediaLatencyPrevAt;
+                if (dt >= 700) {
+                    const rawSlope = (state.estimatedCameraLatencyMs - state.mediaLatencyPrevMs) / dt;
+                    // Clamp noisy estimates before low-pass filtering; do not slew the clip aggressively.
+                    const boundedSlope = Math.max(-0.003, Math.min(0.003, rawSlope));
+                    state.mediaLatencySlope = state.mediaLatencySlope * 0.88 + boundedSlope * 0.12;
+                }
+            }
+            state.mediaLatencyPrevMs = state.estimatedCameraLatencyMs;
+            state.mediaLatencyPrevAt = now;
+            updateMediaClockRate();
+        }
+
+        function updateEstimatedCameraLatency(stats) {
+            const now = performance.now();
+            // Prefer per-frame WebRTC captureTime. Only use network-derived fallback
+            // when recent captureTime metadata is unavailable.
+            if (state.cameraLatencySource === 'captureTime' && now - state.cameraLatencyLastSampleAt < 1800) {
+                updateMediaClockRate();
+                return;
+            }
+
+            let rttMs = null, videoStat = null;
+            stats.forEach(item => {
+                if (item.type === 'candidate-pair' && (item.selected || item.nominated) && Number.isFinite(item.currentRoundTripTime)) {
+                    rttMs = item.currentRoundTripTime * 500;
+                }
+                if (item.type === 'inbound-rtp' && (item.kind || item.mediaType) === 'video') videoStat = item;
+            });
+            if (rttMs === null) {
+                stats.forEach(item => {
+                    if (item.type === 'candidate-pair' && Number.isFinite(item.currentRoundTripTime) && item.state === 'succeeded') {
+                        rttMs = item.currentRoundTripTime * 500;
+                    }
+                });
+            }
+            if (rttMs === null) return;
+            const jbMs = videoStat && videoStat.jitterBufferEmittedCount > 0
+                ? (videoStat.jitterBufferDelay / videoStat.jitterBufferEmittedCount) * 1000 : 0;
+            const decodeMs = videoStat && videoStat.framesDecoded > 0 && Number.isFinite(videoStat.totalProcessingDelay)
+                ? (videoStat.totalProcessingDelay / videoStat.framesDecoded) * 1000 : 0;
+            // Approximation only: one-way network delay is approximated as RTT/2.
+            const estimate = Math.max(0, Math.min(1200, rttMs + jbMs + decodeMs + 34));
+            recordCameraLatencySample(estimate, 'rtt-estimate');
         }
 
         async function manualResyncNow() {
             const badge = document.getElementById('av-sync-badge');
             if (badge) {
-                badge.textContent = '⚡ در حال همگامسازی فوری صدا و تصویر...';
+                badge.textContent = '🔎 اندازه‌گیری و اصلاح تدریجی A/V...';
                 badge.className = 'text-[10px] font-mono px-2 py-0-5 rounded bg-cyan-950 border border-cyan-500/50 text-cyan-300';
             }
-            flushRemoteVideoBuffer('manual');
-            sendRemoteCommand({ type: 'requestKeyFrame' });
-            setTimeout(() => runAvSyncCheck(), 400);
+            // Never detach srcObject, seek a live stream, or force a keyframe for sync.
+            await runAvSyncCheck();
         }
 
         function startAvSyncWatchdog(videoEl) {
             if (state.avSyncTimer) clearInterval(state.avSyncTimer);
-            state.prevRtpStats = {
-                videoJbDelay: 0, videoJbEmitted: 0,
-                audioJbDelay: 0, audioJbEmitted: 0,
-                framesDecoded: 0, framesReceived: 0, framesDropped: 0
-            };
-            state.highDelayStreak = 0;
-
-            if (videoEl && 'requestVideoFrameCallback' in videoEl) {
-                const trackFrame = () => {
+            state.avSyncTimer = null;
+            state.lastVideoFrameTs = 0;
+            state.lastVideoMediaTime = 0;
+            state.nativeClockSamples = [];
+            state.nativeClockBaselineMs = null;
+            state.nativeAvDriftEmaMs = null;
+            state.nativeAvDriftAt = 0;
+            state.nativeAvDriftSamples = 0;
+            if (videoEl && typeof videoEl.requestVideoFrameCallback === 'function') {
+                const trackFrame = (now, metadata) => {
                     state.lastVideoFrameTs = performance.now();
+                    state.lastVideoMediaTime = Number(metadata?.mediaTime) || state.lastVideoMediaTime;
+
+                    // Chromium fallback: currentTime follows the audio clock, while mediaTime
+                    // is the frame PTS. Calibrate the normal compositor offset, then watch drift.
+                    if (state.nativeClockFallbackEnabled) {
+                        const frameMediaTime = Number(metadata?.mediaTime);
+                        const audioClockTime = Number(videoEl.currentTime);
+                        if (Number.isFinite(frameMediaTime) && frameMediaTime > 0 &&
+                            Number.isFinite(audioClockTime) && audioClockTime > 0) {
+                            const rawClockOffsetMs = (audioClockTime - frameMediaTime) * 1000;
+                            if (Number.isFinite(rawClockOffsetMs) && Math.abs(rawClockOffsetMs) < 1500) {
+                                if (state.nativeClockBaselineMs === null) {
+                                    state.nativeClockSamples.push(rawClockOffsetMs);
+                                    if (state.nativeClockSamples.length >= 45) {
+                                        const sorted = [...state.nativeClockSamples].sort((a, b) => a - b);
+                                        state.nativeClockBaselineMs = sorted[Math.floor(sorted.length / 2)];
+                                        state.nativeAvDriftEmaMs = 0;
+                                        state.nativeAvDriftAt = performance.now();
+                                    }
+                                } else {
+                                    const drift = rawClockOffsetMs - state.nativeClockBaselineMs;
+                                    state.nativeAvDriftEmaMs = state.nativeAvDriftEmaMs === null
+                                        ? drift : (state.nativeAvDriftEmaMs * 0.82 + drift * 0.18);
+                                    state.nativeAvDriftAt = performance.now();
+                                    state.nativeAvDriftSamples++;
+                                }
+                            }
+                        }
+                    }
+
+                    // WebRTC video-frame metadata can expose captureTime mapped into this
+                    // device's performance clock using sender clock synchronization/RTCP SR.
+                    // This gives a much better receive-latency estimate than RTT/2 alone.
+                    const captureTime = Number(metadata?.captureTime);
+                    const expectedDisplay = Number(metadata?.expectedDisplayTime);
+                    if (Number.isFinite(captureTime) && captureTime > 0) {
+                        const visibleAt = Number.isFinite(expectedDisplay) ? expectedDisplay : now;
+                        const frameInterval = 1000 / 30; // output compositor targets 30 fps
+                        const measuredLatency = visibleAt - captureTime + (frameInterval / 2);
+                        if (Number.isFinite(measuredLatency) && measuredLatency >= 0 && measuredLatency <= 3000) {
+                            recordCameraLatencySample(measuredLatency, 'captureTime');
+                        }
+                    }
+
                     if (state.role === 'director' && videoEl.srcObject) {
                         try { videoEl.requestVideoFrameCallback(trackFrame); } catch (e) {}
                     }
                 };
                 try { videoEl.requestVideoFrameCallback(trackFrame); } catch (e) {}
             }
-            state.avSyncTimer = setInterval(runAvSyncCheck, 1000);
+            if (state.autoAvSyncEnabled) {
+                state.avSyncTimer = setInterval(runAvSyncCheck, 1000);
+                runAvSyncCheck();
+            }
         }
 
         async function runAvSyncCheck() {
-            if (state.role !== 'director') return;
-            const pc = state.rtcPeerConn;
-            const v1 = document.getElementById('hidden-cam1-video');
+            if (state.role !== 'director' || state.avSyncCheckInFlight) return;
+            const pc = state.activeRemotePc || state.rtcPeerConn;
             const badge = document.getElementById('av-sync-badge');
-            if (!pc || pc.connectionState !== 'connected' || !v1 || !v1.srcObject) return;
-
-            configureReceiverPlayout(pc);
-
+            if (!pc || pc.connectionState !== 'connected') return;
+            state.avSyncCheckInFlight = true;
             try {
                 const stats = await pc.getStats();
-                let vStat = null;
-                let aStat = null;
-                stats.forEach(s => {
-                    if (s.type === 'inbound-rtp' && s.kind === 'video') vStat = s;
-                    if (s.type === 'inbound-rtp' && s.kind === 'audio') aStat = s;
+                let videoStat = null, audioStat = null;
+                stats.forEach(item => {
+                    if (item.type !== 'inbound-rtp') return;
+                    const kind = item.kind || item.mediaType;
+                    if (kind === 'video') videoStat = item;
+                    if (kind === 'audio') audioStat = item;
                 });
-                if (!vStat) return;
+                updateEstimatedCameraLatency(stats);
+                const audioTs = Number(audioStat?.estimatedPlayoutTimestamp);
+                const videoTs = Number(videoStat?.estimatedPlayoutTimestamp);
+                const frameAgeMs = state.lastVideoFrameTs ? Math.round(performance.now() - state.lastVideoFrameTs) : null;
+                let rawDriftMs = null;
+                let driftSource = '';
+                if (Number.isFinite(audioTs) && audioTs > 0 && Number.isFinite(videoTs) && videoTs > 0) {
+                    rawDriftMs = audioTs - videoTs;
+                    driftSource = 'RTCP';
+                } else if (state.nativeClockFallbackEnabled && state.nativeClockBaselineMs !== null &&
+                    state.nativeAvDriftEmaMs !== null && performance.now() - state.nativeAvDriftAt < 700) {
+                    rawDriftMs = state.nativeAvDriftEmaMs;
+                    driftSource = 'ساعت صوتی مرورگر';
+                }
 
-                const dVDelay = (vStat.jitterBufferDelay || 0) - state.prevRtpStats.videoJbDelay;
-                const dVCount = (vStat.jitterBufferEmittedCount || 0) - state.prevRtpStats.videoJbEmitted;
-                const dADelay = aStat ? ((aStat.jitterBufferDelay || 0) - state.prevRtpStats.audioJbDelay) : 0;
-                const dACount = aStat ? ((aStat.jitterBufferEmittedCount || 0) - state.prevRtpStats.audioJbEmitted) : 0;
-
-                const vJbMs = dVCount > 0 ? Math.round((dVDelay / dVCount) * 1000) : 0;
-                const aJbMs = dACount > 0 ? Math.round((dADelay / dACount) * 1000) : 0;
-                const queuedFrames = Math.max(0, (vStat.framesReceived || 0) - (vStat.framesDecoded || 0) - (vStat.framesDropped || 0));
-
-                state.prevRtpStats.videoJbDelay = vStat.jitterBufferDelay || 0;
-                state.prevRtpStats.videoJbEmitted = vStat.jitterBufferEmittedCount || 0;
-                state.prevRtpStats.audioJbDelay = aStat ? (aStat.jitterBufferDelay || 0) : 0;
-                state.prevRtpStats.audioJbEmitted = aStat ? (aStat.jitterBufferEmittedCount || 0) : 0;
-                state.prevRtpStats.framesDecoded = vStat.framesDecoded || 0;
-                state.prevRtpStats.framesReceived = vStat.framesReceived || 0;
-                state.prevRtpStats.framesDropped = vStat.framesDropped || 0;
-
-                const driftMs = vJbMs - aJbMs;
-                const absDriftMs = Math.abs(driftMs);
-                const frameAgeMs = state.lastVideoFrameTs > 0 ? Math.round(performance.now() - state.lastVideoFrameTs) : 0;
-
-                let actionNote = '';
-                if (state.autoAvSyncEnabled) {
-                    if (vJbMs > 380 || driftMs > 380 || queuedFrames > 10) {
-                        state.highDelayStreak++;
-                        flushRemoteVideoBuffer('auto');
-                        if (state.highDelayStreak >= 2) {
-                            sendRemoteCommand({ type: 'requestKeyFrame' });
-                            state.highDelayStreak = 0;
-                        }
-                        actionNote = ' • ⚡ تخلیه خودکار بافر تصویر';
+                if (Number.isFinite(rawDriftMs)) {
+                    state.avDriftEmaMs = state.avDriftEmaMs === null ? rawDriftMs : (state.avDriftEmaMs * 0.72 + rawDriftMs * 0.28);
+                    const driftMs = Math.round(state.avDriftEmaMs);
+                    const sign = Math.sign(driftMs);
+                    if (Math.abs(driftMs) > 42) {
+                        if (sign === state.avDriftSign) state.avDriftStreak++;
+                        else { state.avDriftSign = sign; state.avDriftStreak = 1; }
                     } else {
-                        state.highDelayStreak = 0;
-                        if (state.cam1DelayNode && state.audioCtx) {
-                            const targetDelaySec = driftMs > 25 ? Math.min(0.38, driftMs / 1000) : 0;
-                            if (Math.abs(targetDelaySec - state.currentAudioDelaySec) > 0.015) {
-                                state.currentAudioDelaySec = targetDelaySec;
-                                state.cam1DelayNode.delayTime.setTargetAtTime(targetDelaySec, state.audioCtx.currentTime, 0.15);
-                                if (targetDelaySec > 0) {
-                                    actionNote = ` • 🎛️ همترازی صدا (${Math.round(targetDelaySec * 1000)}ms)`;
-                                }
-                            }
-                        }
+                        state.avDriftStreak = 0;
+                        state.avDriftSign = 0;
                     }
+                    state.avDriftSamples++;
+                    if (state.autoAvSyncEnabled && state.avDriftStreak >= 2) applyCam1AvCompensation(driftMs);
+                    if (state.autoAvSyncEnabled && Math.abs(driftMs) <= 42) applyCam1AvCompensation(0);
 
-                    if (v1.paused) v1.play().catch(() => {});
-                    if (v1.buffered && v1.buffered.length > 0) {
-                        const end = v1.buffered.end(v1.buffered.length - 1);
-                        if (end - v1.currentTime > 0.08) v1.currentTime = end - 0.01;
+                    const abs = Math.abs(driftMs);
+                    const good = abs <= 55;
+                    const color = good ? 'emerald' : (abs <= 140 ? 'amber' : 'red');
+                    const comp = state.cam1AudioCompMs > 10
+                        ? `جبران صدا ${Math.round(state.cam1AudioCompMs)}ms`
+                        : (state.cam1VideoCompMs > 10 ? `جبران تصویر ${Math.round(state.cam1VideoCompMs)}ms`
+                            : (state.cam1VideoCompUnavailable ? 'مرورگر اجازه جبران سمت تصویر را نمی‌دهد' : 'بدون جبران'));
+                    if (badge) {
+                        badge.className = `text-[10px] font-mono px-2 py-0-5 rounded bg-${color}-950/70 border border-${color}-500/40 text-${color}-300`;
+                        badge.textContent = `🎯 A/V دوربین: ${driftMs >= 0 ? '+' : ''}${driftMs}ms • ${driftSource} • ${comp}${frameAgeMs !== null && frameAgeMs > 250 ? ` • فریم ${frameAgeMs}ms` : ''}`;
                     }
+                } else if (badge) {
+                    badge.className = 'text-[10px] font-mono px-2 py-0-5 rounded bg-amber-950/70 border border-amber-500/40 text-amber-300';
+                    badge.textContent = state.nativeClockFallbackEnabled
+                        ? `⏳ کالیبراسیون ساعت صوتی/فریم: ${state.nativeClockSamples.length}/45 نمونه؛ جریان زنده قطع نمی‌شود.`
+                        : 'ℹ️ مرورگر سنجه دقیق A/V را ارائه نمی‌کند؛ همگام‌سازی داخلی همان پخش‌کننده حفظ می‌شود و اصلاح کورکورانه انجام نمی‌شود.';
                 }
-
+            } catch (e) {
                 if (badge) {
-                    const isGood = absDriftMs <= 60 && vJbMs <= 120;
-                    const isWarn = !isGood && absDriftMs <= 250 && vJbMs <= 300;
-                    badge.className = isGood
-                        ? 'text-[10px] font-mono px-2 py-0-5 rounded bg-emerald-950/70 border border-emerald-500/40 text-emerald-300'
-                        : (isWarn
-                            ? 'text-[10px] font-mono px-2 py-0-5 rounded bg-amber-950/70 border border-amber-500/40 text-amber-300'
-                            : 'text-[10px] font-mono px-2 py-0-5 rounded bg-red-950/70 border border-red-500/40 text-red-300');
-                    badge.textContent = `⏱️ چک ۱ث: اختلاف ${driftMs >= 0 ? '+' : ''}${driftMs}ms | بافر تصویر ${vJbMs}ms${frameAgeMs > 200 ? ` | فریم ${frameAgeMs}ms` : ''}${actionNote}`;
+                    badge.className = 'text-[10px] font-mono px-2 py-0-5 rounded bg-slate-900 border border-slate-700 text-slate-400';
+                    badge.textContent = 'سنجش A/V موقتاً در دسترس نیست؛ تصویر زنده قطع یا راه‌اندازی مجدد نمی‌شود.';
                 }
-            } catch (e) {}
+            } finally {
+                state.avSyncCheckInFlight = false;
+            }
+        }
+
+        function toggleAutoMediaSync(enabled) {
+            state.autoMediaSyncEnabled = Boolean(enabled);
+            const cb = document.getElementById('auto-media-sync');
+            if (cb) cb.checked = state.autoMediaSyncEnabled;
+            const mediaVideo = document.getElementById('hidden-media-video');
+            if (!state.autoMediaSyncEnabled) {
+                state.mediaClockRate = 1;
+                if (mediaVideo) mediaVideo.playbackRate = 1;
+            }
         }
 
         // ============================================================================
@@ -1734,6 +1958,23 @@
             stopMqttSignaling();
             if (state.peerRetryTimer) { clearTimeout(state.peerRetryTimer); state.peerRetryTimer = null; }
             if (state.avSyncTimer) { clearInterval(state.avSyncTimer); state.avSyncTimer = null; }
+            state.avSyncCheckInFlight = false;
+            stopCam1VideoFrameCapture(true);
+            state.cam1AudioCompMs = state.cam1VideoCompMs = state.cam1VideoDelayMs = 0;
+            state.avDriftEmaMs = null;
+            state.cameraLatencySamples = 0;
+            state.nativeClockSamples = [];
+            state.nativeClockBaselineMs = null;
+            state.nativeAvDriftEmaMs = null;
+            state.nativeAvDriftAt = 0;
+            state.nativeAvDriftSamples = 0;
+            state.cameraLatencySource = 'none';
+            state.cameraLatencyLastSampleAt = 0;
+            state.captureTimeSamples = 0;
+            state.estimatedCameraLatencyMs = 0;
+            state.mediaLatencySlope = 0;
+            state.mediaLatencyPrevMs = null;
+            state.mediaLatencyPrevAt = 0;
             if (state.ctrlConn) { try { state.ctrlConn.close(); } catch (e) {} state.ctrlConn = null; }
             if (state.offlineDataChannel) { try { state.offlineDataChannel.close(); } catch (e) {} state.offlineDataChannel = null; }
             if (state.activeCall) { try { state.activeCall.close(); } catch (e) {} state.activeCall = null; }
@@ -1742,6 +1983,7 @@
             }
             if (state.peer) { try { state.peer.destroy(); } catch (e) {} state.peer = null; }
             state.rtcPeerConn = null;
+            state.activeRemotePc = null;
             if (state.localCamStream) { state.localCamStream.getTracks().forEach(t => t.stop()); state.localCamStream = null; }
             disconnectMixerChannel('cam1');
             state.remoteCam1Stream = null;
@@ -1758,100 +2000,119 @@
         }
 
         // ============================================================================
-        // 8. MULTI-SERVER PIN 0000 AUTO-SIGNALING (MQTT + PEERJS) — ZERO SCAN NEEDED!
+        // 8. FAST AUTO-CONNECT (0000 DEFAULT + 10-DIGIT PIN / QR)
         // ============================================================================
         const MQTT_BROKERS = [
             'wss://broker.emqx.io:8084/mqtt',
             'wss://broker.hivemq.com:8884/mqtt',
             'wss://test.mosquitto.org:8081/mqtt'
         ];
-        let mqttClient = null;
-        let mqttBrokerIdx = 0;
+        let mqttClients = [];
         let mqttPingTimer = null;
+        let qrScannerStream = null;
+        let qrScannerTimer = null;
+        let backup10DigitPin = String(Math.floor(1000000000 + Math.random() * 9000000000));
 
         function getMqttTopic(pin, sub) {
-            const p = (pin || state.roomPin || '0000').trim() || '0000';
-            return `prismdeck/v72/room_${p}/${sub}`;
+            const p = String(pin || '0000').trim() || '0000';
+            return `prismdeck/v77/room_${p}/${sub}`;
         }
 
         function stopMqttSignaling() {
             if (mqttPingTimer) { clearInterval(mqttPingTimer); mqttPingTimer = null; }
-            if (mqttClient) {
-                try { mqttClient.end(true); } catch (e) {}
-                mqttClient = null;
+            if (mqttClients && mqttClients.length) {
+                mqttClients.forEach(c => { try { c.end(true); } catch (e) {} });
             }
+            mqttClients = [];
         }
 
+        // Connect to ALL brokers in parallel so whichever responds first connects immediately
         function startMqttAutoSignaling(role, pin) {
             stopMqttSignaling();
             if (typeof mqtt === 'undefined') return;
-            const brokerUrl = MQTT_BROKERS[mqttBrokerIdx % MQTT_BROKERS.length];
-            const clientId = `prism_${role}_${Math.random().toString(36).slice(2, 9)}`;
-            try {
-                const client = mqtt.connect(brokerUrl, {
-                    clientId,
-                    clean: true,
-                    connectTimeout: 5000,
-                    reconnectPeriod: 3000
-                });
-                mqttClient = client;
+            const cleanPin = String(pin || '0000').trim() || '0000';
+            const pinsToListen = (role === 'camera' && cleanPin === '0000')
+                ? ['0000', backup10DigitPin]
+                : [cleanPin];
 
-                client.on('connect', () => {
-                    const stCam = document.getElementById('cam-pair-status');
-                    const stDir = document.getElementById('video-diagnostic-visible');
-                    if (role === 'camera') {
-                        client.subscribe(getMqttTopic(pin, 'to_cam'));
-                        client.publish(getMqttTopic(pin, 'to_dir'), JSON.stringify({ type: 'cam-ready', pin }));
-                        if (stCam && (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected')) {
-                            stCam.textContent = `✅ دوربین روی کد ${pin} آماده اتصال خودکار است (بدون نیاز به اسکن)`;
-                            updateConnectionBadge('ready', `آماده (کد ${pin})`);
-                        }
-                    } else if (role === 'director') {
-                        client.subscribe(getMqttTopic(pin, 'to_dir'));
-                        if (stDir && (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected')) {
-                            stDir.textContent = `⏳ جستجوی خودکار دوربین روی کد ${pin}...`;
-                        }
-                        sendMqttDirectorOffer(pin);
-                        mqttPingTimer = setInterval(() => {
-                            if (state.role === 'director' && (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected')) {
-                                client.publish(getMqttTopic(pin, 'to_cam'), JSON.stringify({ type: 'dir-hello', pin }));
-                            }
-                        }, 3500);
-                    }
-                });
+            MQTT_BROKERS.forEach((brokerUrl) => {
+                try {
+                    const clientId = `prism77_${role}_${Math.random().toString(36).slice(2, 9)}`;
+                    const client = mqtt.connect(brokerUrl, {
+                        clientId,
+                        clean: true,
+                        connectTimeout: 4000,
+                        reconnectPeriod: 2500
+                    });
+                    mqttClients.push(client);
 
-                client.on('message', async (topic, payloadBuf) => {
-                    try {
-                        const msg = JSON.parse(payloadBuf.toString());
+                    client.on('connect', () => {
                         if (role === 'camera') {
-                            if (msg.type === 'dir-hello') {
-                                client.publish(getMqttTopic(pin, 'to_dir'), JSON.stringify({ type: 'cam-ready', pin }));
-                            } else if (msg.type === 'sdp-offer' && msg.sdp) {
-                                await handleMqttOfferOnCamera(msg.sdp, pin);
-                            }
+                            pinsToListen.forEach(p => {
+                                client.subscribe(getMqttTopic(p, 'to_cam'));
+                                client.publish(getMqttTopic(p, 'to_dir'), JSON.stringify({ type: 'cam-ready', pin: p }));
+                            });
                         } else if (role === 'director') {
-                            if (msg.type === 'cam-ready') {
-                                if (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected') {
-                                    await sendMqttDirectorOffer(pin);
+                            client.subscribe(getMqttTopic(cleanPin, 'to_dir'));
+                            client.publish(getMqttTopic(cleanPin, 'to_cam'), JSON.stringify({ type: 'dir-hello', pin: cleanPin }));
+                        }
+                    });
+
+                    client.on('message', async (topic, payloadBuf) => {
+                        try {
+                            const msg = JSON.parse(payloadBuf.toString());
+                            const activePin = msg.pin || cleanPin;
+                            if (role === 'camera') {
+                                if (msg.type === 'dir-hello') {
+                                    client.publish(getMqttTopic(activePin, 'to_dir'), JSON.stringify({ type: 'cam-ready', pin: activePin }));
+                                } else if (msg.type === 'sdp-offer' && msg.sdp) {
+                                    await handleMqttOfferOnCamera(client, msg.sdp, activePin);
                                 }
-                            } else if (msg.type === 'sdp-answer' && msg.sdp) {
-                                if (state.rtcPeerConn && state.rtcPeerConn.signalingState === 'have-local-offer') {
-                                    await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: msg.sdp }));
+                            } else if (role === 'director') {
+                                if (msg.type === 'cam-ready') {
+                                    if (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected') {
+                                        await sendMqttDirectorOffer(client, cleanPin);
+                                    }
+                                } else if (msg.type === 'sdp-answer' && msg.sdp) {
+                                    if (state.rtcPeerConn && state.rtcPeerConn.signalingState === 'have-local-offer') {
+                                        await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: msg.sdp }));
+                                    }
                                 }
                             }
-                        }
-                    } catch (e) {}
-                });
+                        } catch (e) {}
+                    });
+                } catch (e) {}
+            });
 
-                client.on('error', () => {
-                    mqttBrokerIdx++;
-                });
-            } catch (e) {}
+            if (role === 'director') {
+                setTimeout(() => {
+                    const openClient = mqttClients.find(c => c && c.connected);
+                    if (openClient && (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected')) {
+                        sendMqttDirectorOffer(openClient, cleanPin);
+                    }
+                }, 600);
+                mqttPingTimer = setInterval(() => {
+                    if (state.role === 'director' && (!state.rtcPeerConn || state.rtcPeerConn.connectionState !== 'connected')) {
+                        mqttClients.forEach(c => {
+                            if (c && c.connected) {
+                                c.publish(getMqttTopic(cleanPin, 'to_cam'), JSON.stringify({ type: 'dir-hello', pin: cleanPin }));
+                            }
+                        });
+                    }
+                }, 2500);
+            }
         }
 
-        async function sendMqttDirectorOffer(pin) {
-            if (!mqttClient || !mqttClient.connected) return;
-            if (state.rtcPeerConn && state.rtcPeerConn.connectionState === 'connected') return;
+        let offerInFlight = false;
+        async function sendMqttDirectorOffer(client, pin) {
+            if (!client || !client.connected || offerInFlight) return;
+            // PeerJS and MQTT are alternate signaling paths, not two parallel camera feeds.
+            const peerCallPc = state.activeCall?.peerConnection;
+            if (peerCallPc && !['closed', 'failed'].includes(peerCallPc.connectionState)) return;
+            const selectedPc = state.activeRemotePc;
+            if (selectedPc && !['closed', 'failed'].includes(selectedPc.connectionState)) return;
+            if (state.rtcPeerConn && (state.rtcPeerConn.connectionState === 'connected' || state.rtcPeerConn.signalingState === 'have-local-offer')) return;
+            offerInFlight = true;
             try {
                 if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} }
                 const pc = new RTCPeerConnection(RTC_CONFIG);
@@ -1865,14 +2126,14 @@
 
                 pc.ontrack = (ev) => {
                     const stream = (ev.streams && ev.streams[0]) || new MediaStream([ev.track]);
-                    attachRemoteCamera1Stream(stream);
+                    attachRemoteCamera1Stream(stream, pc);
                 };
                 pc.onconnectionstatechange = () => {
                     if (pc.connectionState === 'connected') {
-                        configureReceiverPlayout(pc);
-                        updateConnectionBadge('connected', `متصل (کد ${pin})`);
+                        updateConnectionBadge('connected', `متصل (${pin})`);
                         const badge = document.getElementById('p2p-route-badge');
-                        if (badge) badge.textContent = `⚡ اتصال خودکار با کد ${pin} برقرار شد`;
+                        if (badge) badge.textContent = `⚡ متصل با کد ${pin}`;
+                        closeOfflinePairingModal();
                     }
                 };
 
@@ -1880,21 +2141,28 @@
                 offer.sdp = boostSdpForHotspot720p(offer.sdp);
                 await pc.setLocalDescription(offer);
                 await waitIceComplete(pc);
-                if (mqttClient && mqttClient.connected) {
-                    mqttClient.publish(getMqttTopic(pin, 'to_cam'), JSON.stringify({
-                        type: 'sdp-offer',
-                        sdp: pc.localDescription.sdp
-                    }));
-                }
+                mqttClients.forEach(c => {
+                    if (c && c.connected) {
+                        c.publish(getMqttTopic(pin, 'to_cam'), JSON.stringify({
+                            type: 'sdp-offer',
+                            pin,
+                            sdp: pc.localDescription.sdp
+                        }));
+                    }
+                });
             } catch (e) {}
+            setTimeout(() => { offerInFlight = false; }, 1500);
         }
 
-        async function handleMqttOfferOnCamera(offerSdp, pin) {
+        async function handleMqttOfferOnCamera(client, offerSdp, pin) {
             const st = document.getElementById('cam-pair-status');
             try {
+                const peerCallPc = state.activeCall?.peerConnection;
+                if (peerCallPc && !['closed', 'failed'].includes(peerCallPc.connectionState)) return;
                 if (!state.localCamStream || !state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
                     await startHardwareCamera();
                 }
+                if (state.rtcPeerConn && state.rtcPeerConn.connectionState === 'connected') return;
                 if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} }
                 const pc = new RTCPeerConnection(RTC_CONFIG);
                 state.rtcPeerConn = pc;
@@ -1913,8 +2181,9 @@
                 pc.onconnectionstatechange = () => {
                     if (pc.connectionState === 'connected') {
                         enforceLowLatencyWebRTC(pc);
-                        updateConnectionBadge('connected', `متصل (کد ${pin})`);
-                        if (st) st.textContent = `🔴 متصل به کارگردان با کد ${pin} • تصویر و صدا فعال`;
+                        updateConnectionBadge('connected', `متصل (${pin})`);
+                        if (st) st.textContent = `🔴 متصل به کارگردان (کد ${pin}) • تصویر و صدا فعال`;
+                        closeOfflinePairingModal();
                     }
                 };
 
@@ -1923,20 +2192,26 @@
                 answer.sdp = boostSdpForHotspot720p(answer.sdp);
                 await pc.setLocalDescription(answer);
                 await waitIceComplete(pc);
-                if (mqttClient && mqttClient.connected) {
-                    mqttClient.publish(getMqttTopic(pin, 'to_dir'), JSON.stringify({
-                        type: 'sdp-answer',
-                        sdp: pc.localDescription.sdp
-                    }));
-                }
+                mqttClients.forEach(c => {
+                    if (c && c.connected) {
+                        c.publish(getMqttTopic(pin, 'to_dir'), JSON.stringify({
+                            type: 'sdp-answer',
+                            pin,
+                            sdp: pc.localDescription.sdp
+                        }));
+                    }
+                });
             } catch (e) {}
         }
 
         // ============================================================================
-        // ROLE 1: CAMERA NODE WITH PIN 0000 (MQTT + PEERJS DUAL ENGINE)
+        // ROLE 1: CAMERA NODE (OPENS IMMEDIATELY ON 0000 + 10-DIGIT BACKUP)
         // ============================================================================
         async function initCameraNodeRole() {
             switchRole('camera');
+            const st = document.getElementById('cam-pair-status');
+            if (st) st.textContent = '✅ دوربین روشن شد (آماده اتصال روی کد 0000)';
+            updateConnectionBadge('ready', 'دوربین آماده (0000)');
             await startHardwareCamera();
             registerCameraWithPin();
         }
@@ -1964,54 +2239,47 @@
             const pin = (document.getElementById('cam-room-pin')?.value || state.roomPin || '0000').trim() || '0000';
             syncRoomPinInputs(pin);
 
-            // 1) Start multi-broker MQTT auto-signaling on PIN 0000 immediately (works even when PeerJS gives server-error!)
+            if (st) st.textContent = `✅ دوربین روشن و آماده است (کد: ${pin})`;
+            updateConnectionBadge('ready', `آماده (${pin})`);
+
+            // 1) Multi-broker MQTT auto-signaling (listens on both 0000 and 10-digit code)
             startMqttAutoSignaling('camera', pin);
 
-            // 2) Also start PeerJS in parallel as secondary path
+            // 2) PeerJS in parallel
             if (typeof Peer === 'undefined') return;
             if (state.peer) { try { state.peer.destroy(); } catch (e) {} state.peer = null; }
-            const peerId = getCameraPeerId(pin);
-            if (st) st.textContent = `✅ دوربین روی کد ${pin} فعال شد (منتظر کارگردان...)`;
-            updateConnectionBadge('ready', `آماده (کد ${pin})`);
-
-            const peer = createPeerInstance(peerId);
+            const peer = createPeerInstance(getCameraPeerId(pin));
             state.peer = peer;
 
-            peer.on('open', () => {
-                state.peerRetryCount = 0;
-                if (st) st.textContent = `✅ دوربین با کد ${pin} آماده است (منتظر اتصال کارگردان)`;
-                updateConnectionBadge('ready', `آماده (کد ${pin})`);
-            });
-
-            peer.on('connection', (conn) => {
-                setupCtrlConnection(conn);
-            });
-
+            peer.on('connection', (conn) => setupCtrlConnection(conn));
             peer.on('call', async (call) => {
+                const currentPc = state.rtcPeerConn;
+                if (currentPc && currentPc !== call.peerConnection && !['closed', 'failed'].includes(currentPc.connectionState) &&
+                    (currentPc.connectionState === 'connected' || currentPc.connectionState === 'connecting' || currentPc.signalingState !== 'stable')) {
+                    try { call.close(); } catch (e) {}
+                    return;
+                }
                 if (!state.localCamStream || !state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
                     await startHardwareCamera();
                 }
                 if (state.rawAudioTrack) state.rawAudioTrack.enabled = true;
                 state.activeCall = call;
                 call.answer(state.localCamStream, { sdpTransform: boostSdpForHotspot720p });
-
                 const pc = call.peerConnection;
                 state.rtcPeerConn = pc;
                 if (pc) {
                     pc.onconnectionstatechange = () => {
                         if (pc.connectionState === 'connected') {
                             enforceLowLatencyWebRTC(pc);
-                            updateConnectionBadge('connected', `متصل (کد ${pin})`);
+                            updateConnectionBadge('connected', `متصل (${pin})`);
                             if (st) st.textContent = `🔴 متصل به کارگردان (کد ${pin}) • تصویر و صدا فعال`;
+                            closeOfflinePairingModal();
                         }
                     };
                     setTimeout(() => enforceLowLatencyWebRTC(pc), 400);
                 }
             });
-
-            peer.on('error', () => {
-                // Silent fallback: MQTT signaling on PIN 0000 is already active!
-            });
+            peer.on('error', () => {});
         }
 
         function handleIncomingControlCommand(data) {
@@ -2074,7 +2342,7 @@
         }
 
         // ============================================================================
-        // 9. ROLE 2: DIRECTOR SWITCHER STUDIO (AUTO-CONNECT BY PIN 0000)
+        // 9. ROLE 2: DIRECTOR SWITCHER STUDIO (CONNECT BY 0000 OR 10-DIGIT PIN)
         // ============================================================================
         async function initDirectorRole() {
             switchRole('director');
@@ -2114,6 +2382,9 @@
 
         function connectDirectorByPin() {
             ensureAudioContextRunning();
+            state.activeRemotePc = null;
+            state.remoteCam1Stream = null;
+            offerInFlight = false;
             if (state.peerRetryTimer) { clearTimeout(state.peerRetryTimer); state.peerRetryTimer = null; }
             const pin = (document.getElementById('dir-room-pin')?.value || state.roomPin || '0000').trim() || '0000';
             syncRoomPinInputs(pin);
@@ -2121,12 +2392,12 @@
             const visibleDiag = document.getElementById('video-diagnostic-visible');
 
             updateConnectionBadge('waiting', `اتصال به ${pin}...`);
-            if (visibleDiag) visibleDiag.textContent = `⏳ در حال اتصال خودکار به دوربین با کد ${pin}...`;
+            if (visibleDiag) visibleDiag.textContent = `⏳ در حال اتصال به دوربین با کد ${pin}...`;
 
-            // 1) Start multi-broker MQTT auto-signaling on PIN 0000 (bypasses PeerJS server-error!)
+            // 1) Connect via multi-broker MQTT on this PIN
             startMqttAutoSignaling('director', pin);
 
-            // 2) Also try PeerJS in parallel
+            // 2) Connect via PeerJS in parallel
             if (typeof Peer === 'undefined') return;
             if (state.ctrlConn) { try { state.ctrlConn.close(); } catch (e) {} state.ctrlConn = null; }
             if (state.activeCall) { try { state.activeCall.close(); } catch (e) {} state.activeCall = null; }
@@ -2136,7 +2407,9 @@
             state.peer = peer;
 
             peer.on('open', () => {
-                if (state.rtcPeerConn && state.rtcPeerConn.connectionState === 'connected') return;
+                const currentPc = state.rtcPeerConn;
+                if (currentPc && !['closed', 'failed'].includes(currentPc.connectionState) &&
+                    (currentPc.connectionState === 'connected' || currentPc.connectionState === 'connecting' || currentPc.signalingState !== 'stable')) return;
                 const conn = peer.connect(targetPeerId, { reliable: true });
                 setupCtrlConnection(conn);
 
@@ -2149,28 +2422,40 @@
                     state.rtcPeerConn = pc;
                     pc.onconnectionstatechange = () => {
                         if (pc.connectionState === 'connected') {
-                            configureReceiverPlayout(pc);
-                            updateConnectionBadge('connected', `دوربین متصل (کد ${pin})`);
+                            updateConnectionBadge('connected', `متصل (${pin})`);
+                            closeOfflinePairingModal();
                         }
                     };
                 }
 
                 call.on('stream', (remoteStream) => {
-                    if (call.peerConnection) configureReceiverPlayout(call.peerConnection);
-                    attachRemoteCamera1Stream(remoteStream);
+                    attachRemoteCamera1Stream(remoteStream, call.peerConnection);
                 });
             });
 
-            peer.on('error', () => {
-                // Silent fallback: MQTT auto-signaling on PIN 0000 handles connection automatically
-            });
+            peer.on('error', () => {});
         }
 
         // ============================================================================
-        // 9B. ULTRA-COMPACT MICRO-SDP ENCODER FOR QR CODE (~350 CHARS, NEVER FAILS!)
+        // 9B. 10-DIGIT PIN + INSTANT QR CODE (ONLY 10 DIGITS IN QR -> NEVER OVERFLOWS!)
         // ============================================================================
-        let qrScannerStream = null;
-        let qrScannerTimer = null;
+        function generate10DigitPinAndShowQr() {
+            backup10DigitPin = String(Math.floor(1000000000 + Math.random() * 9000000000));
+            syncRoomPinInputs(backup10DigitPin);
+            registerCameraWithPin();
+            openOfflinePairingModal();
+            const disp = document.getElementById('cam-10digit-display');
+            if (disp) disp.textContent = backup10DigitPin;
+            renderQrCodeToElement('off-cam-qr', backup10DigitPin);
+        }
+
+        function connectDirectorWith10DigitInput() {
+            const val = (document.getElementById('dir-10digit-input')?.value || '').trim();
+            if (!val) return;
+            syncRoomPinInputs(val);
+            closeOfflinePairingModal();
+            connectDirectorByPin();
+        }
 
         function openOfflinePairingModal() {
             ensureAudioContextRunning();
@@ -2181,6 +2466,14 @@
             if (!modal) return;
             dirBox.classList.toggle('hidden', state.role !== 'director');
             camBox.classList.toggle('hidden', state.role !== 'camera');
+            if (state.role === 'camera') {
+                const currentPin = (state.roomPin && state.roomPin.length === 10) ? state.roomPin : backup10DigitPin;
+                syncRoomPinInputs(currentPin);
+                registerCameraWithPin();
+                const disp = document.getElementById('cam-10digit-display');
+                if (disp) disp.textContent = currentPin;
+                renderQrCodeToElement('off-cam-qr', currentPin);
+            }
             if (status) status.textContent = '';
             modal.classList.remove('hidden');
         }
@@ -2191,95 +2484,25 @@
             if (modal) modal.classList.add('hidden');
         }
 
-        // Compress full WebRTC SDP (~2500 chars) down to ~220 chars so QR code is tiny and instant!
-        function encodeMicroSdp(desc) {
-            const sdp = desc.sdp || '';
-            const ufrag = (sdp.match(/a=ice-ufrag:([^\r\n]+)/) || [])[1] || '';
-            const pwd = (sdp.match(/a=ice-pwd:([^\r\n]+)/) || [])[1] || '';
-            const fp = (sdp.match(/a=fingerprint:sha-256 ([^\r\n]+)/) || [])[1] || '';
-            const cands = [];
-            const lines = sdp.split('\r\n');
-            for (const l of lines) {
-                if (l.startsWith('a=candidate:') && (l.includes(' typ host') || l.includes(' typ srflx'))) {
-                    const p = l.split(' ');
-                    if (p.length >= 6 && !p[4].includes(':')) {
-                        const proto = p[2].toLowerCase() === 'udp' ? 'u' : 't';
-                        const typ = l.includes(' typ srflx') ? 's' : 'h';
-                        const key = `${proto},${p[4]},${p[5]},${typ}`;
-                        if (!cands.includes(key) && cands.length < 4) cands.push(key);
-                    }
-                }
-            }
-            // If browser hides Full SDP inside tiny JSON, also check if it fits directly
-            const micro = {
-                m: 1,
-                t: desc.type === 'offer' ? 'o' : 'a',
-                u: ufrag,
-                p: pwd,
-                f: fp,
-                c: cands
-            };
-            return btoa(JSON.stringify(micro));
-        }
-
-        // Compact standard SDP to ~700 chars by stripping non-essential lines so QR never overflows
-        function stripSdpToMinimal(sdp) {
-            if (!sdp) return sdp;
-            const keepPrefixes = [
-                'v=', 'o=', 's=', 't=', 'a=group:', 'm=', 'c=',
-                'a=ice-ufrag:', 'a=ice-pwd:', 'a=fingerprint:', 'a=setup:',
-                'a=mid:', 'a=sendonly', 'a=recvonly', 'a=sendrecv',
-                'a=rtpmap:', 'a=fmtp:', 'a=sctp-port:'
-            ];
-            const out = [];
-            let hostCount = 0;
-            for (const line of sdp.split('\r\n')) {
-                if (!line) continue;
-                if (line.startsWith('a=candidate:')) {
-                    if (!line.includes(':') || line.split(':').length <= 3) {
-                        if (hostCount < 6) { out.push(line); hostCount++; }
-                    }
-                    continue;
-                }
-                if (keepPrefixes.some(pref => line.startsWith(pref))) {
-                    if (line.startsWith('a=rtpmap:')) {
-                        const low = line.toLowerCase();
-                        if (low.includes('vp8') || low.includes('h264') || low.includes('opus') || low.includes('rtx')) {
-                            out.push(line);
-                        }
-                    } else {
-                        out.push(line);
-                    }
-                }
-            }
-            return out.join('\r\n') + '\r\n';
-        }
-
         function renderQrCodeToElement(containerId, text) {
             const box = document.getElementById(containerId);
             if (!box) return;
             box.innerHTML = '';
             if (typeof qrcode !== 'function') {
-                box.classList.remove('hidden');
-                box.innerHTML = '<div style="color:#000;font-size:11px;padding:8px;">کتابخانه QR لود نشد؛ از کادر متن پایین استفاده کنید.</div>';
+                box.innerHTML = `<div style="color:#000;font-size:16px;font-weight:bold;padding:12px;">${text}</div>`;
                 return;
             }
             try {
-                const qr = qrcode(0, 'L');
-                qr.addData(text);
+                const qr = qrcode(0, 'M');
+                qr.addData(String(text));
                 qr.make();
-                box.innerHTML = qr.createSvgTag(4, 2);
+                box.innerHTML = qr.createSvgTag(6, 2);
                 const svg = box.querySelector('svg');
                 if (svg) {
-                    svg.style.width = '240px';
-                    svg.style.height = '240px';
-                    svg.style.maxWidth = '100%';
+                    svg.style.width = '200px';
+                    svg.style.height = '200px';
                 }
-                box.classList.remove('hidden');
-            } catch (e) {
-                box.classList.remove('hidden');
-                box.innerHTML = `<div style="color:#000;font-size:11px;padding:8px;">خطای QR (${e.message})</div>`;
-            }
+            } catch (e) {}
         }
 
         function stopQrScanner() {
@@ -2294,7 +2517,7 @@
             }
         }
 
-        async function startQrScanner(targetSide) {
+        async function startQrScanner() {
             stopQrScanner();
             const wrap = document.getElementById('off-qr-scanner-wrap');
             const vid = document.getElementById('off-qr-video');
@@ -2303,17 +2526,12 @@
             if (!wrap || !vid || !canvas) return;
 
             try {
-                let stream = null;
-                if (targetSide === 'camera' && state.localCamStream && state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
-                    stream = state.localCamStream;
-                } else {
-                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
-                    qrScannerStream = stream;
-                }
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+                qrScannerStream = stream;
                 vid.srcObject = stream;
                 await vid.play().catch(() => {});
                 wrap.classList.remove('hidden');
-                if (st) st.textContent = '📷 دوربین اسکن روشن است؛ آن را مقابل QR کد نگه دارید.';
+                if (st) st.textContent = '📷 دوربین را روی QR کد ۱۰ رقمی بگیرید...';
 
                 const detector = ('BarcodeDetector' in window) ? new window.BarcodeDetector({ formats: ['qr_code'] }) : null;
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -2341,14 +2559,13 @@
                         busy = false;
 
                         if (foundText) {
+                            const pinCode = foundText.trim();
                             stopQrScanner();
-                            if (targetSide === 'camera') {
-                                document.getElementById('off-cam-offer').value = foundText;
-                                offlineCameraAcceptOffer();
-                            } else {
-                                document.getElementById('off-dir-answer').value = foundText;
-                                offlineDirectorApplyAnswer();
-                            }
+                            const inp = document.getElementById('dir-10digit-input');
+                            if (inp) inp.value = pinCode;
+                            syncRoomPinInputs(pinCode);
+                            closeOfflinePairingModal();
+                            connectDirectorByPin();
                             return;
                         }
                     }
@@ -2370,138 +2587,8 @@
                     }
                 };
                 pc.addEventListener('icegatheringstatechange', done);
-                setTimeout(resolve, 1200);
+                setTimeout(resolve, 1000);
             });
-        }
-
-        async function copyTextSafe(text) {
-            try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(text);
-                    return true;
-                }
-            } catch (e) {}
-            try {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                ta.remove();
-                return true;
-            } catch (e) { return false; }
-        }
-
-        async function offlineDirectorCreateOffer() {
-            const st = document.getElementById('offline-modal-status');
-            const out = document.getElementById('off-dir-offer');
-            try {
-                if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} }
-                const pc = new RTCPeerConnection(RTC_CONFIG);
-                state.rtcPeerConn = pc;
-                pc.addTransceiver('video', { direction: 'recvonly' });
-                pc.addTransceiver('audio', { direction: 'recvonly' });
-
-                const dc = pc.createDataChannel('ctrl');
-                state.offlineDataChannel = dc;
-                dc.onmessage = (e) => handleIncomingDataMessage(e.data);
-
-                pc.ontrack = (ev) => {
-                    const stream = (ev.streams && ev.streams[0]) || new MediaStream([ev.track]);
-                    attachRemoteCamera1Stream(stream);
-                };
-                pc.onconnectionstatechange = () => {
-                    if (pc.connectionState === 'connected') {
-                        updateConnectionBadge('connected', 'متصل (آفلاین)');
-                        if (st) st.textContent = '✅ اتصال مستقیم آفلاین با موفقیت برقرار شد!';
-                        setTimeout(closeOfflinePairingModal, 900);
-                    }
-                };
-
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                if (st) st.textContent = '⏳ در حال ساخت QR کد فشرده...';
-                await waitIceComplete(pc);
-                const minSdp = stripSdpToMinimal(pc.localDescription.sdp);
-                const payload = btoa(JSON.stringify({ t: 'o', s: minSdp }));
-                out.value = payload;
-                renderQrCodeToElement('off-dir-qr', payload);
-                await copyTextSafe(payload);
-                if (st) st.textContent = '✅ QR کد ساخته شد! حالا با گوشی دوربین اسکن کنید.';
-            } catch (err) {
-                if (st) st.textContent = `❌ خطا: ${err.message}`;
-            }
-        }
-
-        async function offlineDirectorApplyAnswer() {
-            const st = document.getElementById('offline-modal-status');
-            const raw = (document.getElementById('off-dir-answer')?.value || '').trim();
-            if (!raw || !state.rtcPeerConn) {
-                if (st) st.textContent = '⚠️ ابتدا گام ۱ را بزنید و QR کد پاسخ را اسکن کنید.';
-                return;
-            }
-            try {
-                const parsed = JSON.parse(atob(raw));
-                const desc = parsed.s ? { type: 'answer', sdp: parsed.s } : parsed;
-                await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription(desc));
-                if (st) st.textContent = '⏳ در حال برقراری ارتباط مستقیم...';
-            } catch (err) {
-                if (st) st.textContent = `❌ کد پاسخ معتبر نیست: ${err.message}`;
-            }
-        }
-
-        async function offlineCameraAcceptOffer() {
-            const st = document.getElementById('offline-modal-status');
-            const raw = (document.getElementById('off-cam-offer')?.value || '').trim();
-            const out = document.getElementById('off-cam-answer');
-            if (!raw) {
-                if (st) st.textContent = '⚠️ ابتدا QR کد کارگردان را اسکن کنید.';
-                return;
-            }
-            try {
-                if (!state.localCamStream || !state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
-                    await startHardwareCamera();
-                }
-                if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} }
-                const pc = new RTCPeerConnection(RTC_CONFIG);
-                state.rtcPeerConn = pc;
-                state.localCamStream.getTracks().forEach(t => {
-                    t.enabled = true;
-                    pc.addTrack(t, state.localCamStream);
-                });
-                pc.ondatachannel = (ev) => {
-                    state.offlineDataChannel = ev.channel;
-                    ev.channel.onopen = () => {
-                        sendDataChannelMsg({ type: 'lenses', lenses: state.availableLenses, current: state.currentDeviceId });
-                        sendDataChannelMsg({ type: 'cam-rotate', rotation: state.cam1Rotation });
-                    };
-                    ev.channel.onmessage = (e) => handleIncomingDataMessage(e.data);
-                };
-                pc.onconnectionstatechange = () => {
-                    if (pc.connectionState === 'connected') {
-                        enforceLowLatencyWebRTC(pc);
-                        updateConnectionBadge('connected', 'متصل (آفلاین)');
-                        if (st) st.textContent = '✅ دوربین مستقیم به کارگردان وصل شد!';
-                        setTimeout(closeOfflinePairingModal, 900);
-                    }
-                };
-
-                const parsed = JSON.parse(atob(raw));
-                const offerDesc = parsed.s ? { type: 'offer', sdp: parsed.s } : parsed;
-                await pc.setRemoteDescription(new RTCSessionDescription(offerDesc));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                if (st) st.textContent = '⏳ در حال ساخت QR کد پاسخ فشرده...';
-                await waitIceComplete(pc);
-                const minSdp = stripSdpToMinimal(pc.localDescription.sdp);
-                const payload = btoa(JSON.stringify({ t: 'a', s: minSdp }));
-                out.value = payload;
-                renderQrCodeToElement('off-cam-qr', payload);
-                await copyTextSafe(payload);
-                if (st) st.textContent = '✅ QR کد پاسخ ساخته شد! حالا آن را با گوشی کارگردان اسکن کنید.';
-            } catch (err) {
-                if (st) st.textContent = `❌ خطا: ${err.message}`;
-            }
         }
 
         function populateRemoteLensesDropdown(lenses, currentId) {
@@ -2514,35 +2601,58 @@
 
         function v1PlayRemoteCamera() {
             const v1 = document.getElementById('hidden-cam1-video');
-            if (v1 && v1.paused) v1.play().catch(() => {});
+            if (!v1) return;
+            // Audio is routed from this same media element into WebAudio; it is not played by a second sink.
+            v1.muted = false;
+            v1.defaultMuted = false;
+            v1.volume = 1;
+            if (v1.paused) v1.play().catch(() => {});
         }
 
-        function attachRemoteCamera1Stream(stream) {
+        function attachRemoteCamera1Stream(stream, peerConnection = null) {
             const v1 = document.getElementById('hidden-cam1-video');
-            const a1 = document.getElementById('hidden-cam1-audio');
             if (!v1 || !stream) return;
+
+            // PeerJS and MQTT signaling may race. Keep the first active media connection; never swap streams mid-shot.
+            if (peerConnection) {
+                const active = state.activeRemotePc;
+                if (active && active !== peerConnection && !['closed', 'failed'].includes(active.connectionState)) return;
+                state.activeRemotePc = peerConnection;
+                state.rtcPeerConn = peerConnection;
+            }
+
+            if (state.remoteCam1Stream !== stream) stopCam1VideoFrameCapture(true);
             state.remoteCam1Stream = stream;
-            v1.muted = true;
-            v1.defaultMuted = true;
+            state.cameraLatencySamples = 0;
+            state.nativeClockSamples = [];
+            state.nativeClockBaselineMs = null;
+            state.nativeAvDriftEmaMs = null;
+            state.nativeAvDriftAt = 0;
+            state.nativeAvDriftSamples = 0;
+            state.cameraLatencySource = 'none';
+            state.cameraLatencyLastSampleAt = 0;
+            state.captureTimeSamples = 0;
+            state.estimatedCameraLatencyMs = 0;
+            state.mediaLatencySlope = 0;
+            state.mediaLatencyPrevMs = null;
+            state.mediaLatencyPrevAt = 0;
+            v1.muted = false;
+            v1.defaultMuted = false;
+            v1.volume = 1;
             v1.autoplay = true;
             v1.playsInline = true;
             if (v1.srcObject !== stream) v1.srcObject = stream;
 
-            // FIX: Attach audio tracks to an unmuted <audio> with volume=0 so Chromium decodes WebRTC audio!
-            if (a1 && stream.getAudioTracks().length > 0) {
-                a1.muted = false;
-                a1.volume = 0;
-                a1.autoplay = true;
-                a1.srcObject = new MediaStream(stream.getAudioTracks());
-                a1.play().catch(() => {});
-            }
+            // The remote audio and video now share one HTMLMediaElement clock before audio enters the mixer.
+            initWebAudioMixer();
+            connectMediaElementToAudioMixer(v1, 'cam1', false);
 
             const report = () => {
                 const visibleDiag = document.getElementById('video-diagnostic-visible');
                 const tracks = stream.getTracks().map(t => `${t.kind}:${t.readyState}`).join(', ');
                 if (visibleDiag) {
                     visibleDiag.textContent = (v1.videoWidth > 0 && v1.videoHeight > 0)
-                        ? `✅ تصویر و صدای دوربین ۱ فعال: ${v1.videoWidth}×${v1.videoHeight} • چرخش: ${state.cam1Rotation}° • (${tracks})`
+                        ? `✅ تصویر و صدای دوربین ۱ از یک پخش‌کننده: ${v1.videoWidth}×${v1.videoHeight} • چرخش: ${state.cam1Rotation}° • (${tracks})`
                         : `دریافت ترک دوربین ۱ (${tracks})...`;
                 }
             };
@@ -2553,14 +2663,15 @@
             startAvSyncWatchdog(v1);
 
             stream.getAudioTracks().forEach(track => { track.enabled = true; });
-            connectStreamToAudioMixer('cam1', stream);
             report();
             syncRemoteTallyState();
         }
 
         async function forceRefreshVideoStreams() {
-            flushRemoteVideoBuffer('manual');
+            // Request a keyframe without detaching the live stream or resetting its audio clock.
             sendRemoteCommand({ type: 'requestKeyFrame' });
+            const badge = document.getElementById('video-diagnostic-visible');
+            if (badge) badge.textContent = 'درخواست فریم کلیدی ارسال شد؛ جریان زنده بدون قطع صدا ادامه دارد.';
         }
 
         // ============================================================================
@@ -2595,7 +2706,7 @@
                 return;
             }
             if (state.mediaPlaylistIndex < 0) {
-                loadPlaylistItem(0, true);
+                loadPlaylistItem(0, true, true);
                 syncPgmPlayPauseButtonUI();
                 return;
             }
@@ -2608,12 +2719,17 @@
             if (v) {
                 v.muted = false;
                 v.volume = 1.0;
-                connectMediaElementToAudioMixer(v);
-                if (v.paused) {
-                    state.mediaPlaylistRunning = true;
-                    v.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => syncPgmPlayPauseButtonUI());
+                connectMediaElementToAudioMixer(v, 'media', true);
+                if (state.mediaStartTimer !== null) {
+                    cancelScheduledMediaStart();
+                    state.mediaPlaylistRunning = false;
+                    syncPgmPlayPauseButtonUI();
+                } else if (v.paused) {
+                    startMediaVideoPlayback(v, true);
                 } else {
                     v.pause();
+                    v.playbackRate = 1;
+                    state.mediaClockRate = 1;
                     state.mediaPlaylistRunning = false;
                     syncPgmPlayPauseButtonUI();
                 }
@@ -2695,7 +2811,7 @@
 
             function renderLoop(timestamp) {
                 if (state.role !== 'director') { compositorRunning = false; return; }
-                const minFrameInterval = state.isRecording ? 32 : 20;
+                const minFrameInterval = state.isRecording ? (1000 / 30) : 20;
                 if (timestamp - lastRenderTime < minFrameInterval) { requestAnimationFrame(renderLoop); return; }
                 lastRenderTime = timestamp;
 
@@ -2706,6 +2822,9 @@
                     lastFpsTime = timestamp;
                 }
                 drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height);
+                if (state.isRecording && state.canvasCaptureManual && state.canvasCaptureTrack?.readyState === 'live') {
+                    try { state.canvasCaptureTrack.requestFrame(); } catch (e) {}
+                }
                 requestAnimationFrame(renderLoop);
             }
             requestAnimationFrame(renderLoop);
@@ -2714,7 +2833,8 @@
         function drawSourceScene(ctx, sourceType, w, h) {
             ctx.fillStyle = '#070b14';
             ctx.fillRect(0, 0, w, h);
-            const v1 = document.getElementById('hidden-cam1-video');
+            const liveCam1 = document.getElementById('hidden-cam1-video');
+            const v1 = getCam1VisualSource(liveCam1);
 
             if (sourceType === 'cam1') {
                 drawVideoSmart(ctx, v1, 0, 0, w, h, 'CAM 1 (در انتظار تصویر دوربین ۱)', state.cam1Rotation, 'cover', state.cam1Mirror);
@@ -2789,12 +2909,14 @@
 
         function drawVideoSmart(ctx, videoEl, x, y, w, h, label, rotationDeg = 270, fitMode = 'cover', mirror = false, cropOpts = null) {
             if (videoEl && videoEl.srcObject && videoEl.paused) {
-                videoEl.muted = true;
+                // Do not mute this element: its audio is the same clocked source routed to the master mixer.
                 videoEl.play().catch(() => {});
             }
-            if (videoEl && videoEl.videoWidth > 0 && videoEl.videoHeight > 0) {
-                const rawW = videoEl.videoWidth;
-                const rawH = videoEl.videoHeight;
+            const sourceWidth = videoEl?.videoWidth || videoEl?.naturalWidth || videoEl?.displayWidth || videoEl?.width || 0;
+            const sourceHeight = videoEl?.videoHeight || videoEl?.naturalHeight || videoEl?.displayHeight || videoEl?.height || 0;
+            if (videoEl && sourceWidth > 0 && sourceHeight > 0) {
+                const rawW = sourceWidth;
+                const rawH = sourceHeight;
                 const isRotated90 = (rotationDeg === 90 || rotationDeg === 270);
                 const effW = isRotated90 ? rawH : rawW;
                 const effH = isRotated90 ? rawW : rawH;
@@ -2822,7 +2944,7 @@
                 if (rotationDeg !== 0) ctx.rotate((rotationDeg * Math.PI) / 180);
                 if (mirror) ctx.scale(-1, 1);
 
-                const isCam1 = videoEl.id === 'hidden-cam1-video';
+                const isCam1 = videoEl.id === 'hidden-cam1-video' || videoEl === state.cam1DisplayedFrame;
                 if (isCam1 && state.colorBoostLevel > 0) {
                     ctx.filter = state.colorBoostLevel === 1
                         ? 'saturate(1.42) contrast(1.08) brightness(1.03)'
@@ -2981,10 +3103,52 @@
             syncPgmPlayPauseButtonUI();
         }
 
-        function loadPlaylistItem(index, autoplay = false) {
+        function setMediaStartDelay(value) {
+            const ms = Math.max(0, Math.min(1500, Math.round(Number(value) || 0)));
+            state.mediaStartDelayMs = ms;
+            const label = document.getElementById('media-delay-label');
+            if (label) label.textContent = `${ms.toLocaleString('fa-IR')} ms`;
+            const slider = document.getElementById('media-start-delay');
+            if (slider && Number(slider.value) !== ms) slider.value = String(ms);
+        }
+
+        function cancelScheduledMediaStart() {
+            if (state.mediaStartTimer !== null) {
+                clearTimeout(state.mediaStartTimer);
+                state.mediaStartTimer = null;
+            }
+        }
+
+        function startMediaVideoPlayback(videoEl, applyReactionDelay = false) {
+            if (!videoEl) return;
+            cancelScheduledMediaStart();
+            state.mediaPlaylistRunning = true;
+            const autoCamDelay = (applyReactionDelay && state.autoMediaSyncEnabled && state.cameraLatencySamples >= 2)
+                ? Math.round(state.estimatedCameraLatencyMs) : 0;
+            const delayMs = applyReactionDelay ? Math.min(2500, state.mediaStartDelayMs + autoCamDelay) : 0;
+            const playNow = () => {
+                state.mediaStartTimer = null;
+                if (!state.mediaPlaylistRunning || state.mediaType !== 'video') return;
+                try { videoEl.playbackRate = state.autoMediaSyncEnabled ? state.mediaClockRate : 1; } catch (e) {}
+                videoEl.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => syncPgmPlayPauseButtonUI());
+            };
+            if (delayMs > 0) {
+                const status = document.getElementById('pgm-playback-status');
+                if (status) {
+                    status.textContent = `⏳ شروع کلیپ پس از ${delayMs}ms • خودکار دوربین ${autoCamDelay}ms + دستی ${state.mediaStartDelayMs}ms`;
+                    status.className = 'text-[11px] font-mono text-cyan-300';
+                }
+                state.mediaStartTimer = setTimeout(playNow, delayMs);
+            } else {
+                playNow();
+            }
+        }
+
+        function loadPlaylistItem(index, autoplay = false, applyReactionDelay = false) {
             if (index < 0 || index >= state.mediaPlaylist.length) return;
             ensureAudioContextRunning();
             if (state.imageAdvanceTimer) { clearTimeout(state.imageAdvanceTimer); state.imageAdvanceTimer = null; }
+            cancelScheduledMediaStart();
             const item = state.mediaPlaylist[index];
             state.mediaPlaylistIndex = index;
             state.mediaType = item.type;
@@ -3014,7 +3178,7 @@
                     }
                     if (!state.mediaPlaylistRunning) { syncPgmPlayPauseButtonUI(); return; }
                     if (mode === 'sequence' && state.mediaPlaylistIndex < state.mediaPlaylist.length - 1) {
-                        loadPlaylistItem(state.mediaPlaylistIndex + 1, true);
+                        loadPlaylistItem(state.mediaPlaylistIndex + 1, true, false);
                     } else {
                         stopPlaylist();
                         directCutToProgram('cam1');
@@ -3023,7 +3187,7 @@
                 };
                 if (autoplay) {
                     if (!['media', 'pip', 'pip_lg', 'split', 'split23'].includes(state.pgmSource)) directCutToProgram('media');
-                    video.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => syncPgmPlayPauseButtonUI());
+                    startMediaVideoPlayback(video, applyReactionDelay);
                 } else {
                     video.pause();
                 }
@@ -3053,14 +3217,16 @@
             if (!state.mediaPlaylist.length) { document.getElementById('media-status').textContent = 'ابتدا فایل اضافه کنید.'; return; }
             state.mediaPlaylistMode = document.getElementById('playlist-mode')?.value || 'sequence';
             state.mediaPlaylistRunning = true;
-            loadPlaylistItem(state.mediaPlaylistIndex >= 0 ? state.mediaPlaylistIndex : 0, true);
+            loadPlaylistItem(state.mediaPlaylistIndex >= 0 ? state.mediaPlaylistIndex : 0, true, true);
         }
 
         function stopPlaylist() {
             state.mediaPlaylistRunning = false;
+            cancelScheduledMediaStart();
             if (state.imageAdvanceTimer) { clearTimeout(state.imageAdvanceTimer); state.imageAdvanceTimer = null; }
             const v = document.getElementById('hidden-media-video');
-            if (v) v.pause();
+            if (v) { v.pause(); v.playbackRate = 1; }
+            state.mediaClockRate = 1;
             const status = document.getElementById('media-status');
             if (status && state.mediaPlaylistIndex >= 0) status.textContent = `متوقف • ${state.mediaPlaylistIndex + 1} از ${state.mediaPlaylist.length}`;
         }
@@ -3068,7 +3234,7 @@
         function playPlaylistStep(delta) {
             if (!state.mediaPlaylist.length) return;
             const next = Math.max(0, Math.min(state.mediaPlaylist.length - 1, (state.mediaPlaylistIndex < 0 ? 0 : state.mediaPlaylistIndex) + delta));
-            loadPlaylistItem(next, true);
+            loadPlaylistItem(next, true, true);
         }
 
         function toggleMediaPlayback() {
@@ -3078,19 +3244,24 @@
             if (!v) return;
             v.muted = false;
             v.volume = 1.0;
-            connectMediaElementToAudioMixer(v);
-            if (v.paused) {
-                state.mediaPlaylistRunning = true;
+            connectMediaElementToAudioMixer(v, 'media', true);
+            if (state.mediaStartTimer !== null) {
+                cancelScheduledMediaStart();
+                state.mediaPlaylistRunning = false;
+                syncPgmPlayPauseButtonUI();
+            } else if (v.paused) {
                 if (!['media', 'pip', 'pip_lg', 'split', 'split23'].includes(state.pgmSource)) directCutToProgram('media');
-                v.play().then(() => syncPgmPlayPauseButtonUI()).catch(() => {});
+                startMediaVideoPlayback(v, true);
             } else {
                 v.pause();
+                v.playbackRate = 1;
+                state.mediaClockRate = 1;
                 state.mediaPlaylistRunning = false;
                 syncPgmPlayPauseButtonUI();
             }
         }
 
-        function restartMedia() { if (state.mediaPlaylistIndex >= 0) loadPlaylistItem(state.mediaPlaylistIndex, true); }
+        function restartMedia() { if (state.mediaPlaylistIndex >= 0) loadPlaylistItem(state.mediaPlaylistIndex, true, true); }
 
         function switchDirectorTab(tab) {
             ['ptz', 'media'].forEach(t => {
@@ -3119,19 +3290,9 @@
             }
             try {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                // Balanced avoids the very small/variable interactive buffer target during long master recordings.
                 state.audioCtx = new AudioContextClass({ latencyHint: 'interactive' });
                 state.destNode = state.audioCtx.createMediaStreamDestination();
-                const silentOsc = state.audioCtx.createOscillator();
-                const silentGain = state.audioCtx.createGain();
-                silentGain.gain.value = 0.00001;
-                const zeroOutGain = state.audioCtx.createGain();
-                zeroOutGain.gain.value = 0;
-                silentOsc.frequency.value = 440;
-                silentOsc.connect(silentGain);
-                silentGain.connect(state.destNode);
-                silentGain.connect(zeroOutGain);
-                zeroOutGain.connect(state.audioCtx.destination);
-                silentOsc.start();
                 ensureAudioContextRunning();
             } catch (e) {}
         }
@@ -3149,70 +3310,47 @@
 
         function disconnectMixerChannel(channel) {
             try { if (state.sourceNodes[channel]) state.sourceNodes[channel].disconnect(); } catch (e) {}
+            try { if (state.delayNodes[channel]) state.delayNodes[channel].disconnect(); } catch (e) {}
             try { if (state.gainNodes[channel]) state.gainNodes[channel].disconnect(); } catch (e) {}
             try { if (state.analysers[channel]) state.analysers[channel].disconnect(); } catch (e) {}
-            if (channel === 'cam1') {
-                try { if (state.cam1DelayNode) state.cam1DelayNode.disconnect(); } catch (e) {}
-                state.cam1DelayNode = null;
-                state.currentAudioDelaySec = 0;
-            }
             delete state.sourceNodes[channel];
+            delete state.delayNodes[channel];
             delete state.gainNodes[channel];
             delete state.analysers[channel];
         }
 
-        function connectStreamToAudioMixer(channel, stream) {
-            if (!stream || !stream.getAudioTracks || stream.getAudioTracks().length === 0) {
-                disconnectMixerChannel(channel);
-                return;
-            }
+        function connectMediaElementToAudioMixer(videoEl, channel = 'media', monitorToSpeakers = (channel === 'media')) {
+            if (!videoEl) return false;
             initWebAudioMixer();
-            if (!state.audioCtx || !state.destNode) return;
+            if (!state.audioCtx || !state.destNode) return false;
+            ensureAudioContextRunning();
+            if (state.sourceNodes[channel] && state.gainNodes[channel]) return true;
+
             try {
-                disconnectMixerChannel(channel);
-                const audioOnlyStream = new MediaStream(stream.getAudioTracks());
-                const source = state.audioCtx.createMediaStreamSource(audioOnlyStream);
+                let source = mediaElementAudioSourceMap.get(videoEl);
+                if (!source) {
+                    source = state.audioCtx.createMediaElementSource(videoEl);
+                    mediaElementAudioSourceMap.set(videoEl, source);
+                }
+                const delay = state.audioCtx.createDelay(0.75);
                 const gain = state.audioCtx.createGain();
                 const analyser = state.audioCtx.createAnalyser();
                 analyser.fftSize = 256;
-                gain.gain.value = state.gains[channel] ?? 0.45;
-                if (channel === 'cam1') {
-                    const delayNode = state.audioCtx.createDelay(1.0);
-                    delayNode.delayTime.value = 0;
-                    source.connect(delayNode);
-                    delayNode.connect(gain);
-                    state.cam1DelayNode = delayNode;
-                } else {
-                    source.connect(gain);
-                }
+                delay.delayTime.value = channel === 'cam1' ? (state.cam1AudioCompMs || 0) / 1000 : 0;
+                gain.gain.value = state.gains[channel] ?? (channel === 'media' ? 1.35 : 0.45);
+                source.connect(delay);
+                delay.connect(gain);
                 gain.connect(analyser);
                 gain.connect(state.destNode);
+                if (monitorToSpeakers) gain.connect(state.audioCtx.destination);
                 state.sourceNodes[channel] = source;
+                state.delayNodes[channel] = delay;
                 state.gainNodes[channel] = gain;
                 state.analysers[channel] = analyser;
-            } catch (e) { disconnectMixerChannel(channel); }
-        }
-
-        function connectMediaElementToAudioMixer(videoEl) {
-            initWebAudioMixer();
-            if (!state.audioCtx || !state.destNode) return;
-            ensureAudioContextRunning();
-            if (state.mediaElConnected) return;
-            try {
-                const src = state.audioCtx.createMediaElementSource(videoEl);
-                const gain = state.audioCtx.createGain();
-                const analyser = state.audioCtx.createAnalyser();
-                analyser.fftSize = 256;
-                gain.gain.value = state.gains.media ?? 1.35;
-                src.connect(gain);
-                gain.connect(analyser);
-                gain.connect(state.destNode);
-                gain.connect(state.audioCtx.destination);
-                state.mediaElSourceNode = src;
-                state.gainNodes['media'] = gain;
-                state.analysers['media'] = analyser;
-                state.mediaElConnected = true;
-            } catch (e) {}
+                return true;
+            } catch (e) {
+                return false;
+            }
         }
 
         function computeVuPercent(analyser) {
@@ -3317,16 +3455,37 @@
                 }
                 if (state.remoteCam1Stream) {
                     state.remoteCam1Stream.getAudioTracks().forEach(t => { t.enabled = true; });
-                    connectStreamToAudioMixer('cam1', state.remoteCam1Stream);
+                    const camVideoEl = document.getElementById('hidden-cam1-video');
+                    if (camVideoEl) connectMediaElementToAudioMixer(camVideoEl, 'cam1', false);
                 }
                 const mediaVideoEl = document.getElementById('hidden-media-video');
-                if (mediaVideoEl) connectMediaElementToAudioMixer(mediaVideoEl);
+                if (mediaVideoEl) connectMediaElementToAudioMixer(mediaVideoEl, 'media', true);
 
                 const captureFn = cPgm.captureStream || cPgm.mozCaptureStream;
                 if (typeof captureFn !== 'function') { setStatus('این مرورگر از captureStream پشتیبانی نمیکند.'); return; }
                 const existingTrack = state.persistentCanvasStream?.getVideoTracks?.()[0];
                 if (!state.persistentCanvasStream || !existingTrack || existingTrack.readyState !== 'live') {
-                    state.persistentCanvasStream = captureFn.call(cPgm, 30);
+                    state.canvasCaptureTrack = null;
+                    state.canvasCaptureManual = false;
+                    try {
+                        const manualStream = captureFn.call(cPgm, 0);
+                        const manualTrack = manualStream.getVideoTracks()[0];
+                        if (manualTrack && typeof manualTrack.requestFrame === 'function') {
+                            state.persistentCanvasStream = manualStream;
+                            state.canvasCaptureTrack = manualTrack;
+                            state.canvasCaptureManual = true;
+                        } else {
+                            manualStream.getTracks().forEach(t => t.stop());
+                            state.persistentCanvasStream = captureFn.call(cPgm, 30);
+                            state.canvasCaptureTrack = state.persistentCanvasStream.getVideoTracks()[0] || null;
+                        }
+                    } catch (e) {
+                        state.persistentCanvasStream = captureFn.call(cPgm, 30);
+                        state.canvasCaptureTrack = state.persistentCanvasStream.getVideoTracks()[0] || null;
+                    }
+                } else {
+                    state.canvasCaptureTrack = existingTrack;
+                    state.canvasCaptureManual = typeof existingTrack.requestFrame === 'function';
                 }
                 const videoTrack = state.persistentCanvasStream.getVideoTracks()[0];
                 if (!videoTrack) { setStatus('ترک ویدیوی خروجی ساخته نشد.'); return; }
@@ -3372,6 +3531,12 @@
 
                 state.isRecording = true;
                 state.recordingStartAt = Date.now();
+                if (state.canvasCaptureManual && state.canvasCaptureTrack?.readyState === 'live') {
+                    try {
+                        drawSourceScene(ctxPgm, state.pgmSource, cPgm.width, cPgm.height);
+                        state.canvasCaptureTrack.requestFrame();
+                    } catch (e) {}
+                }
                 const pauseRecBtn = document.getElementById('btn-rec-pause-resume');
                 if (pauseRecBtn) { pauseRecBtn.classList.remove('hidden'); pauseRecBtn.classList.add('inline-flex'); }
                 const btn = document.getElementById('btn-record-pgm');
@@ -3387,7 +3552,7 @@
                     const lbl = document.getElementById('btn-record-label');
                     if (lbl) lbl.innerText = `⏹ توقف و ذخیره (${mm}:${ss})`;
                 }, 500);
-                setStatus(`🔴 در حال ضبط مستر با میکس صدای فعال (${mixedAudioTrack ? 'صدا وصل است' : 'بدون ترک صدا'}) • چک ۱ث همگامسازی روشن است.`);
+                setStatus(`🔴 در حال ضبط مستر با میکس صدای هم‌زمان (${mixedAudioTrack ? 'صدا وصل است' : 'بدون ترک صدا'}) • پایش A/V بدون دستکاری جریان فعال است.`);
             } catch (e) {
                 state.isRecording = false;
                 setStatus(`ضبط شروع نشد: ${e?.message || e}`);
@@ -3466,6 +3631,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             setCam1Rotation(270);
             syncRoomPinInputs('0000');
+            setMediaStartDelay(state.mediaStartDelayMs);
         });
     </script>
 </body>
