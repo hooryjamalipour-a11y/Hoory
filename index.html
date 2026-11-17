@@ -6,7 +6,8 @@
     <meta name="theme-color" content="#05070b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.0 OFFLINE</title>
+    <title>استودیو کارگردانی زنده | PRISM LiveDeck Pro v7.1 (PIN 0000)</title>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
     <style>
         :root {
@@ -308,12 +309,12 @@
             <div class="flex items-center gap-1-5 bg-red-500/10 border border-red-500/30 px-2 py-0-5 rounded-md">
                 <span id="header-pulse" class="dot-md bg-red-500 animate-pulse"></span>
                 <span class="font-mono font-bold text-[11px] tracking-wider text-red-400">PRISM<span class="text-slate-100">DECK</span></span>
-                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.0 OFFLINE</span>
+                <span class="text-[9px] bg-emerald-600 text-white px-1-5 rounded font-mono font-bold">v7.1</span>
             </div>
             <button onclick="switchRole('launcher')" id="btn-back-home" class="hidden text-[11px] bg-slate-800 text-slate-300 px-2 py-0-5 rounded border border-slate-700 transition">
                 ⇄ تغییر نقش
             </button>
-            <button onclick="downloadStandaloneHtml()" class="text-[11px] bg-blue-600/20 text-blue-300 border border-blue-500/40 px-2 py-0-5 rounded transition" title="دانلود فایل HTML کاملاً آفلاین">
+            <button onclick="downloadStandaloneHtml()" class="text-[11px] bg-blue-600/20 text-blue-300 border border-blue-500/40 px-2 py-0-5 rounded transition" title="دانلود فایل HTML">
                 ⬇️ دانلود HTML
             </button>
         </div>
@@ -330,7 +331,7 @@
 
             <div class="flex items-center gap-1 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0-5 rounded font-mono text-[10px]">
                 <span class="dot-sm bg-emerald-400"></span>
-                <span class="text-emerald-300">OFFLINE LAN</span>
+                <span class="text-emerald-300">PIN: 0000</span>
             </div>
 
             <div id="connection-badge" class="flex items-center gap-1 bg-slate-800/90 border border-slate-700 px-2 py-0-5 rounded-full">
@@ -345,14 +346,19 @@
         <div class="max-w-3xl w-full space-y-5 z-10 my-auto">
             <div class="text-center space-y-2">
                 <div class="inline-flex flex-wrap items-center justify-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-                    <span>📡 نسخه ۷.۰ صددرصد آفلاین (بدون نیاز به اینترنت و بدون کد ۴ رقمی) • همگام‌سازی خودکار ۱ ثانیه‌ای صدا و تصویر</span>
+                    <span>📡 اتصال فوری با کد پیش‌فرض 0000 (بدون نیاز به کپی/پیست کدهای طولانی) • همگام‌سازی خودکار ۱ ثانیه‌ای صدا و تصویر</span>
                 </div>
                 <h1 class="text-2xl font-black text-white" style="margin:0.5rem 0;">
-                    استودیوی کارگردانی و سوییچر زنده (آفلاین هات‌اسپات)
+                    استودیوی کارگردانی و سوییچر زنده (اتصال با کد 0000)
                 </h1>
                 <p class="text-slate-400 text-xs max-w-xl mx-auto leading-relaxed">
-                    تمام ابزارها داخل همین یک فایل است. بدون هیچ سرور اینترنتی، دو گوشی را مستقیم روی وای‌فای هات‌اسپات به هم وصل کنید، با کنترل از راه دور (DataChannel) و ضد انباشت تاخیر صدا و تصویر.
+                    در گوشی اول «واحد دوربین» و در گوشی دوم «میز کارگردانی» را باز کنید. هر دو گوشی به‌طور پیش‌فرض روی کد <strong class="text-emerald-300 font-mono">0000</strong> تنظیم شده‌اند و با یک لمس به هم متصل می‌شوند.
                 </p>
+
+                <div class="inline-flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1-5 mt-4">
+                    <span class="text-xs text-slate-300 font-bold">🔑 کد اتصال (پیش‌فرض):</span>
+                    <input id="launcher-room-pin" type="text" value="0000" maxlength="12" oninput="syncRoomPinInputs(this.value)" class="bg-slate-950 border border-emerald-500/50 rounded-lg px-2-5 py-1 text-center font-mono font-black text-sm text-emerald-300 outline-none" style="width:6.5rem;">
+                </div>
             </div>
 
             <div class="launcher-grid">
@@ -362,7 +368,7 @@
                         <div class="text-[11px] font-mono text-emerald-400 font-semibold">گوشی اول • CAMERA 1 UNIT</div>
                         <h2 class="text-lg font-bold text-white" style="margin:0;">۱. واحد دوربین فیلمبردار (720p HD)</h2>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            بدون اینترنت و بدون پین؛ یک کد اتصال مستقیم می‌سازد تا گوشی دوم از طریق هات‌اسپات به آن وصل شود.
+                            به‌محض ورود، دوربین با کد پیش‌فرض <strong class="text-emerald-300 font-mono">0000</strong> آماده می‌شود و منتظر اتصال گوشی کارگردان می‌ماند.
                         </p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-emerald-400">
@@ -377,7 +383,7 @@
                         <div class="text-[11px] font-mono text-blue-400 font-semibold">گوشی دوم • DIRECTOR DESK</div>
                         <h2 class="text-lg font-bold text-white" style="margin:0;">۲. میز کارگردانی و ضبط مستر (720p MP4)</h2>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            دریافت مستقیم LAN، چک همزمانی صدا و تصویر هر ۱ ثانیه، کنترل لنز/چرخش از طریق DataChannel آفلاین و ضبط MP4.
+                            با زدن دکمه اتصال روی کد <strong class="text-blue-300 font-mono">0000</strong> مستقیماً به دوربین وصل می‌شود، تصویر و صدا را همگام می‌کند و MP4 ضبط می‌گیرد.
                         </p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-blue-400">
@@ -401,7 +407,7 @@
             </div>
         </div>
 
-        <!-- Top Compact Bar + Offline Pairing Box -->
+        <!-- Top Compact Bar + Simple PIN 0000 Bar -->
         <div class="relative z-40 bg-studio-900/95 border border-slate-800 rounded-xl px-2-5 py-1-5 flex flex-col gap-1-5 shrink-0">
             <div class="flex flex-wrap items-center justify-between gap-1-5">
                 <div class="flex items-center gap-1-5">
@@ -412,8 +418,13 @@
                     <button onclick="toggleCameraOledDimmer(true)" class="text-[10px] bg-slate-800 text-amber-300 border border-amber-500/30 px-2 py-0-5 rounded-lg font-bold">
                         🌙 کم‌نور
                     </button>
-                    <button onclick="toggleCamPairingBox()" id="btn-cam-pair-toggle" class="text-[10px] bg-emerald-600 text-white px-2 py-0-5 rounded-lg font-bold">
-                        🔗 پنل اتصال آفلاین
+                </div>
+
+                <div class="flex items-center gap-1-5">
+                    <span class="text-[10px] text-emerald-300 font-bold">کد دوربین:</span>
+                    <input id="cam-room-pin" type="text" value="0000" maxlength="12" oninput="syncRoomPinInputs(this.value)" class="bg-slate-950 border border-emerald-500/50 rounded px-2 py-0-5 text-center font-mono font-bold text-xs text-emerald-300 outline-none" style="width:4.5rem;">
+                    <button type="button" onclick="registerCameraWithPin()" class="text-[10px] bg-emerald-600 text-white px-2-5 py-1 rounded-lg font-bold">
+                        🔄 ثبت مجدد
                     </button>
                 </div>
 
@@ -424,29 +435,7 @@
                     <span class="bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] rounded-lg px-2 py-1 font-bold">720p HD</span>
                 </div>
             </div>
-
-            <!-- Offline Pairing Panel (Camera Side) -->
-            <div id="cam-offline-pair-box" class="bg-slate-950 border border-emerald-500/40 rounded-lg p-2 space-y-1-5">
-                <div class="flex flex-wrap items-center justify-between gap-1-5">
-                    <span class="text-[10px] text-emerald-300 font-bold">۱) ساخت و ارسال کد اتصال دوربین به کارگردان:</span>
-                    <div class="flex items-center gap-1">
-                        <button type="button" onclick="createOfflineCameraOffer()" class="bg-emerald-600 text-white text-[10px] font-bold px-2-5 py-1 rounded">
-                            📡 ساخت کد دوربین
-                        </button>
-                        <button type="button" onclick="copyTextField('cam-offer-out', 'کد دوربین کپی شد! آن را به گوشی کارگردان بفرستید.')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">
-                            📋 کپی
-                        </button>
-                    </div>
-                </div>
-                <input id="cam-offer-out" type="text" readonly placeholder="روی «ساخت کد دوربین» بزنید..." class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] font-mono text-emerald-300 outline-none">
-
-                <div class="flex flex-wrap items-center gap-1-5">
-                    <input id="cam-answer-in" type="text" placeholder="۲) کد پاسخ کارگردان را اینجا پیست کنید..." oninput="autoApplyAnswerIfValid()" class="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] font-mono text-amber-300 outline-none">
-                    <button type="button" onclick="pasteToField('cam-answer-in', acceptOfflineDirectorAnswer)" class="bg-slate-800 text-slate-200 text-[10px] px-2 py-1 rounded border border-slate-700">📥 پیست</button>
-                    <button type="button" onclick="acceptOfflineDirectorAnswer()" class="bg-amber-500 text-black text-[10px] font-bold px-2-5 py-1 rounded">✅ اتصال</button>
-                </div>
-                <div id="cam-pair-status" class="text-[10px] text-slate-400">منتظر ساخت کد دوربین...</div>
-            </div>
+            <div id="cam-pair-status" class="text-[10px] text-emerald-300 font-medium">در حال آماده‌سازی دوربین روی کد 0000...</div>
         </div>
 
         <!-- Compact Viewfinder Container -->
@@ -528,21 +517,26 @@
         <div class="bg-studio-900 border-b border-slate-800 px-3 py-2 flex flex-col gap-2">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex flex-wrap items-center gap-2">
-                    <button onclick="toggleDirPairingBox()" id="btn-dir-pair-toggle" class="text-xs bg-emerald-600 text-white px-2-5 py-1-5 rounded-lg font-bold transition">
-                        🔗 اتصال آفلاین دوربین ۱
-                    </button>
+                    <div class="flex items-center gap-1-5 bg-slate-950 border border-emerald-500/40 rounded-lg px-2 py-1">
+                        <span class="text-xs text-emerald-300 font-bold">🔑 کد:</span>
+                        <input id="dir-room-pin" type="text" value="0000" maxlength="12" oninput="syncRoomPinInputs(this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-0-5 text-center font-mono font-black text-xs text-emerald-300 outline-none" style="width:4.5rem;">
+                        <button onclick="connectDirectorByPin()" id="btn-dir-connect-pin" class="text-xs bg-emerald-600 text-white px-2-5 py-1 rounded-md font-bold transition">
+                            📡 اتصال به دوربین
+                        </button>
+                    </div>
+
                     <button onclick="cycleCam1Rotation()" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2-5 py-1-5 rounded-lg font-bold flex items-center gap-1 transition">
                         <span>📐 چرخش دوربین ۱:</span>
                         <span id="dir-rot-badge" class="font-mono">270°</span>
                     </button>
                     <button onclick="cycleDirectorColorBoost()" id="btn-dir-color-boost" class="text-xs bg-slate-800 text-slate-200 border border-slate-700 px-2-5 py-1-5 rounded-lg font-bold transition">
-                        🎨 رنگ دوربین: عادی (شیائومی)
+                        🎨 رنگ دوربین: عادی
                     </button>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-1-5">
                     <span class="bg-slate-950 border border-cyan-500/30 text-cyan-300 font-mono text-xs px-2-5 py-1-5 rounded-lg font-bold">
-                        ⚡ 720p HD (آفلاین)
+                        ⚡ 720p HD
                     </span>
                     <button onclick="toggleRecording()" id="btn-record-pgm" class="bg-red-600 text-white font-bold text-xs px-3 py-1-5 rounded-lg shadow-lg flex items-center gap-1-5 transition">
                         <span class="dot-lg bg-white"></span>
@@ -554,26 +548,10 @@
                 </div>
             </div>
 
-            <!-- Offline Pairing Panel (Director Side) -->
-            <div id="dir-offline-pair-box" class="bg-slate-950 border border-emerald-500/40 rounded-lg p-2-5 space-y-2">
-                <div class="flex flex-wrap items-center gap-1-5">
-                    <span class="text-[11px] text-emerald-300 font-bold">۱) کد دوربین ۱ را اینجا پیست کنید:</span>
-                    <input id="dir-offer-in" type="text" placeholder="کد کپی‌شده از گوشی دوربین را پیست کنید..." oninput="autoCreateAnswerIfValid()" class="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] font-mono text-emerald-300 outline-none">
-                    <button type="button" onclick="pasteToField('dir-offer-in', createOfflineDirectorAnswer)" class="bg-slate-800 text-slate-200 text-[10px] px-2 py-1 rounded border border-slate-700">📥 پیست</button>
-                    <button type="button" onclick="createOfflineDirectorAnswer()" class="bg-emerald-600 text-white text-[10px] font-bold px-2-5 py-1 rounded">🔗 ساخت کد پاسخ</button>
-                </div>
-                <div class="flex flex-wrap items-center gap-1-5">
-                    <span class="text-[11px] text-amber-300 font-bold">۲) کد پاسخ را کپی و در گوشی دوربین پیست کنید:</span>
-                    <input id="dir-answer-out" type="text" readonly placeholder="پس از پیست کد دوربین، کد پاسخ اینجا ساخته می‌شود..." class="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] font-mono text-amber-300 outline-none">
-                    <button type="button" onclick="copyTextField('dir-answer-out', 'کد پاسخ کپی شد! آن را در گوشی دوربین پیست کنید.')" class="bg-blue-600 text-white text-[10px] font-bold px-2-5 py-1 rounded">📋 کپی پاسخ</button>
-                </div>
-                <div id="dir-pair-status" class="text-[10px] text-slate-400">منتظر دریافت کد اتصال از گوشی دوربین ۱...</div>
-            </div>
-
             <!-- Status & Download Bar -->
             <div class="w-full flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/80 px-3 py-1-5">
                 <div id="recording-status-visible" role="status" aria-live="polite" class="text-[11px] leading-5 text-slate-200">
-                    آماده ضبط مستر MP4 (720p) • همگام‌سازی خودکار ۱ ثانیه‌ای صدا و تصویر فعال است.
+                    آماده ضبط مستر MP4 (720p) • اتصال سریع با کد 0000 و همگام‌سازی خودکار ۱ ثانیه‌ای صدا و تصویر فعال است.
                 </div>
                 <div id="recorded-download-slot" class="hidden shrink-0"></div>
             </div>
@@ -582,14 +560,14 @@
             <div class="w-full flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-1-5">
                 <div class="flex flex-wrap items-center gap-2">
                     <div id="video-diagnostic-visible" role="status" aria-live="polite" class="text-[10px] leading-5 text-slate-400">
-                        وضعیت تصویر: منتظر اتصال آفلاین دوربین ۱ روی هات‌اسپات (چرخش: 270°)
+                        وضعیت تصویر: در حال اتصال به دوربین با کد 0000 (چرخش: 270°)
                     </div>
                     <div id="av-sync-badge" class="text-[10px] font-mono px-2 py-0-5 rounded bg-slate-900 border border-slate-700 text-slate-300">
                         ⏱️ چک ۱ث صدا/تصویر: در انتظار اتصال
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-1-5">
-                    <span id="p2p-route-badge" class="text-[10px] font-mono text-emerald-400">⚡ مسیر مستقیم هات‌اسپات (بدون اینترنت)</span>
+                    <span id="p2p-route-badge" class="text-[10px] font-mono text-emerald-400">⚡ اتصال مستقیم کد 0000</span>
                     <button type="button" onclick="toggleAutoAvSync()" id="btn-auto-sync-toggle" class="text-[10px] bg-emerald-700/40 text-emerald-200 border border-emerald-500/50 px-2 py-0-5 rounded font-bold transition">
                         🛡️ چک ۱ ثانیه‌ای: روشن
                     </button>
@@ -613,7 +591,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="pgm-source-label" class="font-mono text-xs bg-red-500/20 text-red-300 px-2 py-0-5 rounded">CAM 1</span>
-                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">720p HD OFFLINE</span>
+                        <span id="pgm-res-badge" class="font-mono text-[10px] text-emerald-400">720p HD</span>
                     </div>
                 </div>
                 <div class="relative aspect-video checkerboard flex items-center justify-center overflow-hidden tally-pgm">
@@ -807,27 +785,32 @@
         </div>
     </section>
 
-    <!-- Hidden Media Elements (Inside viewport at 2x2px so Chrome Android NEVER throttles decoding) -->
+    <!-- Hidden Media Elements -->
     <div aria-hidden="true" style="position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.001;overflow:hidden;pointer-events:none;z-index:-1">
         <video id="hidden-cam1-video" width="1280" height="720" autoplay playsinline muted style="width:1280px;height:720px;object-fit:contain;pointer-events:none"></video>
         <video id="hidden-media-video" width="1280" height="720" playsinline preload="metadata" style="width:1280px;height:720px"></video>
         <img id="hidden-media-img" alt="" style="width:auto;height:auto">
     </div>
 
-    <!-- ================= APPLICATION LOGIC (v7.0 100% OFFLINE + ZERO-DRIFT A/V SYNC) ================= -->
+    <!-- ================= APPLICATION LOGIC (v7.1 PIN 0000 + ZERO-DRIFT A/V SYNC) ================= -->
     <script>
-        // 100% Offline LAN/Hotspot P2P: empty iceServers gathers local 192.168.x.x candidates in <50ms with zero internet!
         const RTC_CONFIG = {
-            iceServers: [],
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ],
             bundlePolicy: 'max-bundle',
             rtcpMuxPolicy: 'require'
         };
 
         const state = {
-            appVersion: 7.0,
+            appVersion: 7.1,
             role: 'launcher',
+            roomPin: '0000',
+            peer: null,
+            activeCall: null,
+            ctrlConn: null,
             rtcPeerConn: null,
-            ctrlChannel: null,
             activeVideoSender: null,
             activeAudioSender: null,
 
@@ -900,6 +883,20 @@
             lastCtrlCmdTs: 0
         };
 
+        function syncRoomPinInputs(val) {
+            const clean = (val || '').trim() || '0000';
+            state.roomPin = clean;
+            ['launcher-room-pin', 'cam-room-pin', 'dir-room-pin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value !== clean) el.value = clean;
+            });
+        }
+
+        function getCameraPeerId(pin) {
+            const p = (pin || state.roomPin || '0000').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+            return `prismdeck-v71-cam-${p || '0000'}`;
+        }
+
         // ============================================================================
         // 1. KEEP-AWAKE ENGINE
         // ============================================================================
@@ -970,16 +967,6 @@
             requestScreenWakeLock();
         }
 
-        function toggleCamPairingBox() {
-            const box = document.getElementById('cam-offline-pair-box');
-            if (box) box.classList.toggle('hidden');
-        }
-
-        function toggleDirPairingBox() {
-            const box = document.getElementById('dir-offline-pair-box');
-            if (box) box.classList.toggle('hidden');
-        }
-
         // ============================================================================
         // 2. DOWNLOAD STANDALONE HTML FILE
         // ============================================================================
@@ -989,7 +976,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'PRISM_Offline_v7.html';
+            a.download = 'PRISM_LiveDeck_0000.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -997,80 +984,7 @@
         }
 
         // ============================================================================
-        // 3. OFFLINE TOKEN ENCODE/DECODE & CLIPBOARD HELPERS
-        // ============================================================================
-        function encodeOfflineSignal(obj) {
-            const json = JSON.stringify(obj);
-            const bytes = new TextEncoder().encode(json);
-            let bin = '';
-            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-            return 'PRISM1:' + btoa(bin);
-        }
-
-        function decodeOfflineSignal(str) {
-            const clean = (str || '').trim();
-            if (!clean.startsWith('PRISM1:')) return null;
-            const b64 = clean.slice(7).trim();
-            const bin = atob(b64);
-            const bytes = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-            const json = new TextDecoder().decode(bytes);
-            return JSON.parse(json);
-        }
-
-        async function copyTextField(inputId, msg) {
-            const el = document.getElementById(inputId);
-            if (!el || !el.value) return;
-            try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(el.value);
-                } else {
-                    el.select();
-                    document.execCommand('copy');
-                }
-            } catch (e) {
-                try { el.select(); document.execCommand('copy'); } catch (e2) {}
-            }
-            const statusId = inputId.startsWith('cam') ? 'cam-pair-status' : 'dir-pair-status';
-            const st = document.getElementById(statusId);
-            if (st && msg) st.textContent = '✅ ' + msg;
-        }
-
-        async function pasteToField(inputId, callbackFn) {
-            const el = document.getElementById(inputId);
-            if (!el) return;
-            try {
-                if (navigator.clipboard && navigator.clipboard.readText) {
-                    const text = await navigator.clipboard.readText();
-                    if (text) {
-                        el.value = text.trim();
-                        if (typeof callbackFn === 'function') callbackFn();
-                    }
-                }
-            } catch (e) {}
-        }
-
-        function waitForIceGatheringComplete(pc, timeoutMs = 1500) {
-            return new Promise((resolve) => {
-                if (pc.iceGatheringState === 'complete') { resolve(); return; }
-                let done = false;
-                const finish = () => {
-                    if (done) return;
-                    done = true;
-                    pc.removeEventListener('icegatheringstatechange', onState);
-                    pc.removeEventListener('icecandidate', onCand);
-                    resolve();
-                };
-                const onState = () => { if (pc.iceGatheringState === 'complete') finish(); };
-                const onCand = (e) => { if (!e.candidate) finish(); };
-                pc.addEventListener('icegatheringstatechange', onState);
-                pc.addEventListener('icecandidate', onCand);
-                setTimeout(finish, timeoutMs);
-            });
-        }
-
-        // ============================================================================
-        // 4. ORIENTATION & ROTATION MATRIX (Default 270°)
+        // 3. ORIENTATION & ROTATION MATRIX (Default 270°)
         // ============================================================================
         function setCam1Rotation(deg) {
             state.cam1Rotation = ((deg % 360) + 360) % 360;
@@ -1106,16 +1020,8 @@
         }
 
         // ============================================================================
-        // 5. WEBRTC LOW-LATENCY & 1-SECOND AUTO A/V SYNC ENGINE
+        // 4. WEBRTC LOW-LATENCY & 1-SECOND AUTO A/V SYNC ENGINE
         // ============================================================================
-        async function unlockHotspotLocalIpCandidates() {
-            if (!navigator.mediaDevices?.getUserMedia) return;
-            try {
-                const tmp = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-                tmp.getTracks().forEach(t => t.stop());
-            } catch (e) {}
-        }
-
         function boostSdpForHotspot720p(sdpStr) {
             if (!sdpStr) return sdpStr;
             let lines = sdpStr.split('\r\n');
@@ -1323,7 +1229,7 @@
         }
 
         // ============================================================================
-        // 6. CAMERA 1 HARDWARE, AUDIO INPUTS & LENSES
+        // 5. CAMERA 1 HARDWARE, AUDIO INPUTS & LENSES
         // ============================================================================
         async function refreshAudioInputs() {
             const select = document.getElementById('cam-audio-input-select');
@@ -1424,7 +1330,7 @@
 
         function applyColorBoostUI(level) {
             state.colorBoostLevel = level % 3;
-            const labels = ['🎨 رنگ: عادی (شیائومی)', '🎨 رنگ: زنده (سامسونگ S24)', '🎨 رنگ: فوق‌زنده'];
+            const labels = ['🎨 رنگ: عادی', '🎨 رنگ: زنده (S24)', '🎨 رنگ: فوق‌زنده'];
             const camBtn = document.getElementById('btn-cam-color-boost');
             if (camBtn) {
                 camBtn.innerText = labels[state.colorBoostLevel];
@@ -1633,28 +1539,28 @@
         }
 
         // ============================================================================
-        // 7. OFFLINE DATACHANNEL CONTROL (ZERO INTERNET)
+        // 6. REMOTE CONTROL CHANNEL (PEERJS DATA CONNECTION)
         // ============================================================================
-        function setupDataChannel(dc) {
-            state.ctrlChannel = dc;
-            dc.onopen = () => {
+        function setupCtrlConnection(conn) {
+            state.ctrlConn = conn;
+            conn.on('open', () => {
                 if (state.role === 'camera') {
                     sendDataChannelMsg({ type: 'lenses', lenses: state.availableLenses, current: state.currentDeviceId });
                     sendDataChannelMsg({ type: 'cam-rotate', rotation: state.cam1Rotation });
                 }
-            };
-            dc.onmessage = (evt) => {
+            });
+            conn.on('data', (data) => {
                 try {
-                    const data = JSON.parse(evt.data);
-                    if (state.role === 'camera') handleIncomingControlCommand(data);
-                    else if (state.role === 'director') handleIncomingCameraData(data);
+                    const msg = typeof data === 'string' ? JSON.parse(data) : data;
+                    if (state.role === 'camera') handleIncomingControlCommand(msg);
+                    else if (state.role === 'director') handleIncomingCameraData(msg);
                 } catch (e) {}
-            };
+            });
         }
 
         function sendDataChannelMsg(obj) {
-            if (state.ctrlChannel && state.ctrlChannel.readyState === 'open') {
-                try { state.ctrlChannel.send(JSON.stringify(obj)); } catch (e) {}
+            if (state.ctrlConn && state.ctrlConn.open) {
+                try { state.ctrlConn.send(obj); } catch (e) {}
             }
         }
 
@@ -1665,7 +1571,7 @@
         }
 
         // ============================================================================
-        // 8. NAVIGATION & ROLES
+        // 7. NAVIGATION & ROLES
         // ============================================================================
         function switchRole(targetRole) {
             cleanupConnections();
@@ -1690,8 +1596,10 @@
 
         function cleanupConnections() {
             if (state.avSyncTimer) { clearInterval(state.avSyncTimer); state.avSyncTimer = null; }
-            if (state.ctrlChannel) { try { state.ctrlChannel.close(); } catch (e) {} state.ctrlChannel = null; }
-            if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} state.rtcPeerConn = null; }
+            if (state.ctrlConn) { try { state.ctrlConn.close(); } catch (e) {} state.ctrlConn = null; }
+            if (state.activeCall) { try { state.activeCall.close(); } catch (e) {} state.activeCall = null; }
+            if (state.peer) { try { state.peer.destroy(); } catch (e) {} state.peer = null; }
+            state.rtcPeerConn = null;
             if (state.localCamStream) { state.localCamStream.getTracks().forEach(t => t.stop()); state.localCamStream = null; }
             disconnectMixerChannel('cam1');
             state.remoteCam1Stream = null;
@@ -1708,84 +1616,77 @@
         }
 
         // ============================================================================
-        // 9. ROLE 1: OFFLINE CAMERA NODE
+        // 8. ROLE 1: CAMERA NODE WITH DEFAULT PIN 0000
         // ============================================================================
         async function initCameraNodeRole() {
             switchRole('camera');
             await startHardwareCamera();
-            updateConnectionBadge('ready', 'آماده ساخت کد');
+            registerCameraWithPin();
         }
 
-        async function retryCameraPermission() { await startHardwareCamera(); }
+        async function retryCameraPermission() {
+            await startHardwareCamera();
+            registerCameraWithPin();
+        }
 
-        async function createOfflineCameraOffer() {
+        function registerCameraWithPin() {
             const st = document.getElementById('cam-pair-status');
-            if (st) st.textContent = '⏳ در حال ساخت کد اتصال هات‌اسپات...';
+            const pin = (document.getElementById('cam-room-pin')?.value || state.roomPin || '0000').trim() || '0000';
+            syncRoomPinInputs(pin);
 
-            if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} }
-            const pc = new RTCPeerConnection(RTC_CONFIG);
-            state.rtcPeerConn = pc;
+            if (state.peer) { try { state.peer.destroy(); } catch (e) {} state.peer = null; }
+            const peerId = getCameraPeerId(pin);
+            if (st) st.textContent = `⏳ در حال ثبت کد ${pin}...`;
+            updateConnectionBadge('waiting', `ثبت کد ${pin}...`);
 
-            const dc = pc.createDataChannel('prism_ctrl', { ordered: true });
-            setupDataChannel(dc);
+            const peer = new Peer(peerId, { config: RTC_CONFIG, debug: 0 });
+            state.peer = peer;
 
-            if (!state.localCamStream || !state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
-                await startHardwareCamera();
-            }
+            peer.on('open', () => {
+                if (st) st.textContent = `✅ دوربین با کد ${pin} آماده است (منتظر اتصال کارگردان)`;
+                updateConnectionBadge('ready', `آماده (کد ${pin})`);
+            });
 
-            state.activeVideoSender = null;
-            state.activeAudioSender = null;
+            peer.on('connection', (conn) => {
+                setupCtrlConnection(conn);
+            });
 
-            const videoTrack = state.localCamStream?.getVideoTracks().find(t => t.readyState === 'live');
-            if (videoTrack && state.localCamStream) state.activeVideoSender = pc.addTrack(videoTrack, state.localCamStream);
-
-            const cameraAudioTrack = state.localCamStream?.getAudioTracks?.().find(t => t.readyState === 'live');
-            if (cameraAudioTrack) state.activeAudioSender = pc.addTrack(cameraAudioTrack, state.localCamStream);
-
-            pc.onconnectionstatechange = () => {
-                if (pc.connectionState === 'connected') {
-                    enforceLowLatencyWebRTC(pc);
-                    updateConnectionBadge('connected', 'روی آنتن • متصل');
-                    if (st) st.textContent = '✅ اتصال آفلاین با کارگردان برقرار شد!';
-                    document.getElementById('cam-offline-pair-box')?.classList.add('hidden');
-                } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                    updateConnectionBadge('ready', 'ارتباط قطع شد');
+            peer.on('call', async (call) => {
+                if (!state.localCamStream || !state.localCamStream.getVideoTracks().some(t => t.readyState === 'live')) {
+                    await startHardwareCamera();
                 }
-            };
+                state.activeCall = call;
+                call.answer(state.localCamStream, { sdpTransform: boostSdpForHotspot720p });
 
-            const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
-            offer.sdp = boostSdpForHotspot720p(offer.sdp);
-            await pc.setLocalDescription(offer);
-            await waitForIceGatheringComplete(pc, 1500);
-
-            const token = encodeOfflineSignal({ type: 'offer', sdp: pc.localDescription.sdp });
-            const outEl = document.getElementById('cam-offer-out');
-            if (outEl) outEl.value = token;
-            if (st) st.textContent = '✅ کد ساخته شد! دکمه «کپی» را بزنید و به گوشی کارگردان بفرستید.';
-        }
-
-        function autoApplyAnswerIfValid() {
-            const val = document.getElementById('cam-answer-in')?.value?.trim() || '';
-            if (val.startsWith('PRISM1:') && val.length > 80) acceptOfflineDirectorAnswer();
-        }
-
-        async function acceptOfflineDirectorAnswer() {
-            const raw = document.getElementById('cam-answer-in')?.value?.trim() || '';
-            const st = document.getElementById('cam-pair-status');
-            if (!state.rtcPeerConn || !raw) return;
-            try {
-                const decoded = decodeOfflineSignal(raw);
-                if (!decoded || decoded.type !== 'answer' || !decoded.sdp) {
-                    if (st) st.textContent = '❌ کد پاسخ نامعتبر است.';
-                    return;
+                const pc = call.peerConnection;
+                state.rtcPeerConn = pc;
+                if (pc) {
+                    pc.onconnectionstatechange = () => {
+                        if (pc.connectionState === 'connected') {
+                            enforceLowLatencyWebRTC(pc);
+                            updateConnectionBadge('connected', `متصل (کد ${pin})`);
+                            if (st) st.textContent = `🔴 متصل به کارگردان (کد ${pin})`;
+                        } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                            updateConnectionBadge('ready', `آماده (کد ${pin})`);
+                            if (st) st.textContent = `⚠️ ارتباط قطع شد؛ آماده اتصال مجدد (کد ${pin})`;
+                        }
+                    };
+                    setTimeout(() => enforceLowLatencyWebRTC(pc), 400);
                 }
-                await state.rtcPeerConn.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: decoded.sdp }));
-                await enforceLowLatencyWebRTC(state.rtcPeerConn);
-                updateConnectionBadge('connected', 'متصل به کارگردان');
-                if (st) st.textContent = '✅ متصل شد! در حال ارسال تصویر...';
-            } catch (e) {
-                if (st) st.textContent = '❌ خطا در اتصال: ' + (e.message || e);
-            }
+
+                call.on('close', () => {
+                    updateConnectionBadge('ready', `آماده (کد ${pin})`);
+                    if (st) st.textContent = `✅ آماده اتصال مجدد با کد ${pin}`;
+                });
+            });
+
+            peer.on('error', (err) => {
+                if (err && err.type === 'unavailable-id') {
+                    if (st) st.textContent = `⚠️ کد ${pin} در حال استفاده است؛ کد دیگری وارد کنید یا دوباره بزنید.`;
+                } else {
+                    if (st) st.textContent = `⚠️ وضعیت شبکه: ${err.type || err.message}`;
+                }
+            });
         }
 
         function handleIncomingControlCommand(data) {
@@ -1848,93 +1749,92 @@
         }
 
         // ============================================================================
-        // 10. ROLE 2: OFFLINE DIRECTOR SWITCHER STUDIO
+        // 9. ROLE 2: DIRECTOR SWITCHER STUDIO (CONNECT BY PIN 0000)
         // ============================================================================
         async function initDirectorRole() {
             switchRole('director');
-            await unlockHotspotLocalIpCandidates();
             initWebAudioMixer();
             startCanvasCompositorLoop();
             installReactionOverlayDrag();
             directCutToProgram('cam1');
-            updateConnectionBadge('ready', 'منتظر کد دوربین');
+            connectDirectorByPin();
         }
 
-        function autoCreateAnswerIfValid() {
-            const val = document.getElementById('dir-offer-in')?.value?.trim() || '';
-            if (val.startsWith('PRISM1:') && val.length > 80) createOfflineDirectorAnswer();
+        function createSilentDummyMediaStream() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 16;
+            canvas.height = 16;
+            const ctx = canvas.getContext('2d');
+            if (ctx) ctx.fillRect(0, 0, 16, 16);
+            return canvas.captureStream ? canvas.captureStream(1) : new MediaStream();
         }
 
-        async function createOfflineDirectorAnswer() {
-            const raw = document.getElementById('dir-offer-in')?.value?.trim() || '';
-            const st = document.getElementById('dir-pair-status');
-            if (!raw) return;
-            try {
-                const decoded = decodeOfflineSignal(raw);
-                if (!decoded || decoded.type !== 'offer' || !decoded.sdp) {
-                    if (st) st.textContent = '❌ کد دوربین نامعتبر است.';
-                    return;
-                }
-                if (st) st.textContent = '⏳ در حال ساخت کد پاسخ هات‌اسپات...';
-                await unlockHotspotLocalIpCandidates();
+        function connectDirectorByPin() {
+            const pin = (document.getElementById('dir-room-pin')?.value || state.roomPin || '0000').trim() || '0000';
+            syncRoomPinInputs(pin);
+            const targetPeerId = getCameraPeerId(pin);
+            const visibleDiag = document.getElementById('video-diagnostic-visible');
 
-                if (state.rtcPeerConn) { try { state.rtcPeerConn.close(); } catch (e) {} }
-                const pc = new RTCPeerConnection(RTC_CONFIG);
-                state.rtcPeerConn = pc;
+            if (state.ctrlConn) { try { state.ctrlConn.close(); } catch (e) {} state.ctrlConn = null; }
+            if (state.activeCall) { try { state.activeCall.close(); } catch (e) {} state.activeCall = null; }
+            if (state.peer) { try { state.peer.destroy(); } catch (e) {} state.peer = null; }
 
-                pc.ondatachannel = (e) => { setupDataChannel(e.channel); };
+            updateConnectionBadge('waiting', `اتصال به ${pin}...`);
+            if (visibleDiag) visibleDiag.textContent = `⏳ در حال اتصال به دوربین با کد ${pin}...`;
 
-                const receiverStream = new MediaStream();
-                pc.ontrack = (event) => {
-                    configureReceiverPlayout(pc);
-                    const suppliedStream = event.streams && event.streams[0];
-                    const tracksToAdd = suppliedStream ? suppliedStream.getTracks() : [event.track];
-                    tracksToAdd.forEach(track => {
-                        if (!receiverStream.getTracks().some(t => t.id === track.id)) {
-                            try { receiverStream.addTrack(track); } catch (e) {}
+            const peer = new Peer({ config: RTC_CONFIG, debug: 0 });
+            state.peer = peer;
+
+            peer.on('open', () => {
+                const conn = peer.connect(targetPeerId, { reliable: true });
+                setupCtrlConnection(conn);
+
+                const dummyStream = createSilentDummyMediaStream();
+                const call = peer.call(targetPeerId, dummyStream, { sdpTransform: boostSdpForHotspot720p });
+                state.activeCall = call;
+
+                if (call && call.peerConnection) {
+                    const pc = call.peerConnection;
+                    state.rtcPeerConn = pc;
+                    pc.onconnectionstatechange = async () => {
+                        if (pc.connectionState === 'connected') {
+                            configureReceiverPlayout(pc);
+                            updateConnectionBadge('connected', `دوربین متصل (کد ${pin})`);
+                            try {
+                                const stats = await pc.getStats();
+                                stats.forEach(s => {
+                                    if (s.type === 'candidate-pair' && s.state === 'succeeded' && s.nominated) {
+                                        const rttMs = typeof s.currentRoundTripTime === 'number' ? Math.round(s.currentRoundTripTime * 1000) : 5;
+                                        const badge = document.getElementById('p2p-route-badge');
+                                        if (badge) badge.textContent = `⚡ اتصال مستقیم P2P فعال (پینگ: ${rttMs}ms)`;
+                                    }
+                                });
+                            } catch (e) {}
+                        } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                            updateConnectionBadge('ready', 'ارتباط قطع شد');
+                            if (visibleDiag) visibleDiag.textContent = `⚠️ ارتباط با دوربین قطع شد. روی «اتصال به دوربین» بزنید.`;
                         }
-                    });
-                    if (event.track && !receiverStream.getTracks().some(t => t.id === event.track.id)) {
-                        try { receiverStream.addTrack(event.track); } catch (e) {}
-                    }
-                    attachRemoteCamera1Stream(receiverStream);
-                    if (event.track) event.track.onunmute = () => { try { v1PlayRemoteCamera(); } catch (e) {} };
-                };
+                    };
+                }
 
-                pc.onconnectionstatechange = async () => {
-                    if (pc.connectionState === 'connected') {
-                        configureReceiverPlayout(pc);
-                        updateConnectionBadge('connected', 'دوربین ۱ متصل است');
-                        if (st) st.textContent = '✅ ارتباط مستقیم آفلاین برقرار شد!';
-                        document.getElementById('dir-offline-pair-box')?.classList.add('hidden');
-                        try {
-                            const stats = await pc.getStats();
-                            stats.forEach(s => {
-                                if (s.type === 'candidate-pair' && s.state === 'succeeded' && s.nominated) {
-                                    const rttMs = typeof s.currentRoundTripTime === 'number' ? Math.round(s.currentRoundTripTime * 1000) : 4;
-                                    const badge = document.getElementById('p2p-route-badge');
-                                    if (badge) badge.textContent = `⚡ اتصال مستقیم هات‌اسپات فعال (پینگ: ${rttMs}ms)`;
-                                }
-                            });
-                        } catch (e) {}
-                    } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                        updateConnectionBadge('ready', 'ارتباط قطع شد');
-                    }
-                };
+                call.on('stream', (remoteStream) => {
+                    if (call.peerConnection) configureReceiverPlayout(call.peerConnection);
+                    attachRemoteCamera1Stream(remoteStream);
+                });
 
-                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: decoded.sdp }));
-                const answer = await pc.createAnswer();
-                answer.sdp = boostSdpForHotspot720p(answer.sdp);
-                await pc.setLocalDescription(answer);
-                await waitForIceGatheringComplete(pc, 1500);
+                call.on('close', () => {
+                    updateConnectionBadge('ready', 'ارتباط بسته شد');
+                });
+            });
 
-                const answerToken = encodeOfflineSignal({ type: 'answer', sdp: pc.localDescription.sdp });
-                const outEl = document.getElementById('dir-answer-out');
-                if (outEl) outEl.value = answerToken;
-                if (st) st.textContent = '✅ کد پاسخ ساخته شد! دکمه «کپی پاسخ» را بزنید و در گوشی دوربین پیست کنید.';
-            } catch (e) {
-                if (st) st.textContent = '❌ خطا: ' + (e.message || e);
-            }
+            peer.on('error', (err) => {
+                updateConnectionBadge('ready', 'خطا در اتصال');
+                if (visibleDiag) {
+                    visibleDiag.textContent = err.type === 'peer-unavailable'
+                        ? `⚠️ دوربین با کد ${pin} هنوز باز نشده است! ابتدا در گوشی اول «واحد دوربین» را باز کنید.`
+                        : `⚠️ خطای اتصال: ${err.type || err.message}`;
+                }
+            });
         }
 
         function populateRemoteLensesDropdown(lenses, currentId) {
@@ -1965,7 +1865,7 @@
                 const tracks = stream.getTracks().map(t => `${t.kind}:${t.readyState}`).join(', ');
                 if (visibleDiag) {
                     visibleDiag.textContent = (v1.videoWidth > 0 && v1.videoHeight > 0)
-                        ? `✅ تصویر و صدای دوربین ۱ فعال: ${v1.videoWidth}×${v1.videoHeight} • چرخش: ${state.cam1Rotation}° • (${tracks})`
+                        ? `✅ تصویر و صدای دوربین ۱ فعال (کد ${state.roomPin}): ${v1.videoWidth}×${v1.videoHeight} • چرخش: ${state.cam1Rotation}° • (${tracks})`
                         : `دریافت ترک دوربین ۱ (${tracks})...`;
                 }
             };
@@ -1987,7 +1887,7 @@
         }
 
         // ============================================================================
-        // 11. DIRECT PROGRAM SWITCHER & REMOTE COMMANDS
+        // 10. DIRECT PROGRAM SWITCHER & REMOTE COMMANDS
         // ============================================================================
         function directCutToProgram(src) {
             state.pgmSource = src;
@@ -2067,7 +1967,7 @@
         }
 
         // ============================================================================
-        // 12. GPU CANVAS COMPOSITOR (NATIVE 1280x720 PGM)
+        // 11. GPU CANVAS COMPOSITOR (NATIVE 1280x720 PGM)
         // ============================================================================
         let compositorRunning = false;
 
@@ -2281,7 +2181,7 @@
         }
 
         // ============================================================================
-        // 13. MEDIA PLAYER
+        // 12. MEDIA PLAYER
         // ============================================================================
         function handleMediaUpload(e) {
             const files = Array.from(e.target.files || []);
@@ -2517,7 +2417,7 @@
         }
 
         // ============================================================================
-        // 14. WEBAUDIO MIXER & MP4 RECORDER
+        // 13. WEBAUDIO MIXER & MP4 RECORDER
         // ============================================================================
         function initWebAudioMixer() {
             if (state.audioCtx) return;
@@ -2823,6 +2723,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             setCam1Rotation(270);
+            syncRoomPinInputs('0000');
         });
     </script>
 </body>
